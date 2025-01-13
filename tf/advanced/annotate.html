@@ -34,7 +34,7 @@ but other annotation tools might be added in the future.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bba7d245341786fc367f29ac5a15453beaa5bdb4/tf/advanced/annotate.py#L1-L26" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/advanced/annotate.py#L1-L27" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Enable manual annotation APIs.
@@ -49,6 +49,7 @@ from ..ner.ner import NER
 
 
 def makeNer(app, silent=False, **kwargs):
+    &#34;&#34;&#34;Produce an instance of the NER class.&#34;&#34;&#34;
     return NER(app, silent=silent, **kwargs)
 
 
@@ -86,7 +87,7 @@ def annotateApi(app):
 <span>def <span class="ident">makeNer</span></span>(<span>app, silent=False, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Produce an instance of the NER class.</p></div>
 </dd>
 </dl>
 </section>

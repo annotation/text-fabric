@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bba7d245341786fc367f29ac5a15453beaa5bdb4/tf/core/command.py#L1-L160" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/core/command.py#L1-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from textwrap import dedent
@@ -85,15 +85,18 @@ def readArgs(
 
     taskArgs = set()
     helpTasks = []
+
     for (task, helpStr) in possibleTasks.items():
         helpTasks.append(f&#34;\t{task}:\n\t\t{helpStr}\n&#34;)
         taskArgs.add(task)
+
     notInAllRep = f&#34; except {&#39;, &#39;.join(notInAll)}&#34; if len(notInAll) else &#34;&#34;
     helpTasks.append(f&#34;all:\n\t\tall tasks{notInAllRep}&#34;)
     taskArgs.add(&#34;all&#34;)
 
     paramArgsDef = {}
     helpParams = []
+
     for (param, (helpStr, default)) in possibleParams.items():
         helpParams.append(f&#34;\t{param}={default}:\n\t\t{helpStr}\n&#34;)
         paramArgsDef[param] = default
@@ -101,6 +104,7 @@ def readArgs(
     flagArgsDef = {}
     flagArgs = {}
     helpFlags = []
+
     for (flag, (helpStr, default, nValues)) in possibleFlags.items():
         helpFlags.append(f&#34;\t{flag}={default}:\n\t\t{helpStr}\n&#34;)
         valueCoding = (

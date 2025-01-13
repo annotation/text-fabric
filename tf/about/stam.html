@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.11.1" />
-<title>tf.about.code API documentation</title>
-<meta name="description" content="Code organization …" />
+<title>tf.about.stam API documentation</title>
+<meta name="description" content="Excursion: STAM …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
 integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
@@ -25,93 +25,124 @@ crossorigin>
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.about.code</code></h1>
+<h1 class="title">Module <code>tf.about.stam</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="code-organization">Code organization</h1>
-<p>The code base of TF can be divided into a few major parts,
-each with their own, identifiable task.</p>
-<p>Some parts of the code are covered by unit tests (<code><a title="tf.about.tests" href="tests.html">tf.about.tests</a></code>).</p>
-<p>There is also a
-<a href="https://annotation.github.io/text-fabric/tf/stats/index.html">count of code lines per module and language</a></p>
-<h2 id="base">Base</h2>
-<p>(<code><a title="tf.core" href="../core/index.html">tf.core</a></code>) The core API is responsible for:</p>
-<dl>
-<dt>Feature management</dt>
-<dd>TF data consists of <em>feature files</em>.
-TF must be able to load them, save them, import / export from MQL.</dd>
-<dt>Provide an API</dt>
-<dd>TF must offer an API for handling its data in applications.
-That means: feature lookup, containment lookup, text serialization.</dd>
-<dt>Pre-computation</dt>
-<dd>In order to make its API work efficiently, TF has to pre-compute certain
-compiled forms of the data.</dd>
-</dl>
-<h2 id="search">Search</h2>
-<p>(<code><a title="tf.search.search" href="../search/search.html">tf.search.search</a></code>) TF contains a search engine based on templates,
-which are little graphs of nodes and edges
-that must be instantiated against the corpus.</p>
-<dl>
-<dt>Search versus MQL</dt>
-<dd>The template language is inspired by
-<a href="https://emdros.org">MQL</a>, but has a different syntax.
-It is both weaker and stronger than MQL.</dd>
-<dt>Search versus hand coding</dt>
-<dd>
-<p>Search templates are the most accessible way to get at the data,
-easier than hand-coding your own little programs.</p>
-<p>The underlying engine is quite complicated.
-Sometimes it is faster than hand coding,
-sometimes (much) slower.</p>
-</dd>
-</dl>
-<h2 id="advanced">Advanced</h2>
-<p>(<code><a title="tf.advanced" href="../advanced/index.html">tf.advanced</a></code>) TF contains an advanced API geared to auto-downloading
-corpus data and displaying corpus materials in useful ways.</p>
-<h2 id="dynamic-web-interface">Dynamic Web interface</h2>
-<p>(<code><a title="tf.browser" href="../browser/index.html">tf.browser</a></code>) TF contains a browser interface for interacting
-with your corpus without programming.</p>
-<p>The web interface lets you fire queries (search templates) to TF and interact
-with the results:</p>
+<h1 id="excursion-stam">Excursion: STAM</h1>
+<p><a href="https://github.com/proycon">Maarten van Gompel</a>
+has created the software library
+<a href="https://github.com/annotation/stam">STAM</a>
+and uses it (among other use cases) to build a
+<a href="https://github.com/knaw-huc/brieven-van-hooft-pipeline/blob/main/README.md">pipeline</a>
+from a corpus of letters by P.C. Hooft in Folia format to text segments and
+web annotations.</p>
+<p><img alt="stam" src="../images/stam.png"></p>
+<p>We now have two sytems,
+<a href="https://github.com/annotation/stam">STAM</a>
+and Text-Fabric that can untangle text and markup.
+They are implemented very differently, and have a different flavour, but at the
+same time they share the preference of separating the textual data from all the data
+around the text.</p>
 <ul>
-<li>expanding rows to pretty displays;</li>
-<li>condensing results to various container types;</li>
-<li>exporting results as PDF and CSV.</li>
+<li>
+<p><em>intent</em></p>
+<ul>
+<li><strong>STAM</strong>: make it easier for tools and infrastructure to handle texts with
+annotations.</li>
+<li><strong>TF</strong>: support researchers in analysing textual corpora.</li>
 </ul>
-<p>This interface be served by a local web server provided with data from a TF app.
-(<code><a title="tf.browser.start" href="../browser/start.html">tf.browser.start</a></code>, <code><a title="tf.browser.kernel" href="../browser/kernel.html">tf.browser.kernel</a></code> and <code><a title="tf.browser.web" href="../browser/web.html">tf.browser.web</a></code>).</p>
-<h2 id="static-web-interface">Static Web interface</h2>
-<p>(<code><a title="tf.client" href="../client/index.html">tf.client</a></code>) There is also a static browser interface: you can build a set of
-static HTML pages with Javascript files out of a corpus, which has a search interface
-of a different kind than <code><a title="tf.search" href="../search/index.html">tf.search</a></code>.</p>
-<h2 id="volumes-and-collections">Volumes and collections</h2>
-<p>(<code><a title="tf.volumes" href="../volumes/index.html">tf.volumes</a></code>) Machinery to support the idea that a TF dataset
-is a work that consists of volumes. Volumes and collections of volumes
-can be loaded without loading the whole work while still maintaining
-a profound connection with the whole work through additional features such as <code>owork</code>.
-See also <code><a title="tf.about.volumes" href="volumes.html">tf.about.volumes</a></code>.</p>
-<h2 id="dataset">Dataset</h2>
-<p>(<code><a title="tf.dataset" href="../dataset/index.html">tf.dataset</a></code>) Machinery to manipulate datasets as a whole.</p>
-<h2 id="convert">Convert</h2>
-<p>(<code><a title="tf.convert" href="../convert/index.html">tf.convert</a></code>) There is support for conversion to and from MQL and for converting
-arbitrary structured data (such as database dumps or TEI files) to TF
-(<code><a title="tf.convert.mql" href="../convert/mql.html">tf.convert.mql</a></code>, <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code>).</p>
-<p>There is also some support for round-trips of TF data into other annotation tools and back
-(<code><a title="tf.convert.recorder" href="../convert/recorder.html">tf.convert.recorder</a></code>).</p>
-<h2 id="writing">Writing</h2>
-<p>(<code><a title="tf.writing" href="../writing/index.html">tf.writing</a></code>) TF supports several writing systems by means of transliterations
-and conversions between them and UNICODE.</p>
-<h2 id="ner">NER</h2>
-<p>(<code><a title="tf.ner" href="../ner/index.html">tf.ner</a></code> and <code><a title="tf.browser.ner" href="../browser/ner/index.html">tf.browser.ner</a></code>) This is machinery and an interface to do Named
-Entity Recognition, based on patterns you specify. These patterns can be supplied ad
-hoc in a web interface, or systematically in a spreadsheet.</p>
+</li>
+<li>
+<p><em>implementation</em></p>
+<ul>
+<li><strong>STAM</strong>: Rust + <a href="https://github.com/annotation/stam-python">Python bindings</a>.</li>
+<li><strong>TF</strong>: Pure Python.</li>
+</ul>
+</li>
+<li>
+<p><em>organization</em></p>
+<ul>
+<li><strong>STAM</strong>: very neatly in a core with extensions.</li>
+<li><strong>TF</strong>: core data functionality in <code><a title="tf.core" href="../core/index.html">tf.core</a></code> modules, search functionality in
+<code><a title="tf.search" href="../search/index.html">tf.search</a></code> modules, lots of other functions are included in the code with
+varying degrees of integration and orderliness!</li>
+</ul>
+</li>
+<li>
+<p><em>standards</em></p>
+<ul>
+<li><strong>STAM</strong>: actively seeks to interoperate with existing standards, but
+internally it uses its own way of organizing the data.</li>
+<li><strong>TF</strong>: also relies on a few simple conventions w.r.t. data
+organization and efficient serialization. These conventions are
+documented. It has several import and export functions, e.g. from TEI,
+PageXML, MQL, and to MQL, TSV. But it prefers to input and output data
+in minimalistic streams, without the often redundant strings that are
+attached to standard formats.</li>
+</ul>
+</li>
+<li>
+<p><em>model</em></p>
+<ul>
+<li><strong>STAM</strong>: very generic w.r.t. annotations, annotations can target
+annotations and /or text segments.</li>
+<li><strong>TF</strong>:
+<a href="https://annotation.github.io/text-fabric/tf/about/datamodel.html">graph model</a>
+where nodes stand for textual positions and subsets of them, nodes and
+edges can have features, which are the raw material of annotations, but
+annotations are not a TF concept.</li>
+</ul>
+</li>
+<li>
+<p><em>query language</em></p>
+<ul>
+<li><strong>STAM</strong>:
+<a href="https://github.com/annotation/stam/tree/master/extensions/stam-query">STAMQL</a>,
+evolving as an SQL-like language, with user-friendly primitives for
+annotations.</li>
+<li><strong>TF</strong>:
+<a href="https://annotation.github.io/text-fabric/tf/about/searchusage.html">TF-Query</a>,
+a noise-free language for graph templates with reasonable performance.</li>
+</ul>
+</li>
+<li>
+<p><em>display</em></p>
+<ul>
+<li><strong>STAM</strong>: In development, see <code>stam view</code> in
+<a href="https://github.com/annotation/stam-tools">STAM tools</a>.</li>
+<li><strong>TF</strong>: Powerful functions to display corpus fragments with highlighting in
+<code><a title="tf.advanced" href="../advanced/index.html">tf.advanced</a></code>. The challenge is to build generic display functions that detect
+the peculiarities of the corpora.</li>
+</ul>
+</li>
+<li>
+<p><em>API</em></p>
+<ul>
+<li><strong>STAM</strong>: in Rust and Python.</li>
+<li><strong>TF</strong>: Python.</li>
+</ul>
+</li>
+<li>
+<p><em>GUI</em></p>
+<ul>
+<li><strong>STAM</strong>: not yet.</li>
+<li><strong>TF</strong>: locally served web interface for browsing and searching the corpus.</li>
+</ul>
+</li>
+</ul>
+<p>Both libraries can be used to manage corpus data in intricate ways for research
+and publishing purposes.
+How STAM and Text-Fabric will evolve in the dynamic landscape of corpora, analytical
+methods and AI, is something we cannot predict.
+For now, their different flavour and intent will define their appeal to the different
+categories of users.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/about/code.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/about/stam.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../docs/about/code.md
+.. include:: ../docs/about/stam.md
 &#34;&#34;&#34;</code></pre>
 </details>
 </section>
@@ -179,19 +210,7 @@ setTimeout(() => input.focus(), 100);
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#code-organization">Code organization</a><ul>
-<li><a href="#base">Base</a></li>
-<li><a href="#search">Search</a></li>
-<li><a href="#advanced">Advanced</a></li>
-<li><a href="#dynamic-web-interface">Dynamic Web interface</a></li>
-<li><a href="#static-web-interface">Static Web interface</a></li>
-<li><a href="#volumes-and-collections">Volumes and collections</a></li>
-<li><a href="#dataset">Dataset</a></li>
-<li><a href="#convert">Convert</a></li>
-<li><a href="#writing">Writing</a></li>
-<li><a href="#ner">NER</a></li>
-</ul>
-</li>
+<li><a href="#excursion-stam">Excursion: STAM</a></li>
 </ul>
 </div>
 <ul id="index">

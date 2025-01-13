@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bba7d245341786fc367f29ac5a15453beaa5bdb4/tf/core/helpers.py#L1-L694" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/core/helpers.py#L1-L699" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -40,6 +40,7 @@ import re
 from itertools import chain
 from collections import deque
 from subprocess import run as run_cmd, CalledProcessError
+from datetime import datetime as dt, UTC
 
 
 from ..parameters import OMAP
@@ -84,6 +85,10 @@ MSG_LINE_RE = re.compile(r&#34;^( *[0-9]+) (.*)$&#34;)
 NUM_ALFA_RE = re.compile(r&#34;^([0-9]*)([^0-9]*)(.*)$&#34;)
 
 QUAD = &#34;    &#34;
+
+
+def utcnow():
+    return dt.now(UTC)
 
 
 def versionSort(x):
@@ -1029,6 +1034,12 @@ If <code>None</code> the current directory is used.</dd>
 <p>Only <code>"</code> and <code>'</code> at the beginning of the string are escaped.
 The escaping is realized by putting a backslash at the beginning.</p></div>
 </dd>
+<dt id="tf.core.helpers.utcnow"><code class="name flex">
+<span>def <span class="ident">utcnow</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.core.helpers.valueFromTf"><code class="name flex">
 <span>def <span class="ident">valueFromTf</span></span>(<span>tf)</span>
 </code></dt>
@@ -1176,6 +1187,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.core.helpers.specFromRangesLogical" href="#tf.core.helpers.specFromRangesLogical">specFromRangesLogical</a></code></li>
 <li><code><a title="tf.core.helpers.tfFromValue" href="#tf.core.helpers.tfFromValue">tfFromValue</a></code></li>
 <li><code><a title="tf.core.helpers.tsvEsc" href="#tf.core.helpers.tsvEsc">tsvEsc</a></code></li>
+<li><code><a title="tf.core.helpers.utcnow" href="#tf.core.helpers.utcnow">utcnow</a></code></li>
 <li><code><a title="tf.core.helpers.valueFromTf" href="#tf.core.helpers.valueFromTf">valueFromTf</a></code></li>
 <li><code><a title="tf.core.helpers.var" href="#tf.core.helpers.var">var</a></code></li>
 <li><code><a title="tf.core.helpers.versionSort" href="#tf.core.helpers.versionSort">versionSort</a></code></li>

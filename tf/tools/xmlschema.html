@@ -107,7 +107,7 @@ good = A.task(&quot;validate&quot;, &quot;schema.rng&quot;, &quot;doc1.xml&quot;
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bba7d245341786fc367f29ac5a15453beaa5bdb4/tf/tools/xmlschema.py#L1-L1054" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/tools/xmlschema.py#L1-L1090" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 ## Meaningful information from XML schemas.
@@ -535,7 +535,7 @@ class Elements(CheckImport):
                 self.showElems()
             self.resolve(definitions)
 
-            for (name, odef) in definitions.items():
+            for name, odef in definitions.items():
 
                 oKind = self.repKind(odef.get(&#34;kind&#34;, None))
                 oMixed = self.repMixed(odef.get(&#34;mixed&#34;, None))
@@ -547,11 +547,15 @@ class Elements(CheckImport):
                     transRep = (
                         f&#34;{baseKind} {baseMixed} ==&gt; {oKind} {oMixed}&#34;
                         if baseKind != oKind and baseMixed != oMixed
-                        else f&#34;{baseKind} ==&gt; {oKind}&#34;
-                        if baseKind != oKind
-                        else f&#34;{baseMixed} ==&gt; {oMixed}&#34;
-                        if baseMixed != oMixed
-                        else None
+                        else (
+                            f&#34;{baseKind} ==&gt; {oKind}&#34;
+                            if baseKind != oKind
+                            else (
+                                f&#34;{baseMixed} ==&gt; {oMixed}&#34;
+                                if baseMixed != oMixed
+                                else None
+                            )
+                        )
                     )
                     if transRep is not None:
                         baseDefinitions[name] = odef
@@ -634,7 +638,7 @@ class Elements(CheckImport):
 
         def infer():
             changed = 0
-            for (name, info) in definitions.items():
+            for name, info in definitions.items():
                 if info[&#34;mixed&#34;]:
                     continue
 
@@ -687,7 +691,7 @@ class Elements(CheckImport):
         definitions = self.definitions
         redefinitions = self.redefinitions
 
-        for (name, info) in sorted(definitions.items(), key=self.eKey):
+        for name, info in sorted(definitions.items(), key=self.eKey):
             tag = info[&#34;tag&#34;]
             mixed = &#34;mixed&#34; if info[&#34;mixed&#34;] else &#34;-----&#34;
             abstract = &#34;abstract&#34; if info[&#34;abstract&#34;] else &#34;--------&#34;
@@ -702,7 +706,7 @@ class Elements(CheckImport):
             )
 
         console(&#34;=============================================&#34;)
-        for (name, amount) in sorted(redefinitions.items()):
+        for name, amount in sorted(redefinitions.items()):
             console(f&#34;{amount:&gt;3}x {name}&#34;)
 
     def showOverrides(self):
@@ -719,7 +723,7 @@ class Elements(CheckImport):
             if verbose &gt;= 0:
                 console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
         if verbose &gt;= 0:
-            for (name, trans) in sorted(
+            for name, trans in sorted(
                 x for x in self.overrides.items() if x[1] is not None
             ):
                 console(f&#34;\t{name} {trans}&#34;)
@@ -787,7 +791,7 @@ class Analysis(CheckImport):
 
         return dict(rng=f&#34;{myDir}/tei/tei_all.rng&#34;, xsd=f&#34;{myDir}/tei/tei_all.xsd&#34;)
 
-    def getModel(self, xmlContent):
+    def getModel(self, xmlContent, modelMap):
         modelRe = self.modelRe
         modelSnsRe = self.modelSnsRe
         modelHrefRe = self.modelHrefRe
@@ -797,12 +801,19 @@ class Analysis(CheckImport):
 
         for modelPi in modelPis:
             modelSns = modelSnsRe.search(modelPi)
+
             if modelSns:
                 modelSns = modelSns.group(2)
                 if &#34;relaxng.org&#34; in modelSns:
-                    modelHref = modelHrefRe.search(modelPi)
-                    if modelHref:
-                        model = modelHref.group(2).split(&#34;/&#34;)[-1].removesuffix(&#34;.rng&#34;)
+                    modelHrefResult = modelHrefRe.search(modelPi)
+
+                    if modelHrefResult:
+                        modelHref = modelHrefResult.group(2)
+                        model = (
+                            modelMap[modelHref]
+                            if modelHref in modelMap
+                            else modelHref.split(&#34;/&#34;)[-1].removesuffix(&#34;.rng&#34;)
+                        )
 
         return model
 
@@ -844,11 +855,14 @@ class Analysis(CheckImport):
                 console(stdErr)
         return good
 
-    def validate(self, schema, instances):
+    def validate(self, mode, schema, instances):
         &#34;&#34;&#34;Validates an instance against a schema.
 
         Parameters
         ----------
+        mode: boolean | integer
+            If `True`, validates as many files as possible in one call to the validator,
+            if `1`, treat each file individually.
         schema: string
             The schema to validate against.
         instances: list
@@ -858,24 +872,49 @@ class Analysis(CheckImport):
         -------
         &#34;&#34;&#34;
         myDir = self.myDir
+        verbose = self.verbose
 
         jing = f&#34;{myDir}/jing/jing.jar&#34;
-        instancesRep = &#34; &#34;.join(f&#39;&#34;{instance}&#34;&#39; for instance in instances)
-        (good, stdOut, stdErr) = run(
-            f&#34;&#34;&#34;java -jar {jing} -t &#34;{schema}&#34; {instancesRep}&#34;&#34;&#34;,
-            workDir=None,
-        )
+
+        if type(mode) is int and mode == 1:
+            good = True
+            outputLines = []
+
+            for instance in instances:
+                if verbose:
+                    instanceName = instance.rsplit(&#34;/&#34;, 1)[-1]
+                    console(f&#34;\r\t\t{instanceName:&lt;40} ...&#34;, newline=False)
+
+                (thisGood, stdOut, stdErr) = run(
+                    f&#34;&#34;&#34;java -jar {jing} -t &#34;{schema}&#34; &#34;{instance}&#34; &#34;&#34;&#34;,
+                    workDir=None,
+                )
+                if not thisGood:
+                    good = False
+
+                outputLines.extend((stdOut + stdErr).strip().split(&#34;\n&#34;))
+
+            if verbose:
+                console(&#34;&#34;)
+
+        elif mode is True:
+            instancesRep = &#34; &#34;.join(f&#39;&#34;{instance}&#34;&#39; for instance in instances)
+            (good, stdOut, stdErr) = run(
+                f&#34;&#34;&#34;java -jar {jing} -t &#34;{schema}&#34; {instancesRep}&#34;&#34;&#34;,
+                workDir=None,
+            )
+            outputLines = (stdOut + stdErr).strip().split(&#34;\n&#34;)
+
         info = []
         errors = []
 
-        outputLines = (stdOut + stdErr).strip().split(&#34;\n&#34;)
-
         for line in outputLines:
             if line.startswith(&#34;Elapsed&#34;):
-                info.append(line)
+                # info.append(line)
                 continue
 
             fields = line.split(&#34; &#34;, 2)
+
             if len(fields) == 1:
                 console(f&#34;INFO: {line}&#34;)
                 errors.append((None, None, None, None, &#34;info&#34;, line))
@@ -892,17 +931,14 @@ class Analysis(CheckImport):
                 (file, line, col) = (
                     (file, None, None)
                     if len(fileComps) == 1
-                    else (*fileComps[0:2], None)
-                    if len(fileComps) == 2
-                    else fileComps
+                    else (*fileComps[0:2], None) if len(fileComps) == 2 else fileComps
                 )
                 errors.append((folder, file, line, col, kind, text))
 
         return (good, info, errors)
 
     def analyser(self, baseSchema, override):
-        &#34;&#34;&#34;Initializes an analyser for a schema.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Initializes an analyser for a schema.&#34;&#34;&#34;
         if not self.importOK():
             return
 
@@ -1200,7 +1236,7 @@ In debug mode more information is shown on the console.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bba7d245341786fc367f29ac5a15453beaa5bdb4/tf/tools/xmlschema.py#L617-L1045" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/tools/xmlschema.py#L621-L1081" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Analysis(CheckImport):
     @staticmethod
@@ -1264,7 +1300,7 @@ In debug mode more information is shown on the console.</dd>
 
         return dict(rng=f&#34;{myDir}/tei/tei_all.rng&#34;, xsd=f&#34;{myDir}/tei/tei_all.xsd&#34;)
 
-    def getModel(self, xmlContent):
+    def getModel(self, xmlContent, modelMap):
         modelRe = self.modelRe
         modelSnsRe = self.modelSnsRe
         modelHrefRe = self.modelHrefRe
@@ -1274,12 +1310,19 @@ In debug mode more information is shown on the console.</dd>
 
         for modelPi in modelPis:
             modelSns = modelSnsRe.search(modelPi)
+
             if modelSns:
                 modelSns = modelSns.group(2)
                 if &#34;relaxng.org&#34; in modelSns:
-                    modelHref = modelHrefRe.search(modelPi)
-                    if modelHref:
-                        model = modelHref.group(2).split(&#34;/&#34;)[-1].removesuffix(&#34;.rng&#34;)
+                    modelHrefResult = modelHrefRe.search(modelPi)
+
+                    if modelHrefResult:
+                        modelHref = modelHrefResult.group(2)
+                        model = (
+                            modelMap[modelHref]
+                            if modelHref in modelMap
+                            else modelHref.split(&#34;/&#34;)[-1].removesuffix(&#34;.rng&#34;)
+                        )
 
         return model
 
@@ -1321,11 +1364,14 @@ In debug mode more information is shown on the console.</dd>
                 console(stdErr)
         return good
 
-    def validate(self, schema, instances):
+    def validate(self, mode, schema, instances):
         &#34;&#34;&#34;Validates an instance against a schema.
 
         Parameters
         ----------
+        mode: boolean | integer
+            If `True`, validates as many files as possible in one call to the validator,
+            if `1`, treat each file individually.
         schema: string
             The schema to validate against.
         instances: list
@@ -1335,24 +1381,49 @@ In debug mode more information is shown on the console.</dd>
         -------
         &#34;&#34;&#34;
         myDir = self.myDir
+        verbose = self.verbose
 
         jing = f&#34;{myDir}/jing/jing.jar&#34;
-        instancesRep = &#34; &#34;.join(f&#39;&#34;{instance}&#34;&#39; for instance in instances)
-        (good, stdOut, stdErr) = run(
-            f&#34;&#34;&#34;java -jar {jing} -t &#34;{schema}&#34; {instancesRep}&#34;&#34;&#34;,
-            workDir=None,
-        )
+
+        if type(mode) is int and mode == 1:
+            good = True
+            outputLines = []
+
+            for instance in instances:
+                if verbose:
+                    instanceName = instance.rsplit(&#34;/&#34;, 1)[-1]
+                    console(f&#34;\r\t\t{instanceName:&lt;40} ...&#34;, newline=False)
+
+                (thisGood, stdOut, stdErr) = run(
+                    f&#34;&#34;&#34;java -jar {jing} -t &#34;{schema}&#34; &#34;{instance}&#34; &#34;&#34;&#34;,
+                    workDir=None,
+                )
+                if not thisGood:
+                    good = False
+
+                outputLines.extend((stdOut + stdErr).strip().split(&#34;\n&#34;))
+
+            if verbose:
+                console(&#34;&#34;)
+
+        elif mode is True:
+            instancesRep = &#34; &#34;.join(f&#39;&#34;{instance}&#34;&#39; for instance in instances)
+            (good, stdOut, stdErr) = run(
+                f&#34;&#34;&#34;java -jar {jing} -t &#34;{schema}&#34; {instancesRep}&#34;&#34;&#34;,
+                workDir=None,
+            )
+            outputLines = (stdOut + stdErr).strip().split(&#34;\n&#34;)
+
         info = []
         errors = []
 
-        outputLines = (stdOut + stdErr).strip().split(&#34;\n&#34;)
-
         for line in outputLines:
             if line.startswith(&#34;Elapsed&#34;):
-                info.append(line)
+                # info.append(line)
                 continue
 
             fields = line.split(&#34; &#34;, 2)
+
             if len(fields) == 1:
                 console(f&#34;INFO: {line}&#34;)
                 errors.append((None, None, None, None, &#34;info&#34;, line))
@@ -1369,17 +1440,14 @@ In debug mode more information is shown on the console.</dd>
                 (file, line, col) = (
                     (file, None, None)
                     if len(fileComps) == 1
-                    else (*fileComps[0:2], None)
-                    if len(fileComps) == 2
-                    else fileComps
+                    else (*fileComps[0:2], None) if len(fileComps) == 2 else fileComps
                 )
                 errors.append((folder, file, line, col, kind, text))
 
         return (good, info, errors)
 
     def analyser(self, baseSchema, override):
-        &#34;&#34;&#34;Initializes an analyser for a schema.
-        &#34;&#34;&#34;
+        &#34;&#34;&#34;Initializes an analyser for a schema.&#34;&#34;&#34;
         if not self.importOK():
             return
 
@@ -1746,7 +1814,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 </dl></div>
 </dd>
 <dt id="tf.tools.xmlschema.Analysis.getModel"><code class="name flex">
-<span>def <span class="ident">getModel</span></span>(<span>self, xmlContent)</span>
+<span>def <span class="ident">getModel</span></span>(<span>self, xmlContent, modelMap)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1792,12 +1860,15 @@ Not all tasks require both.</dd>
 </dl></div>
 </dd>
 <dt id="tf.tools.xmlschema.Analysis.validate"><code class="name flex">
-<span>def <span class="ident">validate</span></span>(<span>self, schema, instances)</span>
+<span>def <span class="ident">validate</span></span>(<span>self, mode, schema, instances)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Validates an instance against a schema.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
+<dt><strong><code>mode</code></strong> :&ensp;<code>boolean | integer</code></dt>
+<dd>If <code>True</code>, validates as many files as possible in one call to the validator,
+if <code>1</code>, treat each file individually.</dd>
 <dt><strong><code>schema</code></strong> :&ensp;<code>string</code></dt>
 <dd>The schema to validate against.</dd>
 <dt><strong><code>instances</code></strong> :&ensp;<code>list</code></dt>
@@ -1834,7 +1905,7 @@ In debug mode more information is shown on the console.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bba7d245341786fc367f29ac5a15453beaa5bdb4/tf/tools/xmlschema.py#L118-L614" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/tools/xmlschema.py#L118-L618" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Elements(CheckImport):
     types = set(
@@ -2145,7 +2216,7 @@ In debug mode more information is shown on the console.</dd>
                 self.showElems()
             self.resolve(definitions)
 
-            for (name, odef) in definitions.items():
+            for name, odef in definitions.items():
 
                 oKind = self.repKind(odef.get(&#34;kind&#34;, None))
                 oMixed = self.repMixed(odef.get(&#34;mixed&#34;, None))
@@ -2157,11 +2228,15 @@ In debug mode more information is shown on the console.</dd>
                     transRep = (
                         f&#34;{baseKind} {baseMixed} ==&gt; {oKind} {oMixed}&#34;
                         if baseKind != oKind and baseMixed != oMixed
-                        else f&#34;{baseKind} ==&gt; {oKind}&#34;
-                        if baseKind != oKind
-                        else f&#34;{baseMixed} ==&gt; {oMixed}&#34;
-                        if baseMixed != oMixed
-                        else None
+                        else (
+                            f&#34;{baseKind} ==&gt; {oKind}&#34;
+                            if baseKind != oKind
+                            else (
+                                f&#34;{baseMixed} ==&gt; {oMixed}&#34;
+                                if baseMixed != oMixed
+                                else None
+                            )
+                        )
                     )
                     if transRep is not None:
                         baseDefinitions[name] = odef
@@ -2244,7 +2319,7 @@ In debug mode more information is shown on the console.</dd>
 
         def infer():
             changed = 0
-            for (name, info) in definitions.items():
+            for name, info in definitions.items():
                 if info[&#34;mixed&#34;]:
                     continue
 
@@ -2297,7 +2372,7 @@ In debug mode more information is shown on the console.</dd>
         definitions = self.definitions
         redefinitions = self.redefinitions
 
-        for (name, info) in sorted(definitions.items(), key=self.eKey):
+        for name, info in sorted(definitions.items(), key=self.eKey):
             tag = info[&#34;tag&#34;]
             mixed = &#34;mixed&#34; if info[&#34;mixed&#34;] else &#34;-----&#34;
             abstract = &#34;abstract&#34; if info[&#34;abstract&#34;] else &#34;--------&#34;
@@ -2312,7 +2387,7 @@ In debug mode more information is shown on the console.</dd>
             )
 
         console(&#34;=============================================&#34;)
-        for (name, amount) in sorted(redefinitions.items()):
+        for name, amount in sorted(redefinitions.items()):
             console(f&#34;{amount:&gt;3}x {name}&#34;)
 
     def showOverrides(self):
@@ -2329,7 +2404,7 @@ In debug mode more information is shown on the console.</dd>
             if verbose &gt;= 0:
                 console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
         if verbose &gt;= 0:
-            for (name, trans) in sorted(
+            for name, trans in sorted(
                 x for x in self.overrides.items() if x[1] is not None
             ):
                 console(f&#34;\t{name} {trans}&#34;)</code></pre>

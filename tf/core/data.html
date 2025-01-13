@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bba7d245341786fc367f29ac5a15453beaa5bdb4/tf/core/data.py#L1-L722" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/core/data.py#L1-L720" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import array
 import gc
@@ -40,7 +40,6 @@ from pickletools import optimize
 import gzip
 import collections
 import time
-from datetime import datetime
 from ..parameters import PACK_VERSION, PICKLE_PROTOCOL, GZIP_LEVEL, OTYPE, OSLOTS, OTEXT
 from .helpers import (
     setFromSpec,
@@ -50,6 +49,7 @@ from .helpers import (
     rangesFromSet,
     check32,
     console,
+    utcnow,
 )
 from .files import (
     fileOpen,
@@ -379,11 +379,7 @@ class Data:
                 value = (
                     int(valTf)
                     if isNum and valTf != &#34;&#34;
-                    else None
-                    if isNum
-                    else &#34;&#34;
-                    if valTf == &#34;&#34;
-                    else valueFromTf(valTf)
+                    else None if isNum else &#34;&#34; if valTf == &#34;&#34; else valueFromTf(valTf)
                 )
             if isEdge:
                 for n in nodes:
@@ -451,15 +447,15 @@ class Data:
                 seen = {}
                 datax = {}
                 if edgeValues:
-                    for (n, ms) in data.items():
+                    for n, ms in data.items():
                         msx = {}
-                        for (m, v) in ms.items():
+                        for m, v in ms.items():
                             if v not in seen:
                                 seen[v] = v
                             msx[m] = seen[v]
                         datax[n] = msx
                 else:
-                    for (n, ms) in data.items():
+                    for n, ms in data.items():
                         msx = frozenset(ms)
                         if msx not in seen:
                             seen[msx] = msx
@@ -468,7 +464,7 @@ class Data:
             else:
                 seen = {}
                 datax = {}
-                for (n, ms) in data.items():
+                for n, ms in data.items():
                     if ms not in seen:
                         seen[ms] = ms
                     datax[n] = seen[ms]
@@ -503,9 +499,11 @@ class Data:
             info,
             error,
             *[
-                (dep.metaData if dep.fileName == OTEXT else dep.data)
-                if isinstance(dep, Data)
-                else dep
+                (
+                    (dep.metaData if dep.fileName == OTEXT else dep.data)
+                    if isinstance(dep, Data)
+                    else dep
+                )
                 for dep in self.dependencies
             ],
         )
@@ -562,7 +560,7 @@ class Data:
         fh.write(&#34;@writtenBy=Text-Fabric\n&#34;)
         fh.write(
             &#34;@dateWritten={}\n&#34;.format(
-                datetime.utcnow().replace(microsecond=0).isoformat() + &#34;Z&#34;
+                utcnow().replace(microsecond=0).isoformat() + &#34;Z&#34;
             )
         )
         fh.write(&#34;\n&#34;)
@@ -610,7 +608,7 @@ class Data:
                 if edgeValues:
                     for m in thisData:
                         sets.setdefault(thisData[m], set()).add(m)
-                    for (value, mset) in sorted(sets.items()):
+                    for value, mset in sorted(sets.items()):
                         nodeSpec2 = specFromRanges(rangesFromSet(mset))
                         nodeSpec = &#34;&#34; if n == implicitNode else n
                         implicitNode = n + 1
@@ -645,7 +643,7 @@ class Data:
                 for n in sorted(data):
                     sets.setdefault(data[n], []).append(n)
                 implicitNode = 1
-                for (value, nset) in sorted(
+                for value, nset in sorted(
                     sets.items(), key=lambda x: (x[1][0], x[1][-1])
                 ):
                     if len(nset) == 1 and nset[0] == implicitNode:
@@ -775,7 +773,7 @@ class Data:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bba7d245341786fc367f29ac5a15453beaa5bdb4/tf/core/data.py#L45-L722" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/core/data.py#L45-L720" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data:
     def __init__(
@@ -1079,11 +1077,7 @@ class Data:
                 value = (
                     int(valTf)
                     if isNum and valTf != &#34;&#34;
-                    else None
-                    if isNum
-                    else &#34;&#34;
-                    if valTf == &#34;&#34;
-                    else valueFromTf(valTf)
+                    else None if isNum else &#34;&#34; if valTf == &#34;&#34; else valueFromTf(valTf)
                 )
             if isEdge:
                 for n in nodes:
@@ -1151,15 +1145,15 @@ class Data:
                 seen = {}
                 datax = {}
                 if edgeValues:
-                    for (n, ms) in data.items():
+                    for n, ms in data.items():
                         msx = {}
-                        for (m, v) in ms.items():
+                        for m, v in ms.items():
                             if v not in seen:
                                 seen[v] = v
                             msx[m] = seen[v]
                         datax[n] = msx
                 else:
-                    for (n, ms) in data.items():
+                    for n, ms in data.items():
                         msx = frozenset(ms)
                         if msx not in seen:
                             seen[msx] = msx
@@ -1168,7 +1162,7 @@ class Data:
             else:
                 seen = {}
                 datax = {}
-                for (n, ms) in data.items():
+                for n, ms in data.items():
                     if ms not in seen:
                         seen[ms] = ms
                     datax[n] = seen[ms]
@@ -1203,9 +1197,11 @@ class Data:
             info,
             error,
             *[
-                (dep.metaData if dep.fileName == OTEXT else dep.data)
-                if isinstance(dep, Data)
-                else dep
+                (
+                    (dep.metaData if dep.fileName == OTEXT else dep.data)
+                    if isinstance(dep, Data)
+                    else dep
+                )
                 for dep in self.dependencies
             ],
         )
@@ -1262,7 +1258,7 @@ class Data:
         fh.write(&#34;@writtenBy=Text-Fabric\n&#34;)
         fh.write(
             &#34;@dateWritten={}\n&#34;.format(
-                datetime.utcnow().replace(microsecond=0).isoformat() + &#34;Z&#34;
+                utcnow().replace(microsecond=0).isoformat() + &#34;Z&#34;
             )
         )
         fh.write(&#34;\n&#34;)
@@ -1310,7 +1306,7 @@ class Data:
                 if edgeValues:
                     for m in thisData:
                         sets.setdefault(thisData[m], set()).add(m)
-                    for (value, mset) in sorted(sets.items()):
+                    for value, mset in sorted(sets.items()):
                         nodeSpec2 = specFromRanges(rangesFromSet(mset))
                         nodeSpec = &#34;&#34; if n == implicitNode else n
                         implicitNode = n + 1
@@ -1345,7 +1341,7 @@ class Data:
                 for n in sorted(data):
                     sets.setdefault(data[n], []).append(n)
                 implicitNode = 1
-                for (value, nset) in sorted(
+                for value, nset in sorted(
                     sets.items(), key=lambda x: (x[1][0], x[1][-1])
                 ):
                     if len(nset) == 1 and nset[0] == implicitNode:

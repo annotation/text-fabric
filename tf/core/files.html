@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bba7d245341786fc367f29ac5a15453beaa5bdb4/tf/core/files.py#L1-L861" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/core/files.py#L1-L861" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import json
@@ -819,7 +819,7 @@ def writeJson(data, asFile=None, **kwargs):
         asFile.write(dumped)
 
 
-def readYaml(text=None, plain=False, asFile=None, preferTuples=True):
+def readYaml(text=None, plain=False, asFile=None, preferTuples=True, preferLists=True):
     &#34;&#34;&#34;Read a YAML file or string.
 
     The input data is either a text string or a file name or a file handle.
@@ -1374,7 +1374,7 @@ we will represent lists as tuples.</dd>
 </dl></div>
 </dd>
 <dt id="tf.core.files.readYaml"><code class="name flex">
-<span>def <span class="ident">readYaml</span></span>(<span>text=None, plain=False, asFile=None, preferTuples=True)</span>
+<span>def <span class="ident">readYaml</span></span>(<span>text=None, plain=False, asFile=None, preferTuples=True, preferLists=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Read a YAML file or string.</p>

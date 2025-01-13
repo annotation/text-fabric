@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bba7d245341786fc367f29ac5a15453beaa5bdb4/tf/convert/helpers.py#L1-L802" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/convert/helpers.py#L1-L829" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from textwrap import dedent
@@ -97,6 +97,11 @@ SECTION_MODELS = dict(
     ),
     II=dict(
         levels=(list, [CHAPTER, CHUNK]),
+        element=(str, &#34;head&#34;),
+        attributes=(dict, {}),
+    ),
+    III=dict(
+        levels=(list, [FILE, CHAPTER, CHUNK]),
         element=(str, &#34;head&#34;),
         attributes=(dict, {}),
     ),
@@ -372,6 +377,7 @@ def matchModel(properties, tag, atts):
     if tag == properties[&#34;element&#34;]:
         criticalAtts = properties[&#34;attributes&#34;]
         match = True
+
         for k, cVal in criticalAtts.items():
             aVal = atts.get(k, None)
 
@@ -411,17 +417,11 @@ def setUp(kind):
             &#34;latest&#34;,
         ),
         &#34;sourceBase&#34;: (
-            (
-                &#34;empty: refDir/{kind.lower()};\n\t\t&#34;
-                &#34;any directory of choice.&#34;
-            ),
+            (&#34;empty: refDir/{kind.lower()};\n\t\t&#34; &#34;any directory of choice.&#34;),
             &#34;&#34;,
         ),
         &#34;reportDir&#34;: (
-            (
-                &#34;empty: refDir/report;\n\t\t&#34;
-                &#34;any directory of choice.&#34;
-            ),
+            (&#34;empty: refDir/report;\n\t\t&#34; &#34;any directory of choice.&#34;),
             &#34;&#34;,
         ),
         kind.lower(): (
@@ -433,7 +433,10 @@ def setUp(kind):
             ),
             &#34;latest&#34;,
         ),
-        &#34;validate&#34;: (&#34;Whether to validate the XML input&#34;, True),
+        &#34;validate&#34;: (
+            &#34;Whether to validate the XML input (use 1 for validation per file)&#34;,
+            True,
+        ),
     }
 
     flagSpec = dict(
@@ -527,6 +530,21 @@ def tweakTrans(
             if attributes
             else &#34;\t*\t*no attribute properties*\n&#34;
         )
+    elif sectionModel == &#34;III&#34;:
+        nLevels = &#34;3&#34;
+        fileSection = levelNames[0]
+        chapterSection = levelNames[1]
+        chunkSection = levelNames[2]
+        head = sectionProperties[&#34;element&#34;]
+        attributes = sectionProperties[&#34;attributes&#34;]
+        propertiesRaw = repr(sectionProperties)
+        properties = (
+            &#34;&#34;.join(
+                f&#34;\t*\t`{att}` = `{val}`\n&#34; for (att, val) in sorted(attributes.items())
+            )
+            if attributes
+            else &#34;\t*\t*no attribute properties*\n&#34;
+        )
     else:
         nLevels = &#34;3&#34;
         folderSection = levelNames[0]
@@ -568,6 +586,15 @@ def tweakTrans(
     if sectionModel == &#34;II&#34;:
         text = (
             text.replace(&#34;«head»&#34;, head)
+            .replace(&#34;«properties»&#34;, properties)
+            .replace(&#34;«propertiesRaw»&#34;, propertiesRaw)
+            .replace(&#34;«chapter»&#34;, chapterSection)
+            .replace(&#34;«chunk»&#34;, chunkSection)
+        )
+    elif sectionModel == &#34;III&#34;:
+        text = (
+            text.replace(&#34;«file»&#34;, fileSection)
+            .replace(&#34;«head»&#34;, head)
             .replace(&#34;«properties»&#34;, properties)
             .replace(&#34;«propertiesRaw»&#34;, propertiesRaw)
             .replace(&#34;«chapter»&#34;, chapterSection)
