@@ -1011,35 +1011,49 @@ def publishRelease(app, increase, message=None, description=None):
     console(f"Release {newTag} created")
 
 
+def fromString(string):
+    commit = None
+    release = None
+    local = None
+    if not string:
+        commit = ""
+        release = ""
+    elif string == "latest":
+        commit = None
+        release = ""
+    elif string == "hot":
+        commit = ""
+        release = None
+    elif string in {"local", "clone"}:
+        commit = None
+        release = None
+        local = string
+    elif "." in string or len(string) < 12:
+        commit = None
+        release = string
+    else:
+        commit = string
+        release = None
+    return (commit, release, local)
+
+
+def readInfo(filePathLocal):
+    commit = None
+    release = None
+
+    if fileExists(filePathLocal):
+        with fileOpen(filePathLocal) as f:
+            for line in f:
+                string = line.strip()
+                (commit, release, local) = fromString(string)
+
+    return (commit, release)
+
+
 class Checkout:
     """Auxiliary class for `checkoutRepo`"""
 
     @staticmethod
-    def fromString(string):
-        commit = None
-        release = None
-        local = None
-        if not string:
-            commit = ""
-            release = ""
-        elif string == "latest":
-            commit = None
-            release = ""
-        elif string == "hot":
-            commit = ""
-            release = None
-        elif string in {"local", "clone"}:
-            commit = None
-            release = None
-            local = string
-        elif "." in string or len(string) < 12:
-            commit = None
-            release = string
-        else:
-            commit = string
-            release = None
-        return (commit, release, local)
-
     @staticmethod
     def toString(commit, release, local, backend, source=None, dest=None):
         extra = ""
@@ -1101,7 +1115,7 @@ class Checkout:
         self.repo = repo
         self.source = source
         self.dest = dest
-        (self.commitChk, self.releaseChk, self.local) = self.fromString(checkout)
+        (self.commitChk, self.releaseChk, self.local) = fromString(checkout)
         clone = self.isClone()
 
         relative = prefixSlash(relative)
@@ -2082,15 +2096,11 @@ class Checkout:
                     fileMove(sPath, goodPath)
 
     def readInfo(self):
-        if fileExists(self.filePathLocal):
-            with fileOpen(self.filePathLocal) as f:
-                for line in f:
-                    string = line.strip()
-                    (commit, release, local) = self.fromString(string)
-                    if commit:
-                        self.commitOff = commit
-                    if release:
-                        self.releaseOff = release
+        (commit, release) = readInfo(self.filePathLocal)
+        if commit:
+            self.commitOff = commit
+        if release:
+            self.releaseOff = release
 
     def writeInfo(self, release=None, commit=None):
         releaseOff = self.releaseOff if release is None else release
@@ -2185,7 +2195,7 @@ def checkoutRepo(
         If given, it overrides the semi-baked in `~/text-fabric-data` value.
 
     withPaths: boolean, optional True
-        The data will be saved without the directory structure
+        Whether the data will be saved without the directory structure
         of files that are being downloaded.
 
     keep: boolean, optional True

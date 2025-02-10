@@ -20,7 +20,12 @@ pip install -e .
 
 ### 12.6
 
-#### 12.6.3 Upcoming
+#### 12.6.4
+
+*   Small adaptations in the `tf.advanced.repo` module
+*   Various edits.
+
+#### 12.6.3
 
 2025-01-13
 

@@ -2140,12 +2140,13 @@ class TEI(CheckImport):
                     atts = sorted(attInfo.items())
                     (val, amount) = atts[0]
                     fh.write(
-                        f"{nl}\t{tagRep:<18} " f"{attRep:<11} {amount:>5}x {val}\n"
+                        f"{nl}\t{tagRep:<18} " f"{attRep:<11} {amount:>7}x {val}\n"
                     )
                     infoLines += 1
+
                     for val, amount in atts[1:]:
                         fh.write(
-                            f"""\t{'':<7}{'':<18} {'"':<18} {amount:>5}x {val}\n"""
+                            f"""\t{'':<18} {'':<11} {amount:>7}x {val}\n"""
                         )
                         infoLines += 1
 
@@ -3635,6 +3636,7 @@ class TEI(CheckImport):
 
             sectionProperties = self.sectionProperties
             sectionIs23 = self.sectionIs23
+            sectionIs3 = self.sectionIs3
 
             if sectionIs23:
                 chapterSection = self.chapterSection
@@ -3679,7 +3681,8 @@ class TEI(CheckImport):
                     value = {chapterSection: heading}
                     cv.feature(cur[NODE][chapterSection], **value)
                     chapterNum = cur["chapterNum"]
-                    if verbose >= 0:
+
+                    if not sectionIs3 and verbose >= 0:
                         console(
                             f"\r{chapterSection} {chapterNum:>4} {heading:<50}",
                             newline=False,
