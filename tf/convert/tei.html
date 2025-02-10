@@ -504,7 +504,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/convert/tei.py#L1-L5071" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5ba750f09e755bca220c9fff221c3947f996aa09/tf/convert/tei.py#L1-L5074" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -2648,12 +2648,13 @@ class TEI(CheckImport):
                     atts = sorted(attInfo.items())
                     (val, amount) = atts[0]
                     fh.write(
-                        f&#34;{nl}\t{tagRep:&lt;18} &#34; f&#34;{attRep:&lt;11} {amount:&gt;5}x {val}\n&#34;
+                        f&#34;{nl}\t{tagRep:&lt;18} &#34; f&#34;{attRep:&lt;11} {amount:&gt;7}x {val}\n&#34;
                     )
                     infoLines += 1
+
                     for val, amount in atts[1:]:
                         fh.write(
-                            f&#34;&#34;&#34;\t{&#39;&#39;:&lt;7}{&#39;&#39;:&lt;18} {&#39;&#34;&#39;:&lt;18} {amount:&gt;5}x {val}\n&#34;&#34;&#34;
+                            f&#34;&#34;&#34;\t{&#39;&#39;:&lt;18} {&#39;&#39;:&lt;11} {amount:&gt;7}x {val}\n&#34;&#34;&#34;
                         )
                         infoLines += 1
 
@@ -4143,6 +4144,7 @@ class TEI(CheckImport):
 
             sectionProperties = self.sectionProperties
             sectionIs23 = self.sectionIs23
+            sectionIs3 = self.sectionIs3
 
             if sectionIs23:
                 chapterSection = self.chapterSection
@@ -4187,7 +4189,8 @@ class TEI(CheckImport):
                     value = {chapterSection: heading}
                     cv.feature(cur[NODE][chapterSection], **value)
                     chapterNum = cur[&#34;chapterNum&#34;]
-                    if verbose &gt;= 0:
+
+                    if not sectionIs3 and verbose &gt;= 0:
                         console(
                             f&#34;\r{chapterSection} {chapterNum:&gt;4} {heading:&lt;50}&#34;,
                             newline=False,
@@ -5737,7 +5740,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/convert/tei.py#L932-L5054" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5ba750f09e755bca220c9fff221c3947f996aa09/tf/convert/tei.py#L932-L5057" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
@@ -6950,12 +6953,13 @@ relevant TF version:</p>
                     atts = sorted(attInfo.items())
                     (val, amount) = atts[0]
                     fh.write(
-                        f&#34;{nl}\t{tagRep:&lt;18} &#34; f&#34;{attRep:&lt;11} {amount:&gt;5}x {val}\n&#34;
+                        f&#34;{nl}\t{tagRep:&lt;18} &#34; f&#34;{attRep:&lt;11} {amount:&gt;7}x {val}\n&#34;
                     )
                     infoLines += 1
+
                     for val, amount in atts[1:]:
                         fh.write(
-                            f&#34;&#34;&#34;\t{&#39;&#39;:&lt;7}{&#39;&#39;:&lt;18} {&#39;&#34;&#39;:&lt;18} {amount:&gt;5}x {val}\n&#34;&#34;&#34;
+                            f&#34;&#34;&#34;\t{&#39;&#39;:&lt;18} {&#39;&#39;:&lt;11} {amount:&gt;7}x {val}\n&#34;&#34;&#34;
                         )
                         infoLines += 1
 
@@ -8445,6 +8449,7 @@ relevant TF version:</p>
 
             sectionProperties = self.sectionProperties
             sectionIs23 = self.sectionIs23
+            sectionIs3 = self.sectionIs3
 
             if sectionIs23:
                 chapterSection = self.chapterSection
@@ -8489,7 +8494,8 @@ relevant TF version:</p>
                     value = {chapterSection: heading}
                     cv.feature(cur[NODE][chapterSection], **value)
                     chapterNum = cur[&#34;chapterNum&#34;]
-                    if verbose &gt;= 0:
+
+                    if not sectionIs3 and verbose &gt;= 0:
                         console(
                             f&#34;\r{chapterSection} {chapterNum:&gt;4} {heading:&lt;50}&#34;,
                             newline=False,

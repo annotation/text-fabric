@@ -299,7 +299,7 @@ is being obtained.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/advanced/repo.py#L1-L2283" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5ba750f09e755bca220c9fff221c3947f996aa09/tf/advanced/repo.py#L1-L2293" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Auto downloading from a back-end repository
@@ -1314,35 +1314,49 @@ def publishRelease(app, increase, message=None, description=None):
     console(f&#34;Release {newTag} created&#34;)
 
 
+def fromString(string):
+    commit = None
+    release = None
+    local = None
+    if not string:
+        commit = &#34;&#34;
+        release = &#34;&#34;
+    elif string == &#34;latest&#34;:
+        commit = None
+        release = &#34;&#34;
+    elif string == &#34;hot&#34;:
+        commit = &#34;&#34;
+        release = None
+    elif string in {&#34;local&#34;, &#34;clone&#34;}:
+        commit = None
+        release = None
+        local = string
+    elif &#34;.&#34; in string or len(string) &lt; 12:
+        commit = None
+        release = string
+    else:
+        commit = string
+        release = None
+    return (commit, release, local)
+
+
+def readInfo(filePathLocal):
+    commit = None
+    release = None
+
+    if fileExists(filePathLocal):
+        with fileOpen(filePathLocal) as f:
+            for line in f:
+                string = line.strip()
+                (commit, release, local) = fromString(string)
+
+    return (commit, release)
+
+
 class Checkout:
     &#34;&#34;&#34;Auxiliary class for `checkoutRepo`&#34;&#34;&#34;
 
     @staticmethod
-    def fromString(string):
-        commit = None
-        release = None
-        local = None
-        if not string:
-            commit = &#34;&#34;
-            release = &#34;&#34;
-        elif string == &#34;latest&#34;:
-            commit = None
-            release = &#34;&#34;
-        elif string == &#34;hot&#34;:
-            commit = &#34;&#34;
-            release = None
-        elif string in {&#34;local&#34;, &#34;clone&#34;}:
-            commit = None
-            release = None
-            local = string
-        elif &#34;.&#34; in string or len(string) &lt; 12:
-            commit = None
-            release = string
-        else:
-            commit = string
-            release = None
-        return (commit, release, local)
-
     @staticmethod
     def toString(commit, release, local, backend, source=None, dest=None):
         extra = &#34;&#34;
@@ -1404,7 +1418,7 @@ class Checkout:
         self.repo = repo
         self.source = source
         self.dest = dest
-        (self.commitChk, self.releaseChk, self.local) = self.fromString(checkout)
+        (self.commitChk, self.releaseChk, self.local) = fromString(checkout)
         clone = self.isClone()
 
         relative = prefixSlash(relative)
@@ -2385,15 +2399,11 @@ class Checkout:
                     fileMove(sPath, goodPath)
 
     def readInfo(self):
-        if fileExists(self.filePathLocal):
-            with fileOpen(self.filePathLocal) as f:
-                for line in f:
-                    string = line.strip()
-                    (commit, release, local) = self.fromString(string)
-                    if commit:
-                        self.commitOff = commit
-                    if release:
-                        self.releaseOff = release
+        (commit, release) = readInfo(self.filePathLocal)
+        if commit:
+            self.commitOff = commit
+        if release:
+            self.releaseOff = release
 
     def writeInfo(self, release=None, commit=None):
         releaseOff = self.releaseOff if release is None else release
@@ -2488,7 +2498,7 @@ def checkoutRepo(
         If given, it overrides the semi-baked in `~/text-fabric-data` value.
 
     withPaths: boolean, optional True
-        The data will be saved without the directory structure
+        Whether the data will be saved without the directory structure
         of files that are being downloaded.
 
     keep: boolean, optional True
@@ -2669,7 +2679,7 @@ If given, it overrides the semi-baked in <code>~/github</code> value.</dd>
 <dd>The base of your local cache of downloaded TF feature files.
 If given, it overrides the semi-baked in <code>~/text-fabric-data</code> value.</dd>
 <dt><strong><code>withPaths</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
-<dd>The data will be saved without the directory structure
+<dd>Whether the data will be saved without the directory structure
 of files that are being downloaded.</dd>
 <dt><strong><code>keep</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
 <dd>If False, the destination directory will be cleared
@@ -2736,6 +2746,12 @@ Other folders will not be deleted.</p>
 <dd>The Zip object from which to extract</dd>
 </dl></div>
 </dd>
+<dt id="tf.advanced.repo.fromString"><code class="name flex">
+<span>def <span class="ident">fromString</span></span>(<span>string)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.advanced.repo.getFinalUrl"><code class="name flex">
 <span>def <span class="ident">getFinalUrl</span></span>(<span>url)</span>
 </code></dt>
@@ -2781,6 +2797,12 @@ If None, a boiler plate text, based on the <code>increase</code> parameter, is p
 <dd>Documentation of the release. May be a multiline (markdown) string.
 If None, the <code>message</code> parameter will be used.</dd>
 </dl></div>
+</dd>
+<dt id="tf.advanced.repo.readInfo"><code class="name flex">
+<span>def <span class="ident">readInfo</span></span>(<span>filePathLocal)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 <dt id="tf.advanced.repo.releaseData"><code class="name flex">
 <span>def <span class="ident">releaseData</span></span>(<span>backend, org, repo, folder, version, increase, source=None, dest='/Users/me/Downloads')</span>
@@ -2835,37 +2857,12 @@ The way in which the release version should be increased:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/advanced/repo.py#L1014-L2103" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5ba750f09e755bca220c9fff221c3947f996aa09/tf/advanced/repo.py#L1053-L2113" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Checkout:
     &#34;&#34;&#34;Auxiliary class for `checkoutRepo`&#34;&#34;&#34;
 
     @staticmethod
-    def fromString(string):
-        commit = None
-        release = None
-        local = None
-        if not string:
-            commit = &#34;&#34;
-            release = &#34;&#34;
-        elif string == &#34;latest&#34;:
-            commit = None
-            release = &#34;&#34;
-        elif string == &#34;hot&#34;:
-            commit = &#34;&#34;
-            release = None
-        elif string in {&#34;local&#34;, &#34;clone&#34;}:
-            commit = None
-            release = None
-            local = string
-        elif &#34;.&#34; in string or len(string) &lt; 12:
-            commit = None
-            release = string
-        else:
-            commit = string
-            release = None
-        return (commit, release, local)
-
     @staticmethod
     def toString(commit, release, local, backend, source=None, dest=None):
         extra = &#34;&#34;
@@ -2927,7 +2924,7 @@ The way in which the release version should be increased:</p>
         self.repo = repo
         self.source = source
         self.dest = dest
-        (self.commitChk, self.releaseChk, self.local) = self.fromString(checkout)
+        (self.commitChk, self.releaseChk, self.local) = fromString(checkout)
         clone = self.isClone()
 
         relative = prefixSlash(relative)
@@ -3908,15 +3905,11 @@ The way in which the release version should be increased:</p>
                     fileMove(sPath, goodPath)
 
     def readInfo(self):
-        if fileExists(self.filePathLocal):
-            with fileOpen(self.filePathLocal) as f:
-                for line in f:
-                    string = line.strip()
-                    (commit, release, local) = self.fromString(string)
-                    if commit:
-                        self.commitOff = commit
-                    if release:
-                        self.releaseOff = release
+        (commit, release) = readInfo(self.filePathLocal)
+        if commit:
+            self.commitOff = commit
+        if release:
+            self.releaseOff = release
 
     def writeInfo(self, release=None, commit=None):
         releaseOff = self.releaseOff if release is None else release
@@ -3930,12 +3923,6 @@ The way in which the release version should be increased:</p>
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="tf.advanced.repo.Checkout.fromString"><code class="name flex">
-<span>def <span class="ident">fromString</span></span>(<span>string)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
 <dt id="tf.advanced.repo.Checkout.retrieve"><code class="name flex">
 <span>def <span class="ident">retrieve</span></span>(<span>url)</span>
 </code></dt>
@@ -4124,7 +4111,7 @@ The way in which the release version should be increased:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2c9576c7f47dd61bc5019bf32065828f8f83f7c/tf/advanced/repo.py#L551-L824" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5ba750f09e755bca220c9fff221c3947f996aa09/tf/advanced/repo.py#L551-L824" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Repo:
     &#34;&#34;&#34;Auxiliary class for `releaseData`&#34;&#34;&#34;
@@ -4585,8 +4572,10 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.advanced.repo.catchRemaining" href="#tf.advanced.repo.catchRemaining">catchRemaining</a></code></li>
 <li><code><a title="tf.advanced.repo.checkoutRepo" href="#tf.advanced.repo.checkoutRepo">checkoutRepo</a></code></li>
 <li><code><a title="tf.advanced.repo.extractPrecise" href="#tf.advanced.repo.extractPrecise">extractPrecise</a></code></li>
+<li><code><a title="tf.advanced.repo.fromString" href="#tf.advanced.repo.fromString">fromString</a></code></li>
 <li><code><a title="tf.advanced.repo.getFinalUrl" href="#tf.advanced.repo.getFinalUrl">getFinalUrl</a></code></li>
 <li><code><a title="tf.advanced.repo.publishRelease" href="#tf.advanced.repo.publishRelease">publishRelease</a></code></li>
+<li><code><a title="tf.advanced.repo.readInfo" href="#tf.advanced.repo.readInfo">readInfo</a></code></li>
 <li><code><a title="tf.advanced.repo.releaseData" href="#tf.advanced.repo.releaseData">releaseData</a></code></li>
 </ul>
 </li>
@@ -4606,7 +4595,6 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.advanced.repo.Checkout.error" href="#tf.advanced.repo.Checkout.error">error</a></code></li>
 <li><code><a title="tf.advanced.repo.Checkout.fetchInfo" href="#tf.advanced.repo.Checkout.fetchInfo">fetchInfo</a></code></li>
 <li><code><a title="tf.advanced.repo.Checkout.fixInfo" href="#tf.advanced.repo.Checkout.fixInfo">fixInfo</a></code></li>
-<li><code><a title="tf.advanced.repo.Checkout.fromString" href="#tf.advanced.repo.Checkout.fromString">fromString</a></code></li>
 <li><code><a title="tf.advanced.repo.Checkout.getCommit" href="#tf.advanced.repo.Checkout.getCommit">getCommit</a></code></li>
 <li><code><a title="tf.advanced.repo.Checkout.getCommitFromObj" href="#tf.advanced.repo.Checkout.getCommitFromObj">getCommitFromObj</a></code></li>
 <li><code><a title="tf.advanced.repo.Checkout.getCommitObj" href="#tf.advanced.repo.Checkout.getCommitObj">getCommitObj</a></code></li>
