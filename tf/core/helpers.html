@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5ba750f09e755bca220c9fff221c3947f996aa09/tf/core/helpers.py#L1-L699" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/core/helpers.py#L1-L700" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -729,9 +729,10 @@ def run(cmdline, workDir=None):
     except CalledProcessError as e:
         stdOut = e.stdout.decode(&#34;utf8&#34;).strip()
         stdErr = e.stderr.decode(&#34;utf8&#34;).strip()
+        returnCode = e.returncode
         good = False
 
-    return (good, stdOut, stdErr)</code></pre>
+    return (good, returnCode, stdOut, stdErr)</code></pre>
 </details>
 </section>
 <section>

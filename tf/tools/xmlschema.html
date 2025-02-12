@@ -107,7 +107,7 @@ good = A.task(&quot;validate&quot;, &quot;schema.rng&quot;, &quot;doc1.xml&quot;
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5ba750f09e755bca220c9fff221c3947f996aa09/tf/tools/xmlschema.py#L1-L1090" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/tools/xmlschema.py#L1-L1114" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 ## Meaningful information from XML schemas.
@@ -837,14 +837,17 @@ class Analysis(CheckImport):
 
         Returns
         -------
-        boolean
+        boolean | None
             whether the conversion was successful.
+            If there was a severe error, None is returned.
         &#34;&#34;&#34;
         verbose = self.verbose
         myDir = self.myDir
 
+        severeError = False
+
         trang = f&#34;{myDir}/trang/trang.jar&#34;
-        (good, stdOut, stdErr) = run(
+        (good, returnCode, stdOut, stdErr) = run(
             f&#39;&#39;&#39;java -jar {trang} &#34;{baseSchema}&#34; &#34;{schemaOut}&#34;&#39;&#39;&#39;,
             workDir=None,
         )
@@ -852,8 +855,12 @@ class Analysis(CheckImport):
             console(stdOut)
         if stdErr:
             if verbose &gt;= 0 or not good:
-                console(stdErr)
-        return good
+                console(stdErr, error=True)
+
+        if returnCode != 1:
+            severeError = True
+
+        return None if severeError else good
 
     def validate(self, mode, schema, instances):
         &#34;&#34;&#34;Validates an instance against a schema.
@@ -870,11 +877,17 @@ class Analysis(CheckImport):
 
         Returns
         -------
+        tuple
+            A boolean or None, telling the success of validaiton. None means that
+            validation did not occur; False that it happened and the result
+            was: not valid; True that it happend and the input was valid.
         &#34;&#34;&#34;
         myDir = self.myDir
         verbose = self.verbose
 
         jing = f&#34;{myDir}/jing/jing.jar&#34;
+
+        severeError = False
 
         if type(mode) is int and mode == 1:
             good = True
@@ -885,12 +898,16 @@ class Analysis(CheckImport):
                     instanceName = instance.rsplit(&#34;/&#34;, 1)[-1]
                     console(f&#34;\r\t\t{instanceName:&lt;40} ...&#34;, newline=False)
 
-                (thisGood, stdOut, stdErr) = run(
+                (thisGood, returnCode, stdOut, stdErr) = run(
                     f&#34;&#34;&#34;java -jar {jing} -t &#34;{schema}&#34; &#34;{instance}&#34; &#34;&#34;&#34;,
                     workDir=None,
                 )
                 if not thisGood:
                     good = False
+
+                    if returnCode != 1:
+                        severeError = True
+                        break
 
                 outputLines.extend((stdOut + stdErr).strip().split(&#34;\n&#34;))
 
@@ -899,11 +916,17 @@ class Analysis(CheckImport):
 
         elif mode is True:
             instancesRep = &#34; &#34;.join(f&#39;&#34;{instance}&#34;&#39; for instance in instances)
-            (good, stdOut, stdErr) = run(
+            (good, returnCode, stdOut, stdErr) = run(
                 f&#34;&#34;&#34;java -jar {jing} -t &#34;{schema}&#34; {instancesRep}&#34;&#34;&#34;,
                 workDir=None,
             )
+            if returnCode != 1:
+                severeError = True
+
             outputLines = (stdOut + stdErr).strip().split(&#34;\n&#34;)
+
+        if severeError:
+            return (None, stdOut.strip().split(&#34;\n&#34;), stdErr.strip().split(&#34;\n&#34;))
 
         info = []
         errors = []
@@ -1070,8 +1093,9 @@ class Analysis(CheckImport):
 
         Returns
         -------
-        boolean
+        boolean | void
             whether the task was completed successfully.
+            If None, the task was not carried out.
         &#34;&#34;&#34;
         if not self.importOK():
             return
@@ -1236,7 +1260,7 @@ In debug mode more information is shown on the console.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5ba750f09e755bca220c9fff221c3947f996aa09/tf/tools/xmlschema.py#L621-L1081" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/tools/xmlschema.py#L621-L1105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Analysis(CheckImport):
     @staticmethod
@@ -1346,14 +1370,17 @@ In debug mode more information is shown on the console.</dd>
 
         Returns
         -------
-        boolean
+        boolean | None
             whether the conversion was successful.
+            If there was a severe error, None is returned.
         &#34;&#34;&#34;
         verbose = self.verbose
         myDir = self.myDir
 
+        severeError = False
+
         trang = f&#34;{myDir}/trang/trang.jar&#34;
-        (good, stdOut, stdErr) = run(
+        (good, returnCode, stdOut, stdErr) = run(
             f&#39;&#39;&#39;java -jar {trang} &#34;{baseSchema}&#34; &#34;{schemaOut}&#34;&#39;&#39;&#39;,
             workDir=None,
         )
@@ -1361,8 +1388,12 @@ In debug mode more information is shown on the console.</dd>
             console(stdOut)
         if stdErr:
             if verbose &gt;= 0 or not good:
-                console(stdErr)
-        return good
+                console(stdErr, error=True)
+
+        if returnCode != 1:
+            severeError = True
+
+        return None if severeError else good
 
     def validate(self, mode, schema, instances):
         &#34;&#34;&#34;Validates an instance against a schema.
@@ -1379,11 +1410,17 @@ In debug mode more information is shown on the console.</dd>
 
         Returns
         -------
+        tuple
+            A boolean or None, telling the success of validaiton. None means that
+            validation did not occur; False that it happened and the result
+            was: not valid; True that it happend and the input was valid.
         &#34;&#34;&#34;
         myDir = self.myDir
         verbose = self.verbose
 
         jing = f&#34;{myDir}/jing/jing.jar&#34;
+
+        severeError = False
 
         if type(mode) is int and mode == 1:
             good = True
@@ -1394,12 +1431,16 @@ In debug mode more information is shown on the console.</dd>
                     instanceName = instance.rsplit(&#34;/&#34;, 1)[-1]
                     console(f&#34;\r\t\t{instanceName:&lt;40} ...&#34;, newline=False)
 
-                (thisGood, stdOut, stdErr) = run(
+                (thisGood, returnCode, stdOut, stdErr) = run(
                     f&#34;&#34;&#34;java -jar {jing} -t &#34;{schema}&#34; &#34;{instance}&#34; &#34;&#34;&#34;,
                     workDir=None,
                 )
                 if not thisGood:
                     good = False
+
+                    if returnCode != 1:
+                        severeError = True
+                        break
 
                 outputLines.extend((stdOut + stdErr).strip().split(&#34;\n&#34;))
 
@@ -1408,11 +1449,17 @@ In debug mode more information is shown on the console.</dd>
 
         elif mode is True:
             instancesRep = &#34; &#34;.join(f&#39;&#34;{instance}&#34;&#39; for instance in instances)
-            (good, stdOut, stdErr) = run(
+            (good, returnCode, stdOut, stdErr) = run(
                 f&#34;&#34;&#34;java -jar {jing} -t &#34;{schema}&#34; {instancesRep}&#34;&#34;&#34;,
                 workDir=None,
             )
+            if returnCode != 1:
+                severeError = True
+
             outputLines = (stdOut + stdErr).strip().split(&#34;\n&#34;)
+
+        if severeError:
+            return (None, stdOut.strip().split(&#34;\n&#34;), stdErr.strip().split(&#34;\n&#34;))
 
         info = []
         errors = []
@@ -1579,8 +1626,9 @@ In debug mode more information is shown on the console.</dd>
 
         Returns
         -------
-        boolean
+        boolean | void
             whether the task was completed successfully.
+            If None, the task was not carried out.
         &#34;&#34;&#34;
         if not self.importOK():
             return
@@ -1773,8 +1821,9 @@ A tuple with three elements:
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>boolean</code></dt>
-<dd>whether the conversion was successful.</dd>
+<dt><code>boolean | None</code></dt>
+<dd>whether the conversion was successful.
+If there was a severe error, None is returned.</dd>
 </dl></div>
 </dd>
 <dt id="tf.tools.xmlschema.Analysis.getBaseSchema"><code class="name flex">
@@ -1855,8 +1904,9 @@ Not all tasks require both.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>boolean</code></dt>
-<dd>whether the task was completed successfully.</dd>
+<dt><code>boolean | void</code></dt>
+<dd>whether the task was completed successfully.
+If None, the task was not carried out.</dd>
 </dl></div>
 </dd>
 <dt id="tf.tools.xmlschema.Analysis.validate"><code class="name flex">
@@ -1874,7 +1924,13 @@ if <code>1</code>, treat each file individually.</dd>
 <dt><strong><code>instances</code></strong> :&ensp;<code>list</code></dt>
 <dd>The XML documents to validate.</dd>
 </dl>
-<h2 id="returns">Returns</h2></div>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>A boolean or None, telling the success of validaiton. None means that
+validation did not occur; False that it happened and the result
+was: not valid; True that it happend and the input was valid.</dd>
+</dl></div>
 </dd>
 </dl>
 <h3>Inherited members</h3>
@@ -1905,7 +1961,7 @@ In debug mode more information is shown on the console.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5ba750f09e755bca220c9fff221c3947f996aa09/tf/tools/xmlschema.py#L118-L618" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/tools/xmlschema.py#L118-L618" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Elements(CheckImport):
     types = set(

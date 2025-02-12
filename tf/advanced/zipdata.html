@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5ba750f09e755bca220c9fff221c3947f996aa09/tf/advanced/zipdata.py#L1-L432" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/advanced/zipdata.py#L1-L434" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import types
@@ -219,7 +219,7 @@ def zipAll(app):
     console(&#34;Data to be zipped:&#34;)
     results = []
 
-    for (label, path) in dataItems:
+    for label, path in dataItems:
         if dirExists(path):
             (release, commit) = addCheckout(path)
             checkout = f&#34;({release or &#39;v??&#39;} {commit[-6:] if commit else &#39;??&#39;})&#34;
@@ -239,7 +239,7 @@ def zipAll(app):
         dirMake(dest)
     console(&#34;Writing zip file ...&#34;)
     with ZipFile(destFile, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
-        for (internalPath, path) in sorted(results):
+        for internalPath, path in sorted(results):
             zipFile.write(
                 path,
                 arcname=internalPath,
@@ -251,7 +251,9 @@ def addCheckout(path):
     release = None
     commit = None
 
-    (good, gitInfo, stdErr) = run(&#34;git describe --tags --abbrev=1000 --long&#34;, workDir=path)
+    (good, returnCode, gitInfo, stdErr) = run(
+        &#34;git describe --tags --abbrev=1000 --long&#34;, workDir=path
+    )
     if good:
         (release, n, commit) = [x.strip() for x in gitInfo.split(&#34;-&#34;, 2)]
     else:
@@ -259,7 +261,7 @@ def addCheckout(path):
             console(&#34;WARNING: no local release info found.&#34;, error=True)
             console(&#34;Maybe you have to do go to this repo and do `git pull --tags`&#34;)
             console(&#34;We&#39;ll fetch the local commit info anyway.&#34;)
-            (good, gitInfo, stdErr) = run(&#34;git rev-parse HEAD&#34;, workDir=path)
+            (good, returnCode, gitInfo, stdErr) = run(&#34;git rev-parse HEAD&#34;, workDir=path)
             if good:
                 commit = gitInfo
             else:
@@ -365,7 +367,7 @@ def zipData(
         else:
             versionEntries.append((sourceDir, &#34;&#34;))
             console(&#34;Found unversioned features&#34;)
-        for (versionDir, ver) in versionEntries:
+        for versionDir, ver in versionEntries:
             if ver == TEMP_DIR:
                 continue
             if version is not None and version != ver:
@@ -390,7 +392,7 @@ def zipData(
                     dataFiles.setdefault(ver, set()).add(featureFile)
 
         console(f&#34;zip files end up in {destDir}&#34;)
-        for (ver, features) in sorted(dataFiles.items()):
+        for ver, features in sorted(dataFiles.items()):
             item = f&#34;{org}/{repo}&#34;
             versionRep = f&#34;/{ver}&#34; if ver else &#34;&#34;
             versionRep3 = f&#34;-{ver}&#34; if ver else &#34;&#34;
@@ -414,7 +416,7 @@ def zipData(
         console(f&#34;zipping {org}/{repo}{relative}{versionRep} with {len(results)} files&#34;)
         console(f&#34;zip file is {destDir}/{relativeDest}.zip&#34;)
         with ZipFile(f&#34;{destDir}/{relativeDest}.zip&#34;, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
-            for (internalPath, path) in sorted(results):
+            for internalPath, path in sorted(results):
                 zipFile.write(
                     path,
                     arcname=internalPath,

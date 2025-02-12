@@ -504,7 +504,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5ba750f09e755bca220c9fff221c3947f996aa09/tf/convert/tei.py#L1-L5074" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/convert/tei.py#L1-L5068" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -1446,6 +1446,10 @@ class TEI(CheckImport):
         tf=PARAMS[&#34;tf&#34;][1],
         validate=PARAMS[&#34;validate&#34;][1],
         verbose=FLAGS[&#34;verbose&#34;][1],
+        backend=None,
+        org=None,
+        repo=None,
+        relative=None,
     ):
         &#34;&#34;&#34;Converts TEI to TF.
 
@@ -1599,6 +1603,12 @@ class TEI(CheckImport):
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) progress and reporting messages
 
+        backend, org, repo, relative: string, optional None
+            If all of these are None, these parameters are derived from the
+            currend directory.
+            If one of them is not None, all four of them are taken from the parameters,
+            and the current directory is not used to determine them.
+
         &#34;&#34;&#34;
         super().__init__(&#34;lxml&#34;)
         if self.importOK(hint=True):
@@ -1607,8 +1617,15 @@ class TEI(CheckImport):
             return
 
         self.good = True
+        self.severeError = False
+        self.verbose = verbose
 
-        (backend, org, repo, relative) = getLocation()
+        if all(s is None for s in (backend, org, repo, relative)):
+            (backend, org, repo, relative) = getLocation()
+            base = ex(f&#34;~/{backend}&#34;)
+            repoDir = f&#34;{base}/{org}/{repo}&#34;
+        else:
+            repoDir = sourceBase
 
         if any(s is None for s in (backend, org, repo, relative)):
             console(
@@ -1626,8 +1643,6 @@ class TEI(CheckImport):
                 f&#34;Working in repository {org}/{repo}{relative} in back-end {backend}&#34;
             )
 
-        base = ex(f&#34;~/{backend}&#34;)
-        repoDir = f&#34;{base}/{org}/{repo}&#34;
         refDir = f&#34;{repoDir}{relative}&#34;
         programDir = f&#34;{refDir}/programs&#34;
         convertSpec = f&#34;{programDir}/tei.yaml&#34;
@@ -1800,6 +1815,10 @@ class TEI(CheckImport):
 
         self.A = Analysis(verbose=verbose)
         self.readSchemas()
+        console(f&#34;YYYY {self.good=}&#34;)
+
+        if not self.good:
+            return
 
         self.prelim = prelim
         self.wordAsSlot = wordAsSlot
@@ -2170,9 +2189,19 @@ class TEI(CheckImport):
                         and model not in schemaFiles[&#34;rng&#34;]
                     ):
                         modelInfo[model] = schemaFile
+
             if model in schemaFiles[&#34;rng&#34;] and model not in schemaFiles[&#34;xsd&#34;]:
                 schemaFileXsd = f&#34;{schemaDir}/{model}.xsd&#34;
-                A.fromrelax(schemaFiles[&#34;rng&#34;][model], schemaFileXsd)
+                result = A.fromrelax(schemaFiles[&#34;rng&#34;][model], schemaFileXsd)
+                console(f&#34;XXXXXXXXX {result=}&#34;)
+
+                if not result:
+                    self.good = False
+
+                    if result is None:
+                        self.severeError = True
+                        return
+
                 schemaFiles[&#34;xsd&#34;][model] = schemaFileXsd
 
         models = newModels
@@ -2994,45 +3023,20 @@ class TEI(CheckImport):
         xmlFilesByModel = collections.defaultdict(list)
 
         if sectionModel == &#34;I&#34;:
-            i = 0
-
             for xmlFolder, xmlFiles in self.getXML():
                 msg = &#34;Start &#34; if verbose &gt;= 0 else &#34;\t&#34;
 
                 if verbose &gt;= 0:
-                    console(f&#34;\t{msg}folder {xmlFolder}:&#34;)
-
-                j = 0
-                cr = &#34;&#34;
-                nl = True
+                    console(f&#34;\t{msg}folder {xmlFolder}&#34;)
 
                 for xmlFile in xmlFiles:
-                    i += 1
-                    j += 1
-
-                    if j &gt; PROGRESS_LIMIT:
-                        cr = &#34;\r&#34;
-                        nl = False
-
                     xmlPath = f&#34;{teiPath}/{xmlFolder}/{xmlFile}&#34;
                     (model, adapt, tpl) = self.getSwitches(xmlPath)
-                    mdRep = model or &#34;TEI&#34;
-                    tplRep = tpl or &#34;&#34;
-                    adRep = adapt or &#34;&#34;
-
-                    label = f&#34;{mdRep:&lt;12} {tplRep:&lt;12} {adRep:&lt;12}&#34;
-
-                    if verbose &gt;= 0:
-                        console(f&#34;{cr}\t\t{i:&gt;4} {label} {xmlFile:&lt;50}&#34;, newline=nl)
-
                     xmlFilesByModel[model].append(xmlPath)
-
-                if verbose &gt;= 0:
-                    console(&#34;&#34;)
-                    console(f&#34;End   folder {xmlFolder}&#34;)
 
         elif sectionModel == &#34;II&#34;:
             xmlFile = self.getXML()
+
             if xmlFile is None:
                 console(&#34;No XML files found!&#34;, error=True)
                 return False
@@ -3042,34 +3046,13 @@ class TEI(CheckImport):
             xmlFilesByModel[model].append(xmlPath)
 
         elif sectionModel == &#34;III&#34;:
-            j = 0
-            cr = &#34;&#34;
-            nl = True
-
             for xmlFile in self.getXML():
-                j += 1
-
-                if j &gt; PROGRESS_LIMIT:
-                    cr = &#34;\r&#34;
-                    nl = False
-
                 xmlPath = f&#34;{teiPath}/{xmlFile}&#34;
                 (model, adapt, tpl) = self.getSwitches(xmlPath)
-                mdRep = model or &#34;TEI&#34;
-                tplRep = tpl or &#34;&#34;
-                adRep = adapt or &#34;&#34;
-
-                label = f&#34;{mdRep:&lt;12} {tplRep:&lt;12} {adRep:&lt;12}&#34;
-
-                if verbose &gt;= 0:
-                    console(f&#34;{cr}\t{j:&gt;4} {label} {xmlFile:&lt;50}&#34;, newline=nl)
-
                 xmlFilesByModel[model].append(xmlPath)
 
-            if verbose &gt;= 0:
-                console(&#34;&#34;)
-
         good = True
+        severeError = False
 
         for model, xmlPaths in xmlFilesByModel.items():
             if verbose &gt;= 0:
@@ -3093,6 +3076,8 @@ class TEI(CheckImport):
                 (thisGood, info, theseErrors) = A.validate(
                     validate, schemaFile, xmlPaths
                 )
+                if thisGood is None:  # severe error, validation machinery not good
+                    severeError = True
 
                 for line in info:
                     if verbose &gt;= 0:
@@ -3100,6 +3085,14 @@ class TEI(CheckImport):
 
             if not thisGood:
                 good = False
+
+                if severeError:
+                    for err in theseErrors:
+                        console(err, error=True)
+
+                    self.severeError = True
+                    break
+
                 errors.extend(theseErrors)
                 continue
 
@@ -3117,7 +3110,8 @@ class TEI(CheckImport):
 
         writeElemTypes()
 
-        writeErrors()
+        if not self.severeError:
+            writeErrors()
 
         if good:
             writeNamespaces()
@@ -5614,7 +5608,7 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt id="tf.convert.tei.TEI"><code class="flex name class">
 <span>class <span class="ident">TEI</span></span>
-<span>(</span><span>sourceBase='', reportDir='', tei='latest', tf='latest', validate=True, verbose=-1)</span>
+<span>(</span><span>sourceBase='', reportDir='', tei='latest', tf='latest', validate=True, verbose=-1, backend=None, org=None, repo=None, relative=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Converts TEI to TF.</p>
@@ -5736,11 +5730,16 @@ relevant TF version:</p>
 </dd>
 <dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
 <dd>Produce no (-1), some (0) or many (1) progress and reporting messages</dd>
+<dt><strong><code>backend</code></strong>, <strong><code>org</code></strong>, <strong><code>repo</code></strong>, <strong><code>relative</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>If all of these are None, these parameters are derived from the
+currend directory.
+If one of them is not None, all four of them are taken from the parameters,
+and the current directory is not used to determine them.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5ba750f09e755bca220c9fff221c3947f996aa09/tf/convert/tei.py#L932-L5057" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/convert/tei.py#L932-L5051" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
@@ -5751,6 +5750,10 @@ relevant TF version:</p>
         tf=PARAMS[&#34;tf&#34;][1],
         validate=PARAMS[&#34;validate&#34;][1],
         verbose=FLAGS[&#34;verbose&#34;][1],
+        backend=None,
+        org=None,
+        repo=None,
+        relative=None,
     ):
         &#34;&#34;&#34;Converts TEI to TF.
 
@@ -5904,6 +5907,12 @@ relevant TF version:</p>
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) progress and reporting messages
 
+        backend, org, repo, relative: string, optional None
+            If all of these are None, these parameters are derived from the
+            currend directory.
+            If one of them is not None, all four of them are taken from the parameters,
+            and the current directory is not used to determine them.
+
         &#34;&#34;&#34;
         super().__init__(&#34;lxml&#34;)
         if self.importOK(hint=True):
@@ -5912,8 +5921,15 @@ relevant TF version:</p>
             return
 
         self.good = True
+        self.severeError = False
+        self.verbose = verbose
 
-        (backend, org, repo, relative) = getLocation()
+        if all(s is None for s in (backend, org, repo, relative)):
+            (backend, org, repo, relative) = getLocation()
+            base = ex(f&#34;~/{backend}&#34;)
+            repoDir = f&#34;{base}/{org}/{repo}&#34;
+        else:
+            repoDir = sourceBase
 
         if any(s is None for s in (backend, org, repo, relative)):
             console(
@@ -5931,8 +5947,6 @@ relevant TF version:</p>
                 f&#34;Working in repository {org}/{repo}{relative} in back-end {backend}&#34;
             )
 
-        base = ex(f&#34;~/{backend}&#34;)
-        repoDir = f&#34;{base}/{org}/{repo}&#34;
         refDir = f&#34;{repoDir}{relative}&#34;
         programDir = f&#34;{refDir}/programs&#34;
         convertSpec = f&#34;{programDir}/tei.yaml&#34;
@@ -6105,6 +6119,10 @@ relevant TF version:</p>
 
         self.A = Analysis(verbose=verbose)
         self.readSchemas()
+        console(f&#34;YYYY {self.good=}&#34;)
+
+        if not self.good:
+            return
 
         self.prelim = prelim
         self.wordAsSlot = wordAsSlot
@@ -6475,9 +6493,19 @@ relevant TF version:</p>
                         and model not in schemaFiles[&#34;rng&#34;]
                     ):
                         modelInfo[model] = schemaFile
+
             if model in schemaFiles[&#34;rng&#34;] and model not in schemaFiles[&#34;xsd&#34;]:
                 schemaFileXsd = f&#34;{schemaDir}/{model}.xsd&#34;
-                A.fromrelax(schemaFiles[&#34;rng&#34;][model], schemaFileXsd)
+                result = A.fromrelax(schemaFiles[&#34;rng&#34;][model], schemaFileXsd)
+                console(f&#34;XXXXXXXXX {result=}&#34;)
+
+                if not result:
+                    self.good = False
+
+                    if result is None:
+                        self.severeError = True
+                        return
+
                 schemaFiles[&#34;xsd&#34;][model] = schemaFileXsd
 
         models = newModels
@@ -7299,45 +7327,20 @@ relevant TF version:</p>
         xmlFilesByModel = collections.defaultdict(list)
 
         if sectionModel == &#34;I&#34;:
-            i = 0
-
             for xmlFolder, xmlFiles in self.getXML():
                 msg = &#34;Start &#34; if verbose &gt;= 0 else &#34;\t&#34;
 
                 if verbose &gt;= 0:
-                    console(f&#34;\t{msg}folder {xmlFolder}:&#34;)
-
-                j = 0
-                cr = &#34;&#34;
-                nl = True
+                    console(f&#34;\t{msg}folder {xmlFolder}&#34;)
 
                 for xmlFile in xmlFiles:
-                    i += 1
-                    j += 1
-
-                    if j &gt; PROGRESS_LIMIT:
-                        cr = &#34;\r&#34;
-                        nl = False
-
                     xmlPath = f&#34;{teiPath}/{xmlFolder}/{xmlFile}&#34;
                     (model, adapt, tpl) = self.getSwitches(xmlPath)
-                    mdRep = model or &#34;TEI&#34;
-                    tplRep = tpl or &#34;&#34;
-                    adRep = adapt or &#34;&#34;
-
-                    label = f&#34;{mdRep:&lt;12} {tplRep:&lt;12} {adRep:&lt;12}&#34;
-
-                    if verbose &gt;= 0:
-                        console(f&#34;{cr}\t\t{i:&gt;4} {label} {xmlFile:&lt;50}&#34;, newline=nl)
-
                     xmlFilesByModel[model].append(xmlPath)
-
-                if verbose &gt;= 0:
-                    console(&#34;&#34;)
-                    console(f&#34;End   folder {xmlFolder}&#34;)
 
         elif sectionModel == &#34;II&#34;:
             xmlFile = self.getXML()
+
             if xmlFile is None:
                 console(&#34;No XML files found!&#34;, error=True)
                 return False
@@ -7347,34 +7350,13 @@ relevant TF version:</p>
             xmlFilesByModel[model].append(xmlPath)
 
         elif sectionModel == &#34;III&#34;:
-            j = 0
-            cr = &#34;&#34;
-            nl = True
-
             for xmlFile in self.getXML():
-                j += 1
-
-                if j &gt; PROGRESS_LIMIT:
-                    cr = &#34;\r&#34;
-                    nl = False
-
                 xmlPath = f&#34;{teiPath}/{xmlFile}&#34;
                 (model, adapt, tpl) = self.getSwitches(xmlPath)
-                mdRep = model or &#34;TEI&#34;
-                tplRep = tpl or &#34;&#34;
-                adRep = adapt or &#34;&#34;
-
-                label = f&#34;{mdRep:&lt;12} {tplRep:&lt;12} {adRep:&lt;12}&#34;
-
-                if verbose &gt;= 0:
-                    console(f&#34;{cr}\t{j:&gt;4} {label} {xmlFile:&lt;50}&#34;, newline=nl)
-
                 xmlFilesByModel[model].append(xmlPath)
 
-            if verbose &gt;= 0:
-                console(&#34;&#34;)
-
         good = True
+        severeError = False
 
         for model, xmlPaths in xmlFilesByModel.items():
             if verbose &gt;= 0:
@@ -7398,6 +7380,8 @@ relevant TF version:</p>
                 (thisGood, info, theseErrors) = A.validate(
                     validate, schemaFile, xmlPaths
                 )
+                if thisGood is None:  # severe error, validation machinery not good
+                    severeError = True
 
                 for line in info:
                     if verbose &gt;= 0:
@@ -7405,6 +7389,14 @@ relevant TF version:</p>
 
             if not thisGood:
                 good = False
+
+                if severeError:
+                    for err in theseErrors:
+                        console(err, error=True)
+
+                    self.severeError = True
+                    break
+
                 errors.extend(theseErrors)
                 continue
 
@@ -7422,7 +7414,8 @@ relevant TF version:</p>
 
         writeElemTypes()
 
-        writeErrors()
+        if not self.severeError:
+            writeErrors()
 
         if good:
             writeNamespaces()
