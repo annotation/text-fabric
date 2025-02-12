@@ -230,7 +230,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 
     **with additional meta data, named entities, and page scans.**
 
-[translatin/corpus](https://gitlab.huc.knaw.nl/translatin/corpus)
+[HuygensING/translatin-manif](https://github.com/translatin-manif)
 :   *Latin*
     The transnational impact of Latin drama from the early modern Netherlands,
     a qualitative and computational analysis.

@@ -726,14 +726,17 @@ class Analysis(CheckImport):
 
         Returns
         -------
-        boolean
+        boolean | None
             whether the conversion was successful.
+            If there was a severe error, None is returned.
         """
         verbose = self.verbose
         myDir = self.myDir
 
+        severeError = False
+
         trang = f"{myDir}/trang/trang.jar"
-        (good, stdOut, stdErr) = run(
+        (good, returnCode, stdOut, stdErr) = run(
             f'''java -jar {trang} "{baseSchema}" "{schemaOut}"''',
             workDir=None,
         )
@@ -741,8 +744,12 @@ class Analysis(CheckImport):
             console(stdOut)
         if stdErr:
             if verbose >= 0 or not good:
-                console(stdErr)
-        return good
+                console(stdErr, error=True)
+
+        if returnCode != 1:
+            severeError = True
+
+        return None if severeError else good
 
     def validate(self, mode, schema, instances):
         """Validates an instance against a schema.
@@ -759,11 +766,17 @@ class Analysis(CheckImport):
 
         Returns
         -------
+        tuple
+            A boolean or None, telling the success of validaiton. None means that
+            validation did not occur; False that it happened and the result
+            was: not valid; True that it happend and the input was valid.
         """
         myDir = self.myDir
         verbose = self.verbose
 
         jing = f"{myDir}/jing/jing.jar"
+
+        severeError = False
 
         if type(mode) is int and mode == 1:
             good = True
@@ -774,12 +787,16 @@ class Analysis(CheckImport):
                     instanceName = instance.rsplit("/", 1)[-1]
                     console(f"\r\t\t{instanceName:<40} ...", newline=False)
 
-                (thisGood, stdOut, stdErr) = run(
+                (thisGood, returnCode, stdOut, stdErr) = run(
                     f"""java -jar {jing} -t "{schema}" "{instance}" """,
                     workDir=None,
                 )
                 if not thisGood:
                     good = False
+
+                    if returnCode != 1:
+                        severeError = True
+                        break
 
                 outputLines.extend((stdOut + stdErr).strip().split("\n"))
 
@@ -788,11 +805,17 @@ class Analysis(CheckImport):
 
         elif mode is True:
             instancesRep = " ".join(f'"{instance}"' for instance in instances)
-            (good, stdOut, stdErr) = run(
+            (good, returnCode, stdOut, stdErr) = run(
                 f"""java -jar {jing} -t "{schema}" {instancesRep}""",
                 workDir=None,
             )
+            if returnCode != 1:
+                severeError = True
+
             outputLines = (stdOut + stdErr).strip().split("\n")
+
+        if severeError:
+            return (None, stdOut.strip().split("\n"), stdErr.strip().split("\n"))
 
         info = []
         errors = []
@@ -959,8 +982,9 @@ class Analysis(CheckImport):
 
         Returns
         -------
-        boolean
+        boolean | void
             whether the task was completed successfully.
+            If None, the task was not carried out.
         """
         if not self.importOK():
             return

@@ -938,6 +938,10 @@ class TEI(CheckImport):
         tf=PARAMS["tf"][1],
         validate=PARAMS["validate"][1],
         verbose=FLAGS["verbose"][1],
+        backend=None,
+        org=None,
+        repo=None,
+        relative=None,
     ):
         """Converts TEI to TF.
 
@@ -1091,6 +1095,12 @@ class TEI(CheckImport):
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) progress and reporting messages
 
+        backend, org, repo, relative: string, optional None
+            If all of these are None, these parameters are derived from the
+            currend directory.
+            If one of them is not None, all four of them are taken from the parameters,
+            and the current directory is not used to determine them.
+
         """
         super().__init__("lxml")
         if self.importOK(hint=True):
@@ -1099,8 +1109,15 @@ class TEI(CheckImport):
             return
 
         self.good = True
+        self.severeError = False
+        self.verbose = verbose
 
-        (backend, org, repo, relative) = getLocation()
+        if all(s is None for s in (backend, org, repo, relative)):
+            (backend, org, repo, relative) = getLocation()
+            base = ex(f"~/{backend}")
+            repoDir = f"{base}/{org}/{repo}"
+        else:
+            repoDir = sourceBase
 
         if any(s is None for s in (backend, org, repo, relative)):
             console(
@@ -1118,8 +1135,6 @@ class TEI(CheckImport):
                 f"Working in repository {org}/{repo}{relative} in back-end {backend}"
             )
 
-        base = ex(f"~/{backend}")
-        repoDir = f"{base}/{org}/{repo}"
         refDir = f"{repoDir}{relative}"
         programDir = f"{refDir}/programs"
         convertSpec = f"{programDir}/tei.yaml"
@@ -1292,6 +1307,10 @@ class TEI(CheckImport):
 
         self.A = Analysis(verbose=verbose)
         self.readSchemas()
+        console(f"YYYY {self.good=}")
+
+        if not self.good:
+            return
 
         self.prelim = prelim
         self.wordAsSlot = wordAsSlot
@@ -1662,9 +1681,19 @@ class TEI(CheckImport):
                         and model not in schemaFiles["rng"]
                     ):
                         modelInfo[model] = schemaFile
+
             if model in schemaFiles["rng"] and model not in schemaFiles["xsd"]:
                 schemaFileXsd = f"{schemaDir}/{model}.xsd"
-                A.fromrelax(schemaFiles["rng"][model], schemaFileXsd)
+                result = A.fromrelax(schemaFiles["rng"][model], schemaFileXsd)
+                console(f"XXXXXXXXX {result=}")
+
+                if not result:
+                    self.good = False
+
+                    if result is None:
+                        self.severeError = True
+                        return
+
                 schemaFiles["xsd"][model] = schemaFileXsd
 
         models = newModels
@@ -2486,45 +2515,20 @@ class TEI(CheckImport):
         xmlFilesByModel = collections.defaultdict(list)
 
         if sectionModel == "I":
-            i = 0
-
             for xmlFolder, xmlFiles in self.getXML():
                 msg = "Start " if verbose >= 0 else "\t"
 
                 if verbose >= 0:
-                    console(f"\t{msg}folder {xmlFolder}:")
-
-                j = 0
-                cr = ""
-                nl = True
+                    console(f"\t{msg}folder {xmlFolder}")
 
                 for xmlFile in xmlFiles:
-                    i += 1
-                    j += 1
-
-                    if j > PROGRESS_LIMIT:
-                        cr = "\r"
-                        nl = False
-
                     xmlPath = f"{teiPath}/{xmlFolder}/{xmlFile}"
                     (model, adapt, tpl) = self.getSwitches(xmlPath)
-                    mdRep = model or "TEI"
-                    tplRep = tpl or ""
-                    adRep = adapt or ""
-
-                    label = f"{mdRep:<12} {tplRep:<12} {adRep:<12}"
-
-                    if verbose >= 0:
-                        console(f"{cr}\t\t{i:>4} {label} {xmlFile:<50}", newline=nl)
-
                     xmlFilesByModel[model].append(xmlPath)
-
-                if verbose >= 0:
-                    console("")
-                    console(f"End   folder {xmlFolder}")
 
         elif sectionModel == "II":
             xmlFile = self.getXML()
+
             if xmlFile is None:
                 console("No XML files found!", error=True)
                 return False
@@ -2534,34 +2538,13 @@ class TEI(CheckImport):
             xmlFilesByModel[model].append(xmlPath)
 
         elif sectionModel == "III":
-            j = 0
-            cr = ""
-            nl = True
-
             for xmlFile in self.getXML():
-                j += 1
-
-                if j > PROGRESS_LIMIT:
-                    cr = "\r"
-                    nl = False
-
                 xmlPath = f"{teiPath}/{xmlFile}"
                 (model, adapt, tpl) = self.getSwitches(xmlPath)
-                mdRep = model or "TEI"
-                tplRep = tpl or ""
-                adRep = adapt or ""
-
-                label = f"{mdRep:<12} {tplRep:<12} {adRep:<12}"
-
-                if verbose >= 0:
-                    console(f"{cr}\t{j:>4} {label} {xmlFile:<50}", newline=nl)
-
                 xmlFilesByModel[model].append(xmlPath)
 
-            if verbose >= 0:
-                console("")
-
         good = True
+        severeError = False
 
         for model, xmlPaths in xmlFilesByModel.items():
             if verbose >= 0:
@@ -2585,6 +2568,8 @@ class TEI(CheckImport):
                 (thisGood, info, theseErrors) = A.validate(
                     validate, schemaFile, xmlPaths
                 )
+                if thisGood is None:  # severe error, validation machinery not good
+                    severeError = True
 
                 for line in info:
                     if verbose >= 0:
@@ -2592,6 +2577,14 @@ class TEI(CheckImport):
 
             if not thisGood:
                 good = False
+
+                if severeError:
+                    for err in theseErrors:
+                        console(err, error=True)
+
+                    self.severeError = True
+                    break
+
                 errors.extend(theseErrors)
                 continue
 
@@ -2609,7 +2602,8 @@ class TEI(CheckImport):
 
         writeElemTypes()
 
-        writeErrors()
+        if not self.severeError:
+            writeErrors()
 
         if good:
             writeNamespaces()

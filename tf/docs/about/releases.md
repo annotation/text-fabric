@@ -372,7 +372,9 @@ Minor improvements to the WATM converter, and an update of its docs.
 
     *   [Mondriaan Proeftuin](https://github.com/annotation/mondriaan)
     *   [Suriano Letters](https://gitlab.huc.knaw.nl/suriano/letters)
-    *   [TransLatin Corpus](https://gitlab.huc.knaw.nl/translatin/corpus)
+    *   `[TransLatin Corpus](https://gitlab.huc.knaw.nl/translatin/corpus)`,
+        later moved to
+        [HuygensING/translatin-manif](https://github.com/HuygensING/translatin-manif)
 
 *   Small fixes in `tf.convert.addnlp`: when the NLP data is integrated in the
     TF dataset, the NLP-generated features will get some metadata
@@ -478,7 +480,7 @@ It uses the
 by Marijn Koolen.
 
 For an example see
-[translatin/logic](https://gitlab.huc.knaw.nl/translatin/logic/-/blob/main/tools/convertPlain.ipynb?ref_type=heads).
+[translatin-manif/programs](https://github.com/translatin-manif/programs/blob/main/convertPlain.ipynb).
 
 Fix:
 

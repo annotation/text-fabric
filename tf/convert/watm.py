@@ -16,7 +16,7 @@ completes a pipeline from source to publication.
 We have done this for the following corpora:
 
 *   [mondriaan/letters](https://github.com/annotation/mondriaan)
-*   [translatin/corpus](https://gitlab.huc.knaw.nl/translatin/corpus)
+*   [HuygensING/translatin-manif](https://github.com/HuygensING/translatin-manif)
 *   [suriano/letters](https://gitlab.huc.knaw.nl/suriano/letters)
 
 All these corpora need distinct preprocessing steps before they are "canalized" into

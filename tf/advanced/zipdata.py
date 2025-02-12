@@ -184,7 +184,7 @@ def zipAll(app):
     console("Data to be zipped:")
     results = []
 
-    for (label, path) in dataItems:
+    for label, path in dataItems:
         if dirExists(path):
             (release, commit) = addCheckout(path)
             checkout = f"({release or 'v??'} {commit[-6:] if commit else '??'})"
@@ -204,7 +204,7 @@ def zipAll(app):
         dirMake(dest)
     console("Writing zip file ...")
     with ZipFile(destFile, "w", **ZIP_OPTIONS) as zipFile:
-        for (internalPath, path) in sorted(results):
+        for internalPath, path in sorted(results):
             zipFile.write(
                 path,
                 arcname=internalPath,
@@ -216,7 +216,9 @@ def addCheckout(path):
     release = None
     commit = None
 
-    (good, gitInfo, stdErr) = run("git describe --tags --abbrev=1000 --long", workDir=path)
+    (good, returnCode, gitInfo, stdErr) = run(
+        "git describe --tags --abbrev=1000 --long", workDir=path
+    )
     if good:
         (release, n, commit) = [x.strip() for x in gitInfo.split("-", 2)]
     else:
@@ -224,7 +226,7 @@ def addCheckout(path):
             console("WARNING: no local release info found.", error=True)
             console("Maybe you have to do go to this repo and do `git pull --tags`")
             console("We'll fetch the local commit info anyway.")
-            (good, gitInfo, stdErr) = run("git rev-parse HEAD", workDir=path)
+            (good, returnCode, gitInfo, stdErr) = run("git rev-parse HEAD", workDir=path)
             if good:
                 commit = gitInfo
             else:
@@ -330,7 +332,7 @@ def zipData(
         else:
             versionEntries.append((sourceDir, ""))
             console("Found unversioned features")
-        for (versionDir, ver) in versionEntries:
+        for versionDir, ver in versionEntries:
             if ver == TEMP_DIR:
                 continue
             if version is not None and version != ver:
@@ -355,7 +357,7 @@ def zipData(
                     dataFiles.setdefault(ver, set()).add(featureFile)
 
         console(f"zip files end up in {destDir}")
-        for (ver, features) in sorted(dataFiles.items()):
+        for ver, features in sorted(dataFiles.items()):
             item = f"{org}/{repo}"
             versionRep = f"/{ver}" if ver else ""
             versionRep3 = f"-{ver}" if ver else ""
@@ -379,7 +381,7 @@ def zipData(
         console(f"zipping {org}/{repo}{relative}{versionRep} with {len(results)} files")
         console(f"zip file is {destDir}/{relativeDest}.zip")
         with ZipFile(f"{destDir}/{relativeDest}.zip", "w", **ZIP_OPTIONS) as zipFile:
-            for (internalPath, path) in sorted(results):
+            for internalPath, path in sorted(results):
                 zipFile.write(
                     path,
                     arcname=internalPath,

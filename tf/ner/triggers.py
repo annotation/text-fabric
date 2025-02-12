@@ -647,7 +647,6 @@ class Triggers:
                 )
                 console(msg)
                 messages.append(msg)
-                console(f"{hits=}")
 
                 diags = []
 

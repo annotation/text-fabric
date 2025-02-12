@@ -480,7 +480,7 @@ class PageXML(CheckImport):
         self.otext = otext
 
         self.generic = dict(
-            project="TransLatin",
+            project="Translatin",
             conversion="KNAW/HuC TeamText",
             conversionTF="Dirk Roorda",
         )

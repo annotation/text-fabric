@@ -1129,7 +1129,7 @@ WA.testAll()
     See
     [Mondriaan Proeftuin](https://github.com/annotation/mondriaan)
     [Suriano Letters](https://gitlab.huc.knaw.nl/suriano/letters)
-    [TransLatin Corpus](https://gitlab.huc.knaw.nl/translatin/corpus)
+    [HuygensING/translatin-manif](https://github.com/translatin-manif)
 :   `tf.convert.watm`
 
 ``` python
