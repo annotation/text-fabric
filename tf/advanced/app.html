@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/advanced/app.py#L1-L802" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8966cfdaddd42b3c658be49bae545eec192300e0/tf/advanced/app.py#L1-L820" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types
 import traceback
@@ -105,6 +105,7 @@ class App:
         version=None,
         versionOverride=False,
         checkout=&#34;&#34;,
+        dest=None,
         mod=[],
         locations=None,
         modules=None,
@@ -166,6 +167,7 @@ class App:
             collection=collection,
             silent=silent,
             loadData=loadData,
+            dest=dest,
             _browse=_browse,
         ).items():
             setattr(self, key, value)
@@ -195,7 +197,15 @@ class App:
                     self.sets = sets
                     console(f&#39;Sets from {setFile}: {&#34;, &#34;.join(sets)}&#39;)
             specs = getModulesData(
-                self, backend, mod, locations, modules, version, checkout, silent
+                self,
+                backend,
+                mod,
+                locations,
+                modules,
+                version,
+                checkout,
+                silent,
+                dest=dest,
             )
 
             if specs:
@@ -472,8 +482,7 @@ The app &#34;{appName}&#34; will not work!
 
             self.dm(&#34;\n&#34;.join(md))
             self.dm(
-                &#34;To get this overview in a dict, &#34;
-                &#34;call `A.featureTypes(show=False)`\n&#34;
+                &#34;To get this overview in a dict, &#34; &#34;call `A.featureTypes(show=False)`\n&#34;
             )
         else:
             return info
@@ -489,6 +498,7 @@ def findApp(
     silent=SILENT_D,
     version=None,
     legacy=False,
+    dest=None,
     **kwargs,
 ):
     &#34;&#34;&#34;Find a TF app by name and initialize an object of its main class.
@@ -530,6 +540,10 @@ def findApp(
 
     backend: string
         `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
+
+    dest: string, optional empty string
+        The base of your local cache of downloaded TF feature files.
+        If given, it overrides the semi-baked in `~/text-fabric-data` value.
 
     kwargs: mixed
         Keyword arguments that will be passed to the initializer of the
@@ -609,6 +623,7 @@ def findApp(
                 repo=dataRepo,
                 folder=appFolder,
                 checkout=checkoutApp,
+                dest=dest,
                 withPaths=True,
                 keep=False,
                 silent=silent,
@@ -624,6 +639,7 @@ def findApp(
                 repo=f&#34;app-{appName}&#34;,
                 folder=APP_CODE,
                 checkout=checkoutApp,
+                dest=dest,
                 withPaths=True,
                 keep=False,
                 silent=silent,
@@ -660,6 +676,7 @@ def findApp(
                         repo=dataRepo,
                         folder=APP_APP,
                         checkout=checkoutApp,
+                        dest=dest,
                         withPaths=True,
                         keep=False,
                         silent=silent,
@@ -734,6 +751,7 @@ def findApp(
             _browse,
             *args,
             version=version,
+            dest=dest,
             versionOverride=not not versionGiven,
             silent=silent,
             **kwargs,
@@ -845,7 +863,7 @@ def loadApp(silent=DEEP):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.advanced.app.findApp"><code class="name flex">
-<span>def <span class="ident">findApp</span></span>(<span>appName, checkoutApp, dataLoc, backend, _browse, *args, silent='auto', version=None, legacy=False, **kwargs)</span>
+<span>def <span class="ident">findApp</span></span>(<span>appName, checkoutApp, dataLoc, backend, _browse, *args, silent='auto', version=None, legacy=False, dest=None, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Find a TF app by name and initialize an object of its main class.</p>
@@ -885,6 +903,9 @@ a vanilla app without extra configuration is initialized.</p>
 class.</dd>
 <dt><strong><code>backend</code></strong> :&ensp;<code>string</code></dt>
 <dd><code>github</code> or <code>gitlab</code> or a GitLab instance such as <code>gitlab.huc.knaw.nl</code>.</dd>
+<dt><strong><code>dest</code></strong> :&ensp;<code>string</code>, optional <code>empty string</code></dt>
+<dd>The base of your local cache of downloaded TF feature files.
+If given, it overrides the semi-baked in <code>~/text-fabric-data</code> value.</dd>
 <dt><strong><code>kwargs</code></strong> :&ensp;<code>mixed</code></dt>
 <dd>Keyword arguments that will be passed to the initializer of the
 <code><a title="tf.advanced.app.App" href="#tf.advanced.app.App">App</a></code> class.</dd>
@@ -948,7 +969,7 @@ a customization of it.</dd>
 <dl>
 <dt id="tf.advanced.app.App"><code class="flex name class">
 <span>class <span class="ident">App</span></span>
-<span>(</span><span>cfg, appName, appPath, commit, release, local, backend, _browse, hoist=False, version=None, versionOverride=False, checkout='', mod=[], locations=None, modules=None, volume=None, collection=None, api=None, setFile='', silent='auto', loadData=True, **configOverrides)</span>
+<span>(</span><span>cfg, appName, appPath, commit, release, local, backend, _browse, hoist=False, version=None, versionOverride=False, checkout='', dest=None, mod=[], locations=None, modules=None, volume=None, collection=None, api=None, setFile='', silent='auto', loadData=True, **configOverrides)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set up the advanced TF API.</p>
@@ -990,7 +1011,7 @@ loading features. Used to experiment with performance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/advanced/app.py#L58-L444" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8966cfdaddd42b3c658be49bae545eec192300e0/tf/advanced/app.py#L58-L453" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -1007,6 +1028,7 @@ loading features. Used to experiment with performance.</dd>
         version=None,
         versionOverride=False,
         checkout=&#34;&#34;,
+        dest=None,
         mod=[],
         locations=None,
         modules=None,
@@ -1068,6 +1090,7 @@ loading features. Used to experiment with performance.</dd>
             collection=collection,
             silent=silent,
             loadData=loadData,
+            dest=dest,
             _browse=_browse,
         ).items():
             setattr(self, key, value)
@@ -1097,7 +1120,15 @@ loading features. Used to experiment with performance.</dd>
                     self.sets = sets
                     console(f&#39;Sets from {setFile}: {&#34;, &#34;.join(sets)}&#39;)
             specs = getModulesData(
-                self, backend, mod, locations, modules, version, checkout, silent
+                self,
+                backend,
+                mod,
+                locations,
+                modules,
+                version,
+                checkout,
+                silent,
+                dest=dest,
             )
 
             if specs:
@@ -1374,8 +1405,7 @@ The app &#34;{appName}&#34; will not work!
 
             self.dm(&#34;\n&#34;.join(md))
             self.dm(
-                &#34;To get this overview in a dict, &#34;
-                &#34;call `A.featureTypes(show=False)`\n&#34;
+                &#34;To get this overview in a dict, &#34; &#34;call `A.featureTypes(show=False)`\n&#34;
             )
         else:
             return info</code></pre>

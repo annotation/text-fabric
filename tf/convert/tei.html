@@ -504,7 +504,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/convert/tei.py#L1-L5068" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8966cfdaddd42b3c658be49bae545eec192300e0/tf/convert/tei.py#L1-L5066" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -1815,7 +1815,6 @@ class TEI(CheckImport):
 
         self.A = Analysis(verbose=verbose)
         self.readSchemas()
-        console(f&#34;YYYY {self.good=}&#34;)
 
         if not self.good:
             return
@@ -2193,7 +2192,6 @@ class TEI(CheckImport):
             if model in schemaFiles[&#34;rng&#34;] and model not in schemaFiles[&#34;xsd&#34;]:
                 schemaFileXsd = f&#34;{schemaDir}/{model}.xsd&#34;
                 result = A.fromrelax(schemaFiles[&#34;rng&#34;][model], schemaFileXsd)
-                console(f&#34;XXXXXXXXX {result=}&#34;)
 
                 if not result:
                     self.good = False
@@ -5739,7 +5737,7 @@ and the current directory is not used to determine them.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/convert/tei.py#L932-L5051" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8966cfdaddd42b3c658be49bae545eec192300e0/tf/convert/tei.py#L932-L5049" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
@@ -6119,7 +6117,6 @@ and the current directory is not used to determine them.</dd>
 
         self.A = Analysis(verbose=verbose)
         self.readSchemas()
-        console(f&#34;YYYY {self.good=}&#34;)
 
         if not self.good:
             return
@@ -6497,7 +6494,6 @@ and the current directory is not used to determine them.</dd>
             if model in schemaFiles[&#34;rng&#34;] and model not in schemaFiles[&#34;xsd&#34;]:
                 schemaFileXsd = f&#34;{schemaDir}/{model}.xsd&#34;
                 result = A.fromrelax(schemaFiles[&#34;rng&#34;][model], schemaFileXsd)
-                console(f&#34;XXXXXXXXX {result=}&#34;)
 
                 if not result:
                     self.good = False

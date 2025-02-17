@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/core/files.py#L1-L861" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8966cfdaddd42b3c658be49bae545eec192300e0/tf/core/files.py#L1-L877" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import json
@@ -569,6 +569,22 @@ def fileCopy(pathSrc, pathDst):
 
     Wipes the destination file, if it exists.
     &#34;&#34;&#34;
+    if pathSrc == pathDst:
+        return
+
+    if fileExists(pathSrc):
+        fileRemove(pathDst)
+        copy(pathSrc, pathDst)
+
+
+def fileCopyExpr(dirSrc, dirDst):
+    &#34;&#34;&#34;Copies the `__checkout__.txt` file from one directory to an other.
+
+    Wipes the destination file, if it exists.
+    &#34;&#34;&#34;
+    pathSrc = f&#34;{dirSrc}/{EXPRESS_SYNC}&#34;
+    pathDst = f&#34;{dirDst}/{EXPRESS_SYNC}&#34;
+
     if pathSrc == pathDst:
         return
 
@@ -1230,6 +1246,13 @@ If there is no extension, the empty string is returned.</p></div>
 <div class="desc"><p>Copies a file if it exists as file.</p>
 <p>Wipes the destination file, if it exists.</p></div>
 </dd>
+<dt id="tf.core.files.fileCopyExpr"><code class="name flex">
+<span>def <span class="ident">fileCopyExpr</span></span>(<span>dirSrc, dirDst)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Copies the <code>__checkout__.txt</code> file from one directory to an other.</p>
+<p>Wipes the destination file, if it exists.</p></div>
+</dd>
 <dt id="tf.core.files.fileExists"><code class="name flex">
 <span>def <span class="ident">fileExists</span></span>(<span>path)</span>
 </code></dt>
@@ -1600,6 +1623,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.core.files.expanduser" href="#tf.core.files.expanduser">expanduser</a></code></li>
 <li><code><a title="tf.core.files.extNm" href="#tf.core.files.extNm">extNm</a></code></li>
 <li><code><a title="tf.core.files.fileCopy" href="#tf.core.files.fileCopy">fileCopy</a></code></li>
+<li><code><a title="tf.core.files.fileCopyExpr" href="#tf.core.files.fileCopyExpr">fileCopyExpr</a></code></li>
 <li><code><a title="tf.core.files.fileExists" href="#tf.core.files.fileExists">fileExists</a></code></li>
 <li><code><a title="tf.core.files.fileMove" href="#tf.core.files.fileMove">fileMove</a></code></li>
 <li><code><a title="tf.core.files.fileNm" href="#tf.core.files.fileNm">fileNm</a></code></li>

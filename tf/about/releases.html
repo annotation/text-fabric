@@ -43,7 +43,20 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="126">12.6</h3>
+<h4 id="1265">12.6.5</h4>
+<p>2025-??-??</p>
+<ul>
+<li>
+<p>The place where the downloader thinks the <code>text-fabric-data</code> directory is,
+is in fact a parameter, but only the module <code><a title="tf.advanced.repo" href="../advanced/repo.html">tf.advanced.repo</a></code> used it.
+Now you can also pass it to the <code>use()</code> command in <code><a title="tf.app" href="../app.html">tf.app</a></code></p>
+<p>This is needed when you drive TF programmatically in contexts where your
+home directory is not the best place for it.
+For example in conversion pipelines with multiple projects.</p>
+</li>
+</ul>
 <h4 id="1264">12.6.4</h4>
+<p>2025-02-10</p>
 <ul>
 <li>Small adaptations in the <code><a title="tf.advanced.repo" href="../advanced/repo.html">tf.advanced.repo</a></code> module</li>
 <li>Various edits.</li>
@@ -595,7 +608,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8966cfdaddd42b3c658be49bae545eec192300e0/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -669,6 +682,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#126">12.6</a><ul>
+<li><a href="#1265">12.6.5</a></li>
 <li><a href="#1264">12.6.4</a></li>
 <li><a href="#1263">12.6.3</a></li>
 <li><a href="#1262">12.6.2</a></li>

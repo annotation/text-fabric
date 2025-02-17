@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/advanced/data.py#L1-L448" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8966cfdaddd42b3c658be49bae545eec192300e0/tf/advanced/data.py#L1-L454" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.helpers import itemize
 from ..core.files import backendRep, expandDir, prefixSlash, normpath
@@ -54,6 +54,7 @@ class AppData:
         version,
         checkout,
         silent,
+        dest=None,
     ):
         &#34;&#34;&#34;Collects TF data according to specifications.
 
@@ -82,6 +83,8 @@ class AppData:
             A specifier to use a specific release or commit of a data repository.
         silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
+        dest: string, optional None
+            The location where the text-fabric-data cache is.
 
         &#34;&#34;&#34;
         self.backend = backend
@@ -97,6 +100,7 @@ class AppData:
         self.modulesArg = modules
         self.version = version
         self.checkout = checkout
+        self.dest = dest
         self.silent = silent
 
     def getMain(self):
@@ -374,6 +378,7 @@ class AppData:
 
         backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
         bRep = backendRep(backend, &#34;spec&#34;, default=self.backend)
+        dest = self.dest
         version = self.version
         silent = self.silent
         mLocations = self.mLocations
@@ -406,6 +411,7 @@ class AppData:
                 version=None if isExtra else version,
                 versionOverride=versionOverride,
                 checkout=checkout,
+                dest=dest,
                 withPaths=True if isExtra else False,
                 keep=True if isExtra else False,
                 silent=silent,
@@ -464,7 +470,7 @@ class AppData:
         return True
 
 
-def getModulesData(*args):
+def getModulesData(*args, dest=None):
     &#34;&#34;&#34;Retrieve all data for a corpus.
 
     Parameters
@@ -474,7 +480,7 @@ def getModulesData(*args):
         They are the same as are needed to construct an `AppData` object.
     &#34;&#34;&#34;
 
-    mData = AppData(*args)
+    mData = AppData(*args, dest=dest)
     mData.getModules()
 
     if not mData.good or mData.locations is None:
@@ -491,7 +497,7 @@ def getModulesData(*args):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.advanced.data.getModulesData"><code class="name flex">
-<span>def <span class="ident">getModulesData</span></span>(<span>*args)</span>
+<span>def <span class="ident">getModulesData</span></span>(<span>*args, dest=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Retrieve all data for a corpus.</p>
@@ -509,7 +515,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <dl>
 <dt id="tf.advanced.data.AppData"><code class="flex name class">
 <span>class <span class="ident">AppData</span></span>
-<span>(</span><span>app, backend, moduleRefs, locations, modules, version, checkout, silent)</span>
+<span>(</span><span>app, backend, moduleRefs, locations, modules, version, checkout, silent, dest=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Collects TF data according to specifications.</p>
@@ -537,11 +543,13 @@ level just below the search locations.</dd>
 <dd>A specifier to use a specific release or commit of a data repository.</dd>
 <dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
 <dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
+<dt><strong><code>dest</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>The location where the text-fabric-data cache is.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/47bdd1a40619b769defa94c6541886c08d54e11e/tf/advanced/data.py#L11-L429" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8966cfdaddd42b3c658be49bae545eec192300e0/tf/advanced/data.py#L11-L435" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppData:
     def __init__(
@@ -554,6 +562,7 @@ level just below the search locations.</dd>
         version,
         checkout,
         silent,
+        dest=None,
     ):
         &#34;&#34;&#34;Collects TF data according to specifications.
 
@@ -582,6 +591,8 @@ level just below the search locations.</dd>
             A specifier to use a specific release or commit of a data repository.
         silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
+        dest: string, optional None
+            The location where the text-fabric-data cache is.
 
         &#34;&#34;&#34;
         self.backend = backend
@@ -597,6 +608,7 @@ level just below the search locations.</dd>
         self.modulesArg = modules
         self.version = version
         self.checkout = checkout
+        self.dest = dest
         self.silent = silent
 
     def getMain(self):
@@ -874,6 +886,7 @@ level just below the search locations.</dd>
 
         backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
         bRep = backendRep(backend, &#34;spec&#34;, default=self.backend)
+        dest = self.dest
         version = self.version
         silent = self.silent
         mLocations = self.mLocations
@@ -906,6 +919,7 @@ level just below the search locations.</dd>
                 version=None if isExtra else version,
                 versionOverride=versionOverride,
                 checkout=checkout,
+                dest=dest,
                 withPaths=True if isExtra else False,
                 keep=True if isExtra else False,
                 silent=silent,
