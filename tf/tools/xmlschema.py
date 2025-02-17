@@ -809,8 +809,9 @@ class Analysis(CheckImport):
                 f"""java -jar {jing} -t "{schema}" {instancesRep}""",
                 workDir=None,
             )
-            if returnCode != 1:
-                severeError = True
+            if not good:
+                if returnCode != 1:
+                    severeError = True
 
             outputLines = (stdOut + stdErr).strip().split("\n")
 

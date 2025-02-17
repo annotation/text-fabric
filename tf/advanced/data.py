@@ -19,6 +19,7 @@ class AppData:
         version,
         checkout,
         silent,
+        dest=None,
     ):
         """Collects TF data according to specifications.
 
@@ -47,6 +48,8 @@ class AppData:
             A specifier to use a specific release or commit of a data repository.
         silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
+        dest: string, optional None
+            The location where the text-fabric-data cache is.
 
         """
         self.backend = backend
@@ -62,6 +65,7 @@ class AppData:
         self.modulesArg = modules
         self.version = version
         self.checkout = checkout
+        self.dest = dest
         self.silent = silent
 
     def getMain(self):
@@ -339,6 +343,7 @@ class AppData:
 
         backend = self.backend if backend is None else backendRep(backend, "norm")
         bRep = backendRep(backend, "spec", default=self.backend)
+        dest = self.dest
         version = self.version
         silent = self.silent
         mLocations = self.mLocations
@@ -371,6 +376,7 @@ class AppData:
                 version=None if isExtra else version,
                 versionOverride=versionOverride,
                 checkout=checkout,
+                dest=dest,
                 withPaths=True if isExtra else False,
                 keep=True if isExtra else False,
                 silent=silent,
@@ -429,7 +435,7 @@ class AppData:
         return True
 
 
-def getModulesData(*args):
+def getModulesData(*args, dest=None):
     """Retrieve all data for a corpus.
 
     Parameters
@@ -439,7 +445,7 @@ def getModulesData(*args):
         They are the same as are needed to construct an `AppData` object.
     """
 
-    mData = AppData(*args)
+    mData = AppData(*args, dest=dest)
     mData.getModules()
 
     if not mData.good or mData.locations is None:

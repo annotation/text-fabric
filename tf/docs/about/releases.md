@@ -20,7 +20,21 @@ pip install -e .
 
 ### 12.6
 
+#### 12.6.5
+
+2025-??-??
+
+*   The place where the downloader thinks the `text-fabric-data` directory is,
+    is in fact a parameter, but only the module `tf.advanced.repo` used it.
+    Now you can also pass it to the `use()` command in `tf.app`
+
+    This is needed when you drive TF programmatically in contexts where your
+    home directory is not the best place for it.
+    For example in conversion pipelines with multiple projects.
+
 #### 12.6.4
+
+2025-02-10
 
 *   Small adaptations in the `tf.advanced.repo` module
 *   Various edits.

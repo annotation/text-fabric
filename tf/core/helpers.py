@@ -690,7 +690,9 @@ def run(cmdline, workDir=None):
         )
         stdOut = result.stdout.decode("utf8").strip()
         stdErr = result.stderr.decode("utf8").strip()
+        returnCode = 0
         good = True
+
     except CalledProcessError as e:
         stdOut = e.stdout.decode("utf8").strip()
         stdErr = e.stderr.decode("utf8").strip()

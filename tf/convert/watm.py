@@ -732,7 +732,9 @@ class WATM:
         sectionTypes = T.sectionTypes
         strv = F.str.v if STR in FAllSet else None
 
-        cfg = readYaml(asFile=CONFIG_FILE)
+        repoLocation = app.repoLocation
+        self.repoLocation = repoLocation
+        cfg = readYaml(asFile=f"{repoLocation}/programs/{CONFIG_FILE}")
         self.cfg = cfg
 
         settings = readYaml(asFile=IIIF_FILE, plain=True)
@@ -805,7 +807,6 @@ class WATM:
         self.maxNodePlus = self.F.otype.maxNode + 1
         self.otypes = self.F.otype.all
         self.info = app.info
-        self.repoLocation = app.repoLocation
 
         self.Fall = Fall
         self.Eall = Eall

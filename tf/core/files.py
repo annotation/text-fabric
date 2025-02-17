@@ -542,6 +542,22 @@ def fileCopy(pathSrc, pathDst):
         copy(pathSrc, pathDst)
 
 
+def fileCopyExpr(dirSrc, dirDst):
+    """Copies the `__checkout__.txt` file from one directory to an other.
+
+    Wipes the destination file, if it exists.
+    """
+    pathSrc = f"{dirSrc}/{EXPRESS_SYNC}"
+    pathDst = f"{dirDst}/{EXPRESS_SYNC}"
+
+    if pathSrc == pathDst:
+        return
+
+    if fileExists(pathSrc):
+        fileRemove(pathDst)
+        copy(pathSrc, pathDst)
+
+
 def fileMove(pathSrc, pathDst):
     """Moves a file if it exists as file.
 

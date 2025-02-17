@@ -70,6 +70,7 @@ class App:
         version=None,
         versionOverride=False,
         checkout="",
+        dest=None,
         mod=[],
         locations=None,
         modules=None,
@@ -131,6 +132,7 @@ class App:
             collection=collection,
             silent=silent,
             loadData=loadData,
+            dest=dest,
             _browse=_browse,
         ).items():
             setattr(self, key, value)
@@ -160,7 +162,15 @@ class App:
                     self.sets = sets
                     console(f'Sets from {setFile}: {", ".join(sets)}')
             specs = getModulesData(
-                self, backend, mod, locations, modules, version, checkout, silent
+                self,
+                backend,
+                mod,
+                locations,
+                modules,
+                version,
+                checkout,
+                silent,
+                dest=dest,
             )
 
             if specs:
@@ -437,8 +447,7 @@ The app "{appName}" will not work!
 
             self.dm("\n".join(md))
             self.dm(
-                "To get this overview in a dict, "
-                "call `A.featureTypes(show=False)`\n"
+                "To get this overview in a dict, " "call `A.featureTypes(show=False)`\n"
             )
         else:
             return info
@@ -454,6 +463,7 @@ def findApp(
     silent=SILENT_D,
     version=None,
     legacy=False,
+    dest=None,
     **kwargs,
 ):
     """Find a TF app by name and initialize an object of its main class.
@@ -495,6 +505,10 @@ def findApp(
 
     backend: string
         `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
+
+    dest: string, optional empty string
+        The base of your local cache of downloaded TF feature files.
+        If given, it overrides the semi-baked in `~/text-fabric-data` value.
 
     kwargs: mixed
         Keyword arguments that will be passed to the initializer of the
@@ -574,6 +588,7 @@ def findApp(
                 repo=dataRepo,
                 folder=appFolder,
                 checkout=checkoutApp,
+                dest=dest,
                 withPaths=True,
                 keep=False,
                 silent=silent,
@@ -589,6 +604,7 @@ def findApp(
                 repo=f"app-{appName}",
                 folder=APP_CODE,
                 checkout=checkoutApp,
+                dest=dest,
                 withPaths=True,
                 keep=False,
                 silent=silent,
@@ -625,6 +641,7 @@ def findApp(
                         repo=dataRepo,
                         folder=APP_APP,
                         checkout=checkoutApp,
+                        dest=dest,
                         withPaths=True,
                         keep=False,
                         silent=silent,
@@ -699,6 +716,7 @@ def findApp(
             _browse,
             *args,
             version=version,
+            dest=dest,
             versionOverride=not not versionGiven,
             silent=silent,
             **kwargs,

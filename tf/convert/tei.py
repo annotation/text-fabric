@@ -1307,7 +1307,6 @@ class TEI(CheckImport):
 
         self.A = Analysis(verbose=verbose)
         self.readSchemas()
-        console(f"YYYY {self.good=}")
 
         if not self.good:
             return
@@ -1685,7 +1684,6 @@ class TEI(CheckImport):
             if model in schemaFiles["rng"] and model not in schemaFiles["xsd"]:
                 schemaFileXsd = f"{schemaDir}/{model}.xsd"
                 result = A.fromrelax(schemaFiles["rng"][model], schemaFileXsd)
-                console(f"XXXXXXXXX {result=}")
 
                 if not result:
                     self.good = False

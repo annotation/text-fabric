@@ -1542,6 +1542,7 @@ class Checkout:
             loc = f"{self.localBase}/{self.localDir}{self.versionRep}"
             locRep = ux(loc)
             locEsc = htmlEsc(locRep)
+
             if _browse:
                 self.info(
                     f"Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:"
