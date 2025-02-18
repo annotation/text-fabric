@@ -1038,6 +1038,23 @@ def fromString(string):
 
 
 def readInfo(filePathLocal):
+    """Read the commit and release from a file.
+
+    This is assumed to be a file written by `tf.advanced.checkoutRepo()` after
+    downloading a local copy of an online folder.
+
+    Parameters
+    ----------
+    filePathLocal: string
+        The path to the file with the checkout information
+
+    Returns
+    -------
+    tuple
+        A pair of commit and release tag. If the file does not exist, these
+        values are None. If there is no commit/release info in the file,
+        the corresponding member of the tuple is None.
+    """
     commit = None
     release = None
 
@@ -1048,6 +1065,26 @@ def readInfo(filePathLocal):
                 (commit, release, local) = fromString(string)
 
     return (commit, release)
+
+
+def readInfoDirCommit(folder):
+    """Read the commit from the __checkout__.txt file in a folder.
+
+    See `readInfo()`, but now we only pass the folder in which the __checkout__.txt
+    file sits, and we only return the commit we find in that file.
+
+    Parameters
+    ----------
+    folder: string
+        The folder in which to look for the file __checkout__.txt
+
+    Returns
+    -------
+    string
+        A commit.
+        If the file does not exist, or no commit can be found,  None is returned.
+    """
+    return readInfo(f"{folder}/{EXPRESS_SYNC}")[0]
 
 
 class Checkout:
