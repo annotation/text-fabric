@@ -299,7 +299,7 @@ is being obtained.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8966cfdaddd42b3c658be49bae545eec192300e0/tf/advanced/repo.py#L1-L2294" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/advanced/repo.py#L1-L2331" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Auto downloading from a back-end repository
@@ -1341,6 +1341,23 @@ def fromString(string):
 
 
 def readInfo(filePathLocal):
+    &#34;&#34;&#34;Read the commit and release from a file.
+
+    This is assumed to be a file written by `tf.advanced.checkoutRepo()` after
+    downloading a local copy of an online folder.
+
+    Parameters
+    ----------
+    filePathLocal: string
+        The path to the file with the checkout information
+
+    Returns
+    -------
+    tuple
+        A pair of commit and release tag. If the file does not exist, these
+        values are None. If there is no commit/release info in the file,
+        the corresponding member of the tuple is None.
+    &#34;&#34;&#34;
     commit = None
     release = None
 
@@ -1351,6 +1368,26 @@ def readInfo(filePathLocal):
                 (commit, release, local) = fromString(string)
 
     return (commit, release)
+
+
+def readInfoDirCommit(folder):
+    &#34;&#34;&#34;Read the commit from the __checkout__.txt file in a folder.
+
+    See `readInfo()`, but now we only pass the folder in which the __checkout__.txt
+    file sits, and we only return the commit we find in that file.
+
+    Parameters
+    ----------
+    folder: string
+        The folder in which to look for the file __checkout__.txt
+
+    Returns
+    -------
+    string
+        A commit.
+        If the file does not exist, or no commit can be found,  None is returned.
+    &#34;&#34;&#34;
+    return readInfo(f&#34;{folder}/{EXPRESS_SYNC}&#34;)[0]
 
 
 class Checkout:
@@ -2803,7 +2840,41 @@ If None, the <code>message</code> parameter will be used.</dd>
 <span>def <span class="ident">readInfo</span></span>(<span>filePathLocal)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Read the commit and release from a file.</p>
+<p>This is assumed to be a file written by <code>tf.advanced.checkoutRepo()</code> after
+downloading a local copy of an online folder.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filePathLocal</code></strong> :&ensp;<code>string</code></dt>
+<dd>The path to the file with the checkout information</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>A pair of commit and release tag. If the file does not exist, these
+values are None. If there is no commit/release info in the file,
+the corresponding member of the tuple is None.</dd>
+</dl></div>
+</dd>
+<dt id="tf.advanced.repo.readInfoDirCommit"><code class="name flex">
+<span>def <span class="ident">readInfoDirCommit</span></span>(<span>folder)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Read the commit from the <strong>checkout</strong>.txt file in a folder.</p>
+<p>See <code><a title="tf.advanced.repo.readInfo" href="#tf.advanced.repo.readInfo">readInfo()</a></code>, but now we only pass the folder in which the <strong>checkout</strong>.txt
+file sits, and we only return the commit we find in that file.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>folder</code></strong> :&ensp;<code>string</code></dt>
+<dd>The folder in which to look for the file <strong>checkout</strong>.txt</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>A commit.
+If the file does not exist, or no commit can be found,
+None is returned.</dd>
+</dl></div>
 </dd>
 <dt id="tf.advanced.repo.releaseData"><code class="name flex">
 <span>def <span class="ident">releaseData</span></span>(<span>backend, org, repo, folder, version, increase, source=None, dest='/Users/me/Downloads')</span>
@@ -2858,7 +2929,7 @@ The way in which the release version should be increased:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8966cfdaddd42b3c658be49bae545eec192300e0/tf/advanced/repo.py#L1053-L2114" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/advanced/repo.py#L1090-L2151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Checkout:
     &#34;&#34;&#34;Auxiliary class for `checkoutRepo`&#34;&#34;&#34;
@@ -4113,7 +4184,7 @@ The way in which the release version should be increased:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8966cfdaddd42b3c658be49bae545eec192300e0/tf/advanced/repo.py#L551-L824" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/advanced/repo.py#L551-L824" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Repo:
     &#34;&#34;&#34;Auxiliary class for `releaseData`&#34;&#34;&#34;
@@ -4578,6 +4649,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.advanced.repo.getFinalUrl" href="#tf.advanced.repo.getFinalUrl">getFinalUrl</a></code></li>
 <li><code><a title="tf.advanced.repo.publishRelease" href="#tf.advanced.repo.publishRelease">publishRelease</a></code></li>
 <li><code><a title="tf.advanced.repo.readInfo" href="#tf.advanced.repo.readInfo">readInfo</a></code></li>
+<li><code><a title="tf.advanced.repo.readInfoDirCommit" href="#tf.advanced.repo.readInfoDirCommit">readInfoDirCommit</a></code></li>
 <li><code><a title="tf.advanced.repo.releaseData" href="#tf.advanced.repo.releaseData">releaseData</a></code></li>
 </ul>
 </li>

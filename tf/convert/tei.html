@@ -137,7 +137,7 @@ The information in this dict will also end up in the generated feature docs.</p>
 Together they contain an instruction to produce a feature value from element content
 that can be found on the current stack of XML nodes and attributes.
 The value found will be put in the feature in question
-for the node of type specified in <code>nodeType</code> that is recently constructed.</p>
+for the recently constructed node of type specified in <code>nodeType</code>.</p>
 <p>Example:</p>
 <pre><code class="language-yaml">extra:
   letterid:
@@ -402,7 +402,8 @@ for nodes at various levels, mainly outermost <code>&lt;div&gt;</code> and <code
 siblings of other element types.
 The section heading for the second level is taken from elements in the neighbourhood,
 whose name is given in the parameter <code>element</code>, but only if they carry some attributes,
-which can be specified in the <code>attributes</code> parameter.</p>
+which can be specified in the <code>attributes</code> parameter.
+These elements should be immediate children of the section elements in question.</p>
 <p>In model III, there are 3 section levels in total.
 The corpus consists of a single folder with several files (section level 1),
 with two levels of sections per file, as in model II.</p>
@@ -504,7 +505,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8966cfdaddd42b3c658be49bae545eec192300e0/tf/convert/tei.py#L1-L5066" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/tei.py#L1-L5108" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -630,7 +631,8 @@ Besides the `meta` key, there may also be the keys `path`, and `nodeType`.
 Together they contain an instruction to produce a feature value from element content
 that can be found on the current stack of XML nodes and attributes.
 The value found will be put in the feature in question
-for the node of type specified in `nodeType` that is recently constructed.
+for the recently constructed node of type specified in `nodeType`.
+
 
 Example:
 
@@ -994,6 +996,7 @@ siblings of other element types.
 The section heading for the second level is taken from elements in the neighbourhood,
 whose name is given in the parameter `element`, but only if they carry some attributes,
 which can be specified in the `attributes` parameter.
+These elements should be immediate children of the section elements in question.
 
 In model III, there are 3 section levels in total.
 The corpus consists of a single folder with several files (section level 1),
@@ -2680,9 +2683,7 @@ class TEI(CheckImport):
                     infoLines += 1
 
                     for val, amount in atts[1:]:
-                        fh.write(
-                            f&#34;&#34;&#34;\t{&#39;&#39;:&lt;18} {&#39;&#39;:&lt;11} {amount:&gt;7}x {val}\n&#34;&#34;&#34;
-                        )
+                        fh.write(f&#34;&#34;&#34;\t{&#39;&#39;:&lt;18} {&#39;&#39;:&lt;11} {amount:&gt;7}x {val}\n&#34;&#34;&#34;)
                         infoLines += 1
 
                 def writeTagInfo(tag, tagInfo):
@@ -3468,6 +3469,45 @@ class TEI(CheckImport):
 
             return False
 
+        def isChapterChild(cur):
+            &#34;&#34;&#34;Whether the current element counts as child of a chapter node.
+
+            See `isChapter()`
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            &#34;&#34;&#34;
+            sectionIs23 = self.sectionIs23
+
+            if sectionIs23:
+                nest = cur[XNEST]
+                nNest = len(nest)
+
+                if nNest &gt; 1 and nest[-2][0] in EMPTY_ELEMENTS:
+                    return False
+
+                outcome = nNest &gt; 0 and (
+                    nest[-2][0] == TEI_HEADER
+                    or (
+                        nNest &gt; 2
+                        and (
+                            nest[-3][0] in TEXT_ANCESTORS
+                            or nest[-3][0] == TEXT_ANCESTOR
+                            and nest[-2][0] not in TEXT_ANCESTORS
+                        )
+                    )
+                )
+                return outcome
+
+            return False
+
         def isChunk(cur):
             &#34;&#34;&#34;Whether the current element counts as a chunk node.
 
@@ -4174,7 +4214,7 @@ class TEI(CheckImport):
                     value = {chunkSection: cn}
                     cv.feature(cur[NODE][chunkSection], **value)
 
-                if matchModel(sectionProperties, tag, atts):
+                if matchModel(sectionProperties, tag, atts) and isChapterChild(cur):
                     heading = etree.tostring(
                         xnode, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
                     ).replace(&#34;\n&#34;, &#34; &#34;)
@@ -4648,6 +4688,7 @@ class TEI(CheckImport):
 
                             if transformFunc is not None:
                                 text = transformFunc(text)
+
                             tree = etree.parse(text, parser)
                             root = tree.getroot()
 
@@ -4681,6 +4722,7 @@ class TEI(CheckImport):
 
                         if not tokenAsSlot:
                             addSlot(cv, cur, None)
+
                         if tpl:
                             cv.terminate(cur[NODE][tpl])
                             del cur[NODE][tpl]
@@ -4833,8 +4875,9 @@ class TEI(CheckImport):
                         cur[&#34;chunkElems&#34;] = set()
                         cur[&#34;chapterElems&#34;] = set()
 
-                        for child in root.iterchildren(tag=etree.Element):
-                            walkNode(cv, cur, child)
+                        walkNode(cv, cur, root)
+                        # for child in root.iterchildren(tag=etree.Element):
+                        #     walkNode(cv, cur, child)
 
                     if not tokenAsSlot:
                         addSlot(cv, cur, None)
@@ -5737,7 +5780,7 @@ and the current directory is not used to determine them.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8966cfdaddd42b3c658be49bae545eec192300e0/tf/convert/tei.py#L932-L5049" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/tei.py#L934-L5091" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
@@ -6982,9 +7025,7 @@ and the current directory is not used to determine them.</dd>
                     infoLines += 1
 
                     for val, amount in atts[1:]:
-                        fh.write(
-                            f&#34;&#34;&#34;\t{&#39;&#39;:&lt;18} {&#39;&#39;:&lt;11} {amount:&gt;7}x {val}\n&#34;&#34;&#34;
-                        )
+                        fh.write(f&#34;&#34;&#34;\t{&#39;&#39;:&lt;18} {&#39;&#39;:&lt;11} {amount:&gt;7}x {val}\n&#34;&#34;&#34;)
                         infoLines += 1
 
                 def writeTagInfo(tag, tagInfo):
@@ -7770,6 +7811,45 @@ and the current directory is not used to determine them.</dd>
 
             return False
 
+        def isChapterChild(cur):
+            &#34;&#34;&#34;Whether the current element counts as child of a chapter node.
+
+            See `isChapter()`
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            &#34;&#34;&#34;
+            sectionIs23 = self.sectionIs23
+
+            if sectionIs23:
+                nest = cur[XNEST]
+                nNest = len(nest)
+
+                if nNest &gt; 1 and nest[-2][0] in EMPTY_ELEMENTS:
+                    return False
+
+                outcome = nNest &gt; 0 and (
+                    nest[-2][0] == TEI_HEADER
+                    or (
+                        nNest &gt; 2
+                        and (
+                            nest[-3][0] in TEXT_ANCESTORS
+                            or nest[-3][0] == TEXT_ANCESTOR
+                            and nest[-2][0] not in TEXT_ANCESTORS
+                        )
+                    )
+                )
+                return outcome
+
+            return False
+
         def isChunk(cur):
             &#34;&#34;&#34;Whether the current element counts as a chunk node.
 
@@ -8476,7 +8556,7 @@ and the current directory is not used to determine them.</dd>
                     value = {chunkSection: cn}
                     cv.feature(cur[NODE][chunkSection], **value)
 
-                if matchModel(sectionProperties, tag, atts):
+                if matchModel(sectionProperties, tag, atts) and isChapterChild(cur):
                     heading = etree.tostring(
                         xnode, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
                     ).replace(&#34;\n&#34;, &#34; &#34;)
@@ -8950,6 +9030,7 @@ and the current directory is not used to determine them.</dd>
 
                             if transformFunc is not None:
                                 text = transformFunc(text)
+
                             tree = etree.parse(text, parser)
                             root = tree.getroot()
 
@@ -8983,6 +9064,7 @@ and the current directory is not used to determine them.</dd>
 
                         if not tokenAsSlot:
                             addSlot(cv, cur, None)
+
                         if tpl:
                             cv.terminate(cur[NODE][tpl])
                             del cur[NODE][tpl]
@@ -9135,8 +9217,9 @@ and the current directory is not used to determine them.</dd>
                         cur[&#34;chunkElems&#34;] = set()
                         cur[&#34;chapterElems&#34;] = set()
 
-                        for child in root.iterchildren(tag=etree.Element):
-                            walkNode(cv, cur, child)
+                        walkNode(cv, cur, root)
+                        # for child in root.iterchildren(tag=etree.Element):
+                        #     walkNode(cv, cur, child)
 
                     if not tokenAsSlot:
                         addSlot(cv, cur, None)
