@@ -169,8 +169,6 @@ def servePassage(web, getx=None):
     form = getFormData(interfaceDefaults)
     textFormat = form["textFormat"] or None
 
-    passages = ""
-
     openedKey = "passageOpened"
     openedSet = set(form[openedKey].split(",")) if form[openedKey] else set()
 

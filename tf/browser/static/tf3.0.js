@@ -217,7 +217,7 @@ const subLinks = (kind, subkind) => {
       .click(e => {
         e.preventDefault()
         const { currentTarget } = e
-        $("#pos").val($(currentTarget).html())
+        $("#pos").val($(currentTarget).text())
         storeForm()
         getTable(kind, subkind, "results")
       })
@@ -228,7 +228,7 @@ const subLinks = (kind, subkind) => {
       .click(e => {
         e.preventDefault()
         const { currentTarget } = e
-        $("#sec0").val($(currentTarget).html())
+        $("#sec0").val($(currentTarget).text())
         $("#sec1").val("1")
         $("#sec2").val("")
         $(`#${opKey}`).val("")
@@ -240,7 +240,7 @@ const subLinks = (kind, subkind) => {
       .click(e => {
         e.preventDefault()
         const { currentTarget } = e
-        $("#sec1").val($(currentTarget).html())
+        $("#sec1").val($(currentTarget).text())
         $("#sec2").val("")
         $(`#${opKey}`).val("")
         storeForm()
@@ -493,7 +493,7 @@ const filterS0 = () => {
     let s = 0
     s0items.each((i, elem) => {
       const el = $(elem)
-      const s0 = el.html().toLowerCase()
+      const s0 = el.text().toLowerCase()
       if (filterValue == "" || s0.indexOf(filterValue) >= 0) {
         el.show()
         s += 1
@@ -638,7 +638,7 @@ const nodesEvent = e => {
   e.preventDefault()
   e.stopPropagation()
   const { currentTarget } = e
-  const txt = $(currentTarget).html()
+  const txt = $(currentTarget).text()
   const orig = elems.val()
   elems.val(`${orig}\n${txt}`)
 }
