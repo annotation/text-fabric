@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/pagexml.py#L1-L1024" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a69c811d488a4cb523dbbc7a5bba6c07c4c6fd9/tf/convert/pagexml.py#L1-L1031" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from subprocess import run
@@ -52,10 +52,10 @@ from ..core.files import (
     writeYaml,
     expanduser as ex,
     unexpanduser as ux,
-    APP_CONFIG
+    APP_CONFIG,
 )
 from ..core.generic import AttrDict
-from ..core.helpers import console, versionSort, mergeDict
+from ..core.helpers import console, versionSort, mergeDict, readCfg
 from ..core.timestamp import AUTO, DEEP, TERSE
 from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
@@ -357,7 +357,7 @@ class PageXML(CheckImport):
                     &#34;Not working in a repo: &#34;
                     f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
                 ),
-                error=True
+                error=True,
             )
             self.good = False
             return
@@ -370,9 +370,12 @@ class PageXML(CheckImport):
         base = ex(f&#34;~/{backend}&#34;)
         repoDir = f&#34;{base}/{org}/{repo}&#34;
         refDir = f&#34;{repoDir}{relative}&#34;
-        convertSpec = f&#34;{refDir}/pagexml.yaml&#34;
 
-        settings = readYaml(asFile=convertSpec, plain=False)
+        (ok, settings) = readCfg(
+            refDir, &#34;pagexml&#34;, &#34;conversion&#34;, verbose=verbose, plain=False
+        )
+        if not ok:
+            self.error = True
 
         self.settings = settings
 
@@ -393,11 +396,13 @@ class PageXML(CheckImport):
                 absIndex = sourceIndex + (nSourceVersions if sourceIndex &lt; 0 else 0) + 1
                 console(
                     (
-                        f&#34;no item in {absIndex} in {nSourceVersions} source versions &#34;
-                        f&#34;in {ux(metaDir)}&#34;
-                    )
-                    if len(sourceVersions)
-                    else f&#34;no source versions in {ux(metaDir)}&#34;,
+                        (
+                            f&#34;no item in {absIndex} in {nSourceVersions} source versions &#34;
+                            f&#34;in {ux(metaDir)}&#34;
+                        )
+                        if len(sourceVersions)
+                        else f&#34;no source versions in {ux(metaDir)}&#34;
+                    ),
                     error=True,
                 )
                 self.good = False
@@ -420,9 +425,11 @@ class PageXML(CheckImport):
         sourceStatusRep = (
             &#34;most recent&#34;
             if sourceStatus == 0
-            else &#34;previous&#34;
-            if sourceStatus == 1
-            else f&#34;{sourceStatus - 1} before previous&#34;
+            else (
+                &#34;previous&#34;
+                if sourceStatus == 1
+                else f&#34;{sourceStatus - 1} before previous&#34;
+            )
         )
         if sourceStatus == len(sourceVersions) - 1 and len(sourceVersions) &gt; 1:
             sourceStatusRep = &#34;oldest&#34;
@@ -1230,7 +1237,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/pagexml.py#L174-L1007" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a69c811d488a4cb523dbbc7a5bba6c07c4c6fd9/tf/convert/pagexml.py#L174-L1014" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class PageXML(CheckImport):
     def __init__(
@@ -1383,7 +1390,7 @@ relevant TF version:</p>
                     &#34;Not working in a repo: &#34;
                     f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
                 ),
-                error=True
+                error=True,
             )
             self.good = False
             return
@@ -1396,9 +1403,12 @@ relevant TF version:</p>
         base = ex(f&#34;~/{backend}&#34;)
         repoDir = f&#34;{base}/{org}/{repo}&#34;
         refDir = f&#34;{repoDir}{relative}&#34;
-        convertSpec = f&#34;{refDir}/pagexml.yaml&#34;
 
-        settings = readYaml(asFile=convertSpec, plain=False)
+        (ok, settings) = readCfg(
+            refDir, &#34;pagexml&#34;, &#34;conversion&#34;, verbose=verbose, plain=False
+        )
+        if not ok:
+            self.error = True
 
         self.settings = settings
 
@@ -1419,11 +1429,13 @@ relevant TF version:</p>
                 absIndex = sourceIndex + (nSourceVersions if sourceIndex &lt; 0 else 0) + 1
                 console(
                     (
-                        f&#34;no item in {absIndex} in {nSourceVersions} source versions &#34;
-                        f&#34;in {ux(metaDir)}&#34;
-                    )
-                    if len(sourceVersions)
-                    else f&#34;no source versions in {ux(metaDir)}&#34;,
+                        (
+                            f&#34;no item in {absIndex} in {nSourceVersions} source versions &#34;
+                            f&#34;in {ux(metaDir)}&#34;
+                        )
+                        if len(sourceVersions)
+                        else f&#34;no source versions in {ux(metaDir)}&#34;
+                    ),
                     error=True,
                 )
                 self.good = False
@@ -1446,9 +1458,11 @@ relevant TF version:</p>
         sourceStatusRep = (
             &#34;most recent&#34;
             if sourceStatus == 0
-            else &#34;previous&#34;
-            if sourceStatus == 1
-            else f&#34;{sourceStatus - 1} before previous&#34;
+            else (
+                &#34;previous&#34;
+                if sourceStatus == 1
+                else f&#34;{sourceStatus - 1} before previous&#34;
+            )
         )
         if sourceStatus == len(sourceVersions) - 1 and len(sourceVersions) &gt; 1:
             sourceStatusRep = &#34;oldest&#34;

@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/core/helpers.py#L1-L702" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a69c811d488a4cb523dbbc7a5bba6c07c4c6fd9/tf/core/helpers.py#L1-L717" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -44,7 +44,7 @@ from datetime import datetime as dt, UTC
 
 
 from ..parameters import OMAP
-from .files import unexpanduser as ux
+from .files import readYaml, unexpanduser as ux
 
 
 NBSP = &#34;\u00a0&#34;  # non-breaking space
@@ -734,7 +734,22 @@ def run(cmdline, workDir=None):
         returnCode = e.returncode
         good = False
 
-    return (good, returnCode, stdOut, stdErr)</code></pre>
+    return (good, returnCode, stdOut, stdErr)
+
+
+def readCfg(folder, file, label, verbose=0, **kwargs):
+    settingsFile = f&#34;{folder}/config/{file}.yml&#34;
+    settings = readYaml(asFile=settingsFile, **kwargs)
+
+    if settings:
+        if verbose == 1:
+            console(f&#34;{label} settings read from {settingsFile}&#34;)
+        good = True
+    else:
+        console(f&#34;No {label} settings found, looked for {settingsFile}&#34;, error=True)
+        good = False
+
+    return (good, settings)</code></pre>
 </details>
 </section>
 <section>
@@ -976,6 +991,12 @@ Also: all tab characters will be replaced by single spaces.</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="tf.core.helpers.readCfg"><code class="name flex">
+<span>def <span class="ident">readCfg</span></span>(<span>folder, file, label, verbose=0, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.core.helpers.run"><code class="name flex">
 <span>def <span class="ident">run</span></span>(<span>cmdline, workDir=None)</span>
 </code></dt>
@@ -1182,6 +1203,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.core.helpers.project" href="#tf.core.helpers.project">project</a></code></li>
 <li><code><a title="tf.core.helpers.rangesFromList" href="#tf.core.helpers.rangesFromList">rangesFromList</a></code></li>
 <li><code><a title="tf.core.helpers.rangesFromSet" href="#tf.core.helpers.rangesFromSet">rangesFromSet</a></code></li>
+<li><code><a title="tf.core.helpers.readCfg" href="#tf.core.helpers.readCfg">readCfg</a></code></li>
 <li><code><a title="tf.core.helpers.run" href="#tf.core.helpers.run">run</a></code></li>
 <li><code><a title="tf.core.helpers.setFromSpec" href="#tf.core.helpers.setFromSpec">setFromSpec</a></code></li>
 <li><code><a title="tf.core.helpers.setFromStr" href="#tf.core.helpers.setFromStr">setFromStr</a></code></li>

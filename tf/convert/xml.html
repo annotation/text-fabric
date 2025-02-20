@@ -135,7 +135,7 @@ conversion code is demonstrated in the Greek New Testament:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/xml.py#L1-L1250" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a69c811d488a4cb523dbbc7a5bba6c07c4c6fd9/tf/convert/xml.py#L1-L1255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # XML import
@@ -298,7 +298,7 @@ from ..convert.walker import CV
 from ..core.timestamp import AUTO, DEEP, TERSE
 from ..core.text import DEFAULT_FORMAT
 from ..core.command import readArgs
-from ..core.helpers import mergeDict
+from ..core.helpers import mergeDict, readCfg
 from ..core.files import (
     fileOpen,
     abspath,
@@ -315,7 +315,7 @@ from ..core.files import (
     scanDir,
     readYaml,
     writeYaml,
-    APP_CONFIG
+    APP_CONFIG,
 )
 
 TASKS_EXCLUDED = {&#34;apptoken&#34;, &#34;browse&#34;}
@@ -509,14 +509,17 @@ class XML(CheckImport):
         repoDir = f&#34;{base}/{org}/{repo}&#34;
         refDir = f&#34;{repoDir}{relative}&#34;
         programDir = f&#34;{refDir}/programs&#34;
-        convertSpec = f&#34;{programDir}/xml.yaml&#34;
         convertCustom = f&#34;{programDir}/xml.py&#34;
 
         sourceRefDir = sourceBase if sourceBase else refDir
         xmlDir = f&#34;{sourceRefDir}/xml&#34;
         reportDir = reportDir if reportDir else f&#34;{sourceRefDir}/report&#34;
 
-        settings = readYaml(asFile=convertSpec, plain=True)
+        (ok, settings) = readCfg(
+            refDir, &#34;xml&#34;, &#34;conversion&#34;, verbose=verbose, plain=True
+        )
+        if not ok:
+            self.good = False
 
         self.transform = None
         if fileExists(convertCustom):
@@ -557,11 +560,13 @@ class XML(CheckImport):
                 absIndex = xmlIndex + (nXmlVersions if xmlIndex &lt; 0 else 0) + 1
                 console(
                     (
-                        f&#34;no item in {absIndex} in {nXmlVersions} source versions &#34;
-                        f&#34;in {ux(xmlDir)}&#34;
-                    )
-                    if len(xmlVersions)
-                    else f&#34;no source versions in {ux(xmlDir)}&#34;,
+                        (
+                            f&#34;no item in {absIndex} in {nXmlVersions} source versions &#34;
+                            f&#34;in {ux(xmlDir)}&#34;
+                        )
+                        if len(xmlVersions)
+                        else f&#34;no source versions in {ux(xmlDir)}&#34;
+                    ),
                     error=True,
                 )
                 self.good = False
@@ -585,9 +590,7 @@ class XML(CheckImport):
         xmlStatusRep = (
             &#34;most recent&#34;
             if xmlStatus == 0
-            else &#34;previous&#34;
-            if xmlStatus == 1
-            else f&#34;{xmlStatus - 1} before previous&#34;
+            else &#34;previous&#34; if xmlStatus == 1 else f&#34;{xmlStatus - 1} before previous&#34;
         )
         if xmlStatus == len(xmlVersions) - 1 and len(xmlVersions) &gt; 1:
             xmlStatusRep = &#34;oldest&#34;
@@ -817,9 +820,11 @@ class XML(CheckImport):
                                 dest[tag][k][w.strip()] += 1
 
                 for child in xnode.iterchildren(
-                    tag=(etree.Element, etree.ProcessingInstruction)
-                    if procins
-                    else etree.Element
+                    tag=(
+                        (etree.Element, etree.ProcessingInstruction)
+                        if procins
+                        else etree.Element
+                    )
                 ):
                     nodeInfo(child)
 
@@ -1246,11 +1251,11 @@ class XML(CheckImport):
                 targetText = (
                     createConfig
                     if name == &#34;config&#34;
-                    else createApp
-                    if name == &#34;app&#34;
-                    else createDisplay
-                    if name == &#34;display&#34;
-                    else fileCopy  # this cannot occur because justCopy is False
+                    else (
+                        createApp
+                        if name == &#34;app&#34;
+                        else createDisplay if name == &#34;display&#34; else fileCopy
+                    )  # this cannot occur because justCopy is False
                 )(sourceText, customText)
 
                 if targetText is None:
@@ -1527,7 +1532,7 @@ relevant TF version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/xml.py#L195-L1233" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a69c811d488a4cb523dbbc7a5bba6c07c4c6fd9/tf/convert/xml.py#L195-L1238" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class XML(CheckImport):
     def __init__(
@@ -1707,14 +1712,17 @@ relevant TF version:</p>
         repoDir = f&#34;{base}/{org}/{repo}&#34;
         refDir = f&#34;{repoDir}{relative}&#34;
         programDir = f&#34;{refDir}/programs&#34;
-        convertSpec = f&#34;{programDir}/xml.yaml&#34;
         convertCustom = f&#34;{programDir}/xml.py&#34;
 
         sourceRefDir = sourceBase if sourceBase else refDir
         xmlDir = f&#34;{sourceRefDir}/xml&#34;
         reportDir = reportDir if reportDir else f&#34;{sourceRefDir}/report&#34;
 
-        settings = readYaml(asFile=convertSpec, plain=True)
+        (ok, settings) = readCfg(
+            refDir, &#34;xml&#34;, &#34;conversion&#34;, verbose=verbose, plain=True
+        )
+        if not ok:
+            self.good = False
 
         self.transform = None
         if fileExists(convertCustom):
@@ -1755,11 +1763,13 @@ relevant TF version:</p>
                 absIndex = xmlIndex + (nXmlVersions if xmlIndex &lt; 0 else 0) + 1
                 console(
                     (
-                        f&#34;no item in {absIndex} in {nXmlVersions} source versions &#34;
-                        f&#34;in {ux(xmlDir)}&#34;
-                    )
-                    if len(xmlVersions)
-                    else f&#34;no source versions in {ux(xmlDir)}&#34;,
+                        (
+                            f&#34;no item in {absIndex} in {nXmlVersions} source versions &#34;
+                            f&#34;in {ux(xmlDir)}&#34;
+                        )
+                        if len(xmlVersions)
+                        else f&#34;no source versions in {ux(xmlDir)}&#34;
+                    ),
                     error=True,
                 )
                 self.good = False
@@ -1783,9 +1793,7 @@ relevant TF version:</p>
         xmlStatusRep = (
             &#34;most recent&#34;
             if xmlStatus == 0
-            else &#34;previous&#34;
-            if xmlStatus == 1
-            else f&#34;{xmlStatus - 1} before previous&#34;
+            else &#34;previous&#34; if xmlStatus == 1 else f&#34;{xmlStatus - 1} before previous&#34;
         )
         if xmlStatus == len(xmlVersions) - 1 and len(xmlVersions) &gt; 1:
             xmlStatusRep = &#34;oldest&#34;
@@ -2015,9 +2023,11 @@ relevant TF version:</p>
                                 dest[tag][k][w.strip()] += 1
 
                 for child in xnode.iterchildren(
-                    tag=(etree.Element, etree.ProcessingInstruction)
-                    if procins
-                    else etree.Element
+                    tag=(
+                        (etree.Element, etree.ProcessingInstruction)
+                        if procins
+                        else etree.Element
+                    )
                 ):
                     nodeInfo(child)
 
@@ -2444,11 +2454,11 @@ relevant TF version:</p>
                 targetText = (
                     createConfig
                     if name == &#34;config&#34;
-                    else createApp
-                    if name == &#34;app&#34;
-                    else createDisplay
-                    if name == &#34;display&#34;
-                    else fileCopy  # this cannot occur because justCopy is False
+                    else (
+                        createApp
+                        if name == &#34;app&#34;
+                        else createDisplay if name == &#34;display&#34; else fileCopy
+                    )  # this cannot occur because justCopy is False
                 )(sourceText, customText)
 
                 if targetText is None:

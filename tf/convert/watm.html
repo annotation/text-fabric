@@ -509,7 +509,7 @@ information from reaching the WATM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/watm.py#L1-L2642" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a69c811d488a4cb523dbbc7a5bba6c07c4c6fd9/tf/convert/watm.py#L1-L2651" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Export to Web Annotation Text Model
 
@@ -987,7 +987,7 @@ import collections
 import re
 
 from ..core.generic import AttrDict
-from ..core.helpers import console
+from ..core.helpers import console, readCfg
 from ..core.files import (
     fileOpen,
     fileCopy,
@@ -1014,8 +1014,6 @@ TF_SPECIFIC_FEATURES = {OTYPE, OSLOTS, AFTER, STR}
 
 PROGRESS_LIMIT = 5
 
-CONFIG_FILE = &#34;watm.yaml&#34;
-IIIF_FILE = &#34;iiif.yaml&#34;
 NODEMAP_FILE = &#34;anno2node.tsv&#34;
 SLOTMAP_FILE = &#34;pos2node.tsv&#34;
 LOGICAL_FILE = &#34;logicalpairs.tsv&#34;
@@ -1259,10 +1257,21 @@ class WATM:
 
         repoLocation = app.repoLocation
         self.repoLocation = repoLocation
-        cfg = readYaml(asFile=f&#34;{repoLocation}/programs/{CONFIG_FILE}&#34;)
+
+        (ok, cfg) = readCfg(
+            repoLocation, &#34;watm&#34;, &#34;conversion&#34;, verbose=-1 if silent else 1
+        )
+        if not ok:
+            self.error = True
+
         self.cfg = cfg
 
-        settings = readYaml(asFile=IIIF_FILE, plain=True)
+        (ok, settings) = readCfg(
+            repoLocation, &#34;iiif&#34;, &#34;IIIF&#34;, verbose=-1 if silent else 1, plain=True
+        )
+        if not ok:
+            self.error = True
+
         self.scanInfo = (
             operationalize(parseIIIF(settings, prod, &#34;scans&#34;)) if settings else {}
         )
@@ -1273,7 +1282,7 @@ class WATM:
 
         if type(textRepoLevel) is not int or not 1 &lt;= textRepoLevel &lt;= 3:
             console(
-                f&#34;{CONFIG_FILE}: textRepoLevel must be an integer between 1 and 3&#34;,
+                &#34;watm settings: textRepoLevel must be an integer between 1 and 3&#34;,
                 error=True,
             )
             self.error = True
@@ -1291,7 +1300,7 @@ class WATM:
         if hyphenation is not None:
             if strv is None:
                 console(
-                    f&#34;{CONFIG_FILE}: hyphenation cannot be solved &#34;
+                    &#34;watm settings: hyphenation cannot be solved &#34;
                     &#34;because feature str does not exist in the TF dataset&#34;,
                     error=True,
                 )
@@ -1300,7 +1309,7 @@ class WATM:
 
             if hyphenation.lineType not in F.otype.all:
                 console(
-                    f&#34;{CONFIG_FILE}: hyphenation.lineType &#34;
+                    &#34;watm settings: hyphenation.lineType &#34;
                     &#34;must be an existing node type&#34;,
                     error=True,
                 )
@@ -1356,7 +1365,7 @@ class WATM:
         for instruction in inheritFeatures:
             if type(instruction) is not AttrDict:
                 console(
-                    f&#34;{CONFIG_FILE}: inheritFeatures non-dict instruction: &#34;
+                    &#34;watm settings: inheritFeatures non-dict instruction: &#34;
                     f&#34;{repr(instruction)}&#34;,
                     error=True,
                 )
@@ -1368,7 +1377,7 @@ class WATM:
 
                 if value not in otypes:
                     console(
-                        f&#34;{CONFIG_FILE}: inheritFeatures {field}: &#34;
+                        &#34;watm settings: inheritFeatures {field}: &#34;
                         f&#34;{value} is not a node type&#34;
                     )
                     self.error = True
@@ -1376,14 +1385,14 @@ class WATM:
             namespace = instruction.namespace
 
             if namespace is None:
-                console(f&#34;{CONFIG_FILE}: inheritFeatures namespace not specified&#34;)
+                console(&#34;watm settings: inheritFeatures namespace not specified&#34;)
                 self.error = True
 
             features = instruction.features
 
             for feat in features:
                 if feat not in FAllSet:
-                    console(f&#34;{CONFIG_FILE}: inheritFeatures feature {feat} unknown&#34;)
+                    console(&#34;watm settings: inheritFeatures feature {feat} unknown&#34;)
                     self.error = True
 
         if not silent:
@@ -3276,7 +3285,7 @@ versions in the <code>watm</code> directory.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/watm.py#L681-L2489" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a69c811d488a4cb523dbbc7a5bba6c07c4c6fd9/tf/convert/watm.py#L679-L2498" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATM:
     &#34;&#34;&#34;The export machinery is exposed as a class, wrapped around a TF dataset.&#34;&#34;&#34;
@@ -3346,10 +3355,21 @@ versions in the <code>watm</code> directory.</p>
 
         repoLocation = app.repoLocation
         self.repoLocation = repoLocation
-        cfg = readYaml(asFile=f&#34;{repoLocation}/programs/{CONFIG_FILE}&#34;)
+
+        (ok, cfg) = readCfg(
+            repoLocation, &#34;watm&#34;, &#34;conversion&#34;, verbose=-1 if silent else 1
+        )
+        if not ok:
+            self.error = True
+
         self.cfg = cfg
 
-        settings = readYaml(asFile=IIIF_FILE, plain=True)
+        (ok, settings) = readCfg(
+            repoLocation, &#34;iiif&#34;, &#34;IIIF&#34;, verbose=-1 if silent else 1, plain=True
+        )
+        if not ok:
+            self.error = True
+
         self.scanInfo = (
             operationalize(parseIIIF(settings, prod, &#34;scans&#34;)) if settings else {}
         )
@@ -3360,7 +3380,7 @@ versions in the <code>watm</code> directory.</p>
 
         if type(textRepoLevel) is not int or not 1 &lt;= textRepoLevel &lt;= 3:
             console(
-                f&#34;{CONFIG_FILE}: textRepoLevel must be an integer between 1 and 3&#34;,
+                &#34;watm settings: textRepoLevel must be an integer between 1 and 3&#34;,
                 error=True,
             )
             self.error = True
@@ -3378,7 +3398,7 @@ versions in the <code>watm</code> directory.</p>
         if hyphenation is not None:
             if strv is None:
                 console(
-                    f&#34;{CONFIG_FILE}: hyphenation cannot be solved &#34;
+                    &#34;watm settings: hyphenation cannot be solved &#34;
                     &#34;because feature str does not exist in the TF dataset&#34;,
                     error=True,
                 )
@@ -3387,7 +3407,7 @@ versions in the <code>watm</code> directory.</p>
 
             if hyphenation.lineType not in F.otype.all:
                 console(
-                    f&#34;{CONFIG_FILE}: hyphenation.lineType &#34;
+                    &#34;watm settings: hyphenation.lineType &#34;
                     &#34;must be an existing node type&#34;,
                     error=True,
                 )
@@ -3443,7 +3463,7 @@ versions in the <code>watm</code> directory.</p>
         for instruction in inheritFeatures:
             if type(instruction) is not AttrDict:
                 console(
-                    f&#34;{CONFIG_FILE}: inheritFeatures non-dict instruction: &#34;
+                    &#34;watm settings: inheritFeatures non-dict instruction: &#34;
                     f&#34;{repr(instruction)}&#34;,
                     error=True,
                 )
@@ -3455,7 +3475,7 @@ versions in the <code>watm</code> directory.</p>
 
                 if value not in otypes:
                     console(
-                        f&#34;{CONFIG_FILE}: inheritFeatures {field}: &#34;
+                        &#34;watm settings: inheritFeatures {field}: &#34;
                         f&#34;{value} is not a node type&#34;
                     )
                     self.error = True
@@ -3463,14 +3483,14 @@ versions in the <code>watm</code> directory.</p>
             namespace = instruction.namespace
 
             if namespace is None:
-                console(f&#34;{CONFIG_FILE}: inheritFeatures namespace not specified&#34;)
+                console(&#34;watm settings: inheritFeatures namespace not specified&#34;)
                 self.error = True
 
             features = instruction.features
 
             for feat in features:
                 if feat not in FAllSet:
-                    console(f&#34;{CONFIG_FILE}: inheritFeatures feature {feat} unknown&#34;)
+                    console(&#34;watm settings: inheritFeatures feature {feat} unknown&#34;)
                     self.error = True
 
         if not silent:
@@ -5353,7 +5373,7 @@ See <code><a title="tf.convert.watm.WATM" href="#tf.convert.watm.WATM">WATM</a><
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/watm.py#L2492-L2642" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a69c811d488a4cb523dbbc7a5bba6c07c4c6fd9/tf/convert/watm.py#L2501-L2651" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class WATMS:
     &#34;&#34;&#34;Export corpora that are divided over multiple TF datasets.

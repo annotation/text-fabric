@@ -505,7 +505,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/tei.py#L1-L5108" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a69c811d488a4cb523dbbc7a5bba6c07c4c6fd9/tf/convert/tei.py#L1-L5111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -1179,7 +1179,7 @@ from .helpers import (
 )
 from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
-from ..core.helpers import console, versionSort, mergeDict
+from ..core.helpers import console, versionSort, mergeDict, readCfg
 from ..convert.walker import CV
 from ..core.timestamp import AUTO, DEEP, TERSE
 from ..core.command import readArgs
@@ -1648,7 +1648,6 @@ class TEI(CheckImport):
 
         refDir = f&#34;{repoDir}{relative}&#34;
         programDir = f&#34;{refDir}/programs&#34;
-        convertSpec = f&#34;{programDir}/tei.yaml&#34;
         convertCustom = f&#34;{programDir}/tei.py&#34;
 
         sourceRefDir = sourceBase if sourceBase else refDir
@@ -1657,7 +1656,11 @@ class TEI(CheckImport):
         schemaDir = f&#34;{sourceRefDir}/schema&#34;
         self.schemaDir = schemaDir
 
-        settings = readYaml(asFile=convertSpec, plain=True)
+        (ok, settings) = readCfg(
+            refDir, &#34;tei&#34;, &#34;conversion&#34;, verbose=verbose, plain=True
+        )
+        if not ok:
+            self.good = False
 
         customKeys = set(
             &#34;&#34;&#34;
@@ -5780,7 +5783,7 @@ and the current directory is not used to determine them.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/tei.py#L934-L5091" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a69c811d488a4cb523dbbc7a5bba6c07c4c6fd9/tf/convert/tei.py#L934-L5094" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
@@ -5990,7 +5993,6 @@ and the current directory is not used to determine them.</dd>
 
         refDir = f&#34;{repoDir}{relative}&#34;
         programDir = f&#34;{refDir}/programs&#34;
-        convertSpec = f&#34;{programDir}/tei.yaml&#34;
         convertCustom = f&#34;{programDir}/tei.py&#34;
 
         sourceRefDir = sourceBase if sourceBase else refDir
@@ -5999,7 +6001,11 @@ and the current directory is not used to determine them.</dd>
         schemaDir = f&#34;{sourceRefDir}/schema&#34;
         self.schemaDir = schemaDir
 
-        settings = readYaml(asFile=convertSpec, plain=True)
+        (ok, settings) = readCfg(
+            refDir, &#34;tei&#34;, &#34;conversion&#34;, verbose=verbose, plain=True
+        )
+        if not ok:
+            self.good = False
 
         customKeys = set(
             &#34;&#34;&#34;

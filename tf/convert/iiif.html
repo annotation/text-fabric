@@ -31,10 +31,9 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/iiif.py#L1-L225" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a69c811d488a4cb523dbbc7a5bba6c07c4c6fd9/tf/convert/iiif.py#L1-L247" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.files import (
-    readYaml,
     readJson,
     writeJson,
     fileOpen,
@@ -44,7 +43,7 @@ crossorigin>
     dirContents,
     stripExt,
 )
-from ..core.helpers import console
+from ..core.helpers import console, readCfg
 from .helpers import parseIIIF, fillinIIIF
 
 DS_STORE = &#34;.DS_Store&#34;
@@ -57,6 +56,7 @@ class IIIF:
         self.pageInfoFile = pageInfoFile
         self.prod = prod
         self.silent = silent
+        self.error = False
 
         teiVersionRep = f&#34;/{teiVersion}&#34; if teiVersion else teiVersion
 
@@ -79,7 +79,14 @@ class IIIF:
 
         self.coversHtmlIn = f&#34;{repoLocation}/programs/covers.html&#34;
         self.coversHtmlOut = f&#34;{staticDir}/covers.html&#34;
-        settings = readYaml(asFile=f&#34;{repoLocation}/programs/iiif.yaml&#34;, plain=True)
+
+        (ok, settings) = readCfg(
+            repoLocation, &#34;iiif&#34;, &#34;IIIF&#34;, verbose=-1 if silent else 1, plain=True
+        )
+        if not ok:
+            self.error = True
+            return
+
         self.settings = settings
         self.templates = parseIIIF(settings, prod, &#34;templates&#34;)
 
@@ -109,6 +116,9 @@ class IIIF:
             console(msg, **kwargs)
 
     def getRotations(self):
+        if self.error:
+            return
+
         prod = self.prod
         thumbDir = self.thumbDir
         scanDir = self.scanDir
@@ -127,6 +137,9 @@ class IIIF:
                 rotateInfo[p] = rot
 
     def getSizes(self):
+        if self.error:
+            return
+
         prod = self.prod
         thumbDir = self.thumbDir
         scanDir = self.scanDir
@@ -176,6 +189,9 @@ class IIIF:
             self.console(f&#34;Average deviation:  W = {devW:&gt;4} H = {devH:&gt;4}&#34;)
 
     def getPageSeq(self):
+        if self.error:
+            return
+
         coversDir = self.coversDir
         pageInfoFile = self.pageInfoFile
 
@@ -188,6 +204,9 @@ class IIIF:
         )
 
     def genPages(self, kind, folder=None):
+        if self.error:
+            return
+
         if kind == &#34;covers&#34;:
             folder = kind
         templates = self.templates
@@ -227,6 +246,9 @@ class IIIF:
         writeJson(data, asFile=f&#34;{manifestDir}/{folder}.json&#34;)
 
     def manifests(self):
+        if self.error:
+            return
+
         folders = self.folders
         manifestDir = self.manifestDir
         logoInDir = self.logoInDir
@@ -278,7 +300,7 @@ class IIIF:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/iiif.py#L18-L225" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a69c811d488a4cb523dbbc7a5bba6c07c4c6fd9/tf/convert/iiif.py#L17-L247" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class IIIF:
     def __init__(self, teiVersion, app, pageInfoFile, prod=False, silent=False):
@@ -287,6 +309,7 @@ class IIIF:
         self.pageInfoFile = pageInfoFile
         self.prod = prod
         self.silent = silent
+        self.error = False
 
         teiVersionRep = f&#34;/{teiVersion}&#34; if teiVersion else teiVersion
 
@@ -309,7 +332,14 @@ class IIIF:
 
         self.coversHtmlIn = f&#34;{repoLocation}/programs/covers.html&#34;
         self.coversHtmlOut = f&#34;{staticDir}/covers.html&#34;
-        settings = readYaml(asFile=f&#34;{repoLocation}/programs/iiif.yaml&#34;, plain=True)
+
+        (ok, settings) = readCfg(
+            repoLocation, &#34;iiif&#34;, &#34;IIIF&#34;, verbose=-1 if silent else 1, plain=True
+        )
+        if not ok:
+            self.error = True
+            return
+
         self.settings = settings
         self.templates = parseIIIF(settings, prod, &#34;templates&#34;)
 
@@ -339,6 +369,9 @@ class IIIF:
             console(msg, **kwargs)
 
     def getRotations(self):
+        if self.error:
+            return
+
         prod = self.prod
         thumbDir = self.thumbDir
         scanDir = self.scanDir
@@ -357,6 +390,9 @@ class IIIF:
                 rotateInfo[p] = rot
 
     def getSizes(self):
+        if self.error:
+            return
+
         prod = self.prod
         thumbDir = self.thumbDir
         scanDir = self.scanDir
@@ -406,6 +442,9 @@ class IIIF:
             self.console(f&#34;Average deviation:  W = {devW:&gt;4} H = {devH:&gt;4}&#34;)
 
     def getPageSeq(self):
+        if self.error:
+            return
+
         coversDir = self.coversDir
         pageInfoFile = self.pageInfoFile
 
@@ -418,6 +457,9 @@ class IIIF:
         )
 
     def genPages(self, kind, folder=None):
+        if self.error:
+            return
+
         if kind == &#34;covers&#34;:
             folder = kind
         templates = self.templates
@@ -457,6 +499,9 @@ class IIIF:
         writeJson(data, asFile=f&#34;{manifestDir}/{folder}.json&#34;)
 
     def manifests(self):
+        if self.error:
+            return
+
         folders = self.folders
         manifestDir = self.manifestDir
         logoInDir = self.logoInDir

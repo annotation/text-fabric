@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6caf58cdb6a6952727b1daa008411982e2506d01/tf/convert/helpers.py#L1-L829" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a69c811d488a4cb523dbbc7a5bba6c07c4c6fd9/tf/convert/helpers.py#L1-L834" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from textwrap import dedent
@@ -752,8 +752,9 @@ def parseIIIF(settings, prod, selector):
     &#34;&#34;&#34;
 
     def applySwitches(prod, constants, switches):
-        for k, v in switches[&#34;prod&#34; if prod else &#34;dev&#34;].items():
-            constants[k] = v
+        if len(switches):
+            for k, v in switches[&#34;prod&#34; if prod else &#34;dev&#34;].items():
+                constants[k] = v
 
         return constants
 
@@ -786,8 +787,12 @@ def parseIIIF(settings, prod, selector):
 
         return data
 
-    constants = applySwitches(prod, settings[&#34;constants&#34;], settings[&#34;switches&#34;])
-    macros = applySwitches(prod, settings[&#34;macros&#34;], settings[&#34;switches&#34;])
+    constants = applySwitches(
+        prod, settings.get(&#34;constants&#34;, {}), settings.get(&#34;switches&#34;, {})
+    )
+    macros = applySwitches(
+        prod, settings.get(&#34;macros&#34;, {}), settings.get(&#34;switches&#34;, {})
+    )
 
     return AttrDict(
         {
