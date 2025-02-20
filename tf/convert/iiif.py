@@ -1,5 +1,4 @@
 from ..core.files import (
-    readYaml,
     readJson,
     writeJson,
     fileOpen,
@@ -9,7 +8,7 @@ from ..core.files import (
     dirContents,
     stripExt,
 )
-from ..core.helpers import console
+from ..core.helpers import console, readCfg
 from .helpers import parseIIIF, fillinIIIF
 
 DS_STORE = ".DS_Store"
@@ -22,6 +21,7 @@ class IIIF:
         self.pageInfoFile = pageInfoFile
         self.prod = prod
         self.silent = silent
+        self.error = False
 
         teiVersionRep = f"/{teiVersion}" if teiVersion else teiVersion
 
@@ -44,7 +44,14 @@ class IIIF:
 
         self.coversHtmlIn = f"{repoLocation}/programs/covers.html"
         self.coversHtmlOut = f"{staticDir}/covers.html"
-        settings = readYaml(asFile=f"{repoLocation}/programs/iiif.yaml", plain=True)
+
+        (ok, settings) = readCfg(
+            repoLocation, "iiif", "IIIF", verbose=-1 if silent else 1, plain=True
+        )
+        if not ok:
+            self.error = True
+            return
+
         self.settings = settings
         self.templates = parseIIIF(settings, prod, "templates")
 
@@ -74,6 +81,9 @@ class IIIF:
             console(msg, **kwargs)
 
     def getRotations(self):
+        if self.error:
+            return
+
         prod = self.prod
         thumbDir = self.thumbDir
         scanDir = self.scanDir
@@ -92,6 +102,9 @@ class IIIF:
                 rotateInfo[p] = rot
 
     def getSizes(self):
+        if self.error:
+            return
+
         prod = self.prod
         thumbDir = self.thumbDir
         scanDir = self.scanDir
@@ -141,6 +154,9 @@ class IIIF:
             self.console(f"Average deviation:  W = {devW:>4} H = {devH:>4}")
 
     def getPageSeq(self):
+        if self.error:
+            return
+
         coversDir = self.coversDir
         pageInfoFile = self.pageInfoFile
 
@@ -153,6 +169,9 @@ class IIIF:
         )
 
     def genPages(self, kind, folder=None):
+        if self.error:
+            return
+
         if kind == "covers":
             folder = kind
         templates = self.templates
@@ -192,6 +211,9 @@ class IIIF:
         writeJson(data, asFile=f"{manifestDir}/{folder}.json")
 
     def manifests(self):
+        if self.error:
+            return
+
         folders = self.folders
         manifestDir = self.manifestDir
         logoInDir = self.logoInDir

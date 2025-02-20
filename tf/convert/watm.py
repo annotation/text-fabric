@@ -474,7 +474,7 @@ import collections
 import re
 
 from ..core.generic import AttrDict
-from ..core.helpers import console
+from ..core.helpers import console, readCfg
 from ..core.files import (
     fileOpen,
     fileCopy,
@@ -501,8 +501,6 @@ TF_SPECIFIC_FEATURES = {OTYPE, OSLOTS, AFTER, STR}
 
 PROGRESS_LIMIT = 5
 
-CONFIG_FILE = "watm.yaml"
-IIIF_FILE = "iiif.yaml"
 NODEMAP_FILE = "anno2node.tsv"
 SLOTMAP_FILE = "pos2node.tsv"
 LOGICAL_FILE = "logicalpairs.tsv"
@@ -746,10 +744,21 @@ class WATM:
 
         repoLocation = app.repoLocation
         self.repoLocation = repoLocation
-        cfg = readYaml(asFile=f"{repoLocation}/programs/{CONFIG_FILE}")
+
+        (ok, cfg) = readCfg(
+            repoLocation, "watm", "conversion", verbose=-1 if silent else 1
+        )
+        if not ok:
+            self.error = True
+
         self.cfg = cfg
 
-        settings = readYaml(asFile=IIIF_FILE, plain=True)
+        (ok, settings) = readCfg(
+            repoLocation, "iiif", "IIIF", verbose=-1 if silent else 1, plain=True
+        )
+        if not ok:
+            self.error = True
+
         self.scanInfo = (
             operationalize(parseIIIF(settings, prod, "scans")) if settings else {}
         )
@@ -760,7 +769,7 @@ class WATM:
 
         if type(textRepoLevel) is not int or not 1 <= textRepoLevel <= 3:
             console(
-                f"{CONFIG_FILE}: textRepoLevel must be an integer between 1 and 3",
+                "watm settings: textRepoLevel must be an integer between 1 and 3",
                 error=True,
             )
             self.error = True
@@ -778,7 +787,7 @@ class WATM:
         if hyphenation is not None:
             if strv is None:
                 console(
-                    f"{CONFIG_FILE}: hyphenation cannot be solved "
+                    "watm settings: hyphenation cannot be solved "
                     "because feature str does not exist in the TF dataset",
                     error=True,
                 )
@@ -787,7 +796,7 @@ class WATM:
 
             if hyphenation.lineType not in F.otype.all:
                 console(
-                    f"{CONFIG_FILE}: hyphenation.lineType "
+                    "watm settings: hyphenation.lineType "
                     "must be an existing node type",
                     error=True,
                 )
@@ -843,7 +852,7 @@ class WATM:
         for instruction in inheritFeatures:
             if type(instruction) is not AttrDict:
                 console(
-                    f"{CONFIG_FILE}: inheritFeatures non-dict instruction: "
+                    "watm settings: inheritFeatures non-dict instruction: "
                     f"{repr(instruction)}",
                     error=True,
                 )
@@ -855,7 +864,7 @@ class WATM:
 
                 if value not in otypes:
                     console(
-                        f"{CONFIG_FILE}: inheritFeatures {field}: "
+                        "watm settings: inheritFeatures {field}: "
                         f"{value} is not a node type"
                     )
                     self.error = True
@@ -863,14 +872,14 @@ class WATM:
             namespace = instruction.namespace
 
             if namespace is None:
-                console(f"{CONFIG_FILE}: inheritFeatures namespace not specified")
+                console("watm settings: inheritFeatures namespace not specified")
                 self.error = True
 
             features = instruction.features
 
             for feat in features:
                 if feat not in FAllSet:
-                    console(f"{CONFIG_FILE}: inheritFeatures feature {feat} unknown")
+                    console("watm settings: inheritFeatures feature {feat} unknown")
                     self.error = True
 
         if not silent:

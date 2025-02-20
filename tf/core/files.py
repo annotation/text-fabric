@@ -750,11 +750,15 @@ def readJson(text=None, plain=False, asFile=None, preferTuples=False):
     if asFile is None:
         cfg = json.loads(text)
     else:
-        if fileExists(asFile):
-            with fileOpen(asFile) as fh:
-                cfg = json.load(fh)
+        if type(asFile) is str:
+            if fileExists(asFile):
+                with fileOpen(asFile) as fh:
+                    cfg = json.load(fh)
+            else:
+                cfg = {}
         else:
-            cfg = {}
+            # in this case asFile should be a file handle
+            cfg = json.load(asFile)
 
     return cfg if plain else deepAttrDict(cfg, preferTuples=preferTuples)
 

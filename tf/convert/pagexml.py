@@ -17,10 +17,10 @@ from ..core.files import (
     writeYaml,
     expanduser as ex,
     unexpanduser as ux,
-    APP_CONFIG
+    APP_CONFIG,
 )
 from ..core.generic import AttrDict
-from ..core.helpers import console, versionSort, mergeDict
+from ..core.helpers import console, versionSort, mergeDict, readCfg
 from ..core.timestamp import AUTO, DEEP, TERSE
 from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
@@ -322,7 +322,7 @@ class PageXML(CheckImport):
                     "Not working in a repo: "
                     f"backend={backend} org={org} repo={repo} relative={relative}"
                 ),
-                error=True
+                error=True,
             )
             self.good = False
             return
@@ -335,9 +335,12 @@ class PageXML(CheckImport):
         base = ex(f"~/{backend}")
         repoDir = f"{base}/{org}/{repo}"
         refDir = f"{repoDir}{relative}"
-        convertSpec = f"{refDir}/pagexml.yaml"
 
-        settings = readYaml(asFile=convertSpec, plain=False)
+        (ok, settings) = readCfg(
+            refDir, "pagexml", "conversion", verbose=verbose, plain=False
+        )
+        if not ok:
+            self.error = True
 
         self.settings = settings
 
@@ -358,11 +361,13 @@ class PageXML(CheckImport):
                 absIndex = sourceIndex + (nSourceVersions if sourceIndex < 0 else 0) + 1
                 console(
                     (
-                        f"no item in {absIndex} in {nSourceVersions} source versions "
-                        f"in {ux(metaDir)}"
-                    )
-                    if len(sourceVersions)
-                    else f"no source versions in {ux(metaDir)}",
+                        (
+                            f"no item in {absIndex} in {nSourceVersions} source versions "
+                            f"in {ux(metaDir)}"
+                        )
+                        if len(sourceVersions)
+                        else f"no source versions in {ux(metaDir)}"
+                    ),
                     error=True,
                 )
                 self.good = False
@@ -385,9 +390,11 @@ class PageXML(CheckImport):
         sourceStatusRep = (
             "most recent"
             if sourceStatus == 0
-            else "previous"
-            if sourceStatus == 1
-            else f"{sourceStatus - 1} before previous"
+            else (
+                "previous"
+                if sourceStatus == 1
+                else f"{sourceStatus - 1} before previous"
+            )
         )
         if sourceStatus == len(sourceVersions) - 1 and len(sourceVersions) > 1:
             sourceStatusRep = "oldest"

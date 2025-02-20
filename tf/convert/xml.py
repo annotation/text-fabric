@@ -159,7 +159,7 @@ from ..convert.walker import CV
 from ..core.timestamp import AUTO, DEEP, TERSE
 from ..core.text import DEFAULT_FORMAT
 from ..core.command import readArgs
-from ..core.helpers import mergeDict
+from ..core.helpers import mergeDict, readCfg
 from ..core.files import (
     fileOpen,
     abspath,
@@ -176,7 +176,7 @@ from ..core.files import (
     scanDir,
     readYaml,
     writeYaml,
-    APP_CONFIG
+    APP_CONFIG,
 )
 
 TASKS_EXCLUDED = {"apptoken", "browse"}
@@ -370,14 +370,17 @@ class XML(CheckImport):
         repoDir = f"{base}/{org}/{repo}"
         refDir = f"{repoDir}{relative}"
         programDir = f"{refDir}/programs"
-        convertSpec = f"{programDir}/xml.yaml"
         convertCustom = f"{programDir}/xml.py"
 
         sourceRefDir = sourceBase if sourceBase else refDir
         xmlDir = f"{sourceRefDir}/xml"
         reportDir = reportDir if reportDir else f"{sourceRefDir}/report"
 
-        settings = readYaml(asFile=convertSpec, plain=True)
+        (ok, settings) = readCfg(
+            refDir, "xml", "conversion", verbose=verbose, plain=True
+        )
+        if not ok:
+            self.good = False
 
         self.transform = None
         if fileExists(convertCustom):
@@ -418,11 +421,13 @@ class XML(CheckImport):
                 absIndex = xmlIndex + (nXmlVersions if xmlIndex < 0 else 0) + 1
                 console(
                     (
-                        f"no item in {absIndex} in {nXmlVersions} source versions "
-                        f"in {ux(xmlDir)}"
-                    )
-                    if len(xmlVersions)
-                    else f"no source versions in {ux(xmlDir)}",
+                        (
+                            f"no item in {absIndex} in {nXmlVersions} source versions "
+                            f"in {ux(xmlDir)}"
+                        )
+                        if len(xmlVersions)
+                        else f"no source versions in {ux(xmlDir)}"
+                    ),
                     error=True,
                 )
                 self.good = False
@@ -446,9 +451,7 @@ class XML(CheckImport):
         xmlStatusRep = (
             "most recent"
             if xmlStatus == 0
-            else "previous"
-            if xmlStatus == 1
-            else f"{xmlStatus - 1} before previous"
+            else "previous" if xmlStatus == 1 else f"{xmlStatus - 1} before previous"
         )
         if xmlStatus == len(xmlVersions) - 1 and len(xmlVersions) > 1:
             xmlStatusRep = "oldest"
@@ -678,9 +681,11 @@ class XML(CheckImport):
                                 dest[tag][k][w.strip()] += 1
 
                 for child in xnode.iterchildren(
-                    tag=(etree.Element, etree.ProcessingInstruction)
-                    if procins
-                    else etree.Element
+                    tag=(
+                        (etree.Element, etree.ProcessingInstruction)
+                        if procins
+                        else etree.Element
+                    )
                 ):
                     nodeInfo(child)
 
@@ -1107,11 +1112,11 @@ class XML(CheckImport):
                 targetText = (
                     createConfig
                     if name == "config"
-                    else createApp
-                    if name == "app"
-                    else createDisplay
-                    if name == "display"
-                    else fileCopy  # this cannot occur because justCopy is False
+                    else (
+                        createApp
+                        if name == "app"
+                        else createDisplay if name == "display" else fileCopy
+                    )  # this cannot occur because justCopy is False
                 )(sourceText, customText)
 
                 if targetText is None:

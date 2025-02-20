@@ -9,7 +9,7 @@ from datetime import datetime as dt, UTC
 
 
 from ..parameters import OMAP
-from .files import unexpanduser as ux
+from .files import readYaml, unexpanduser as ux
 
 
 NBSP = "\u00a0"  # non-breaking space
@@ -700,3 +700,18 @@ def run(cmdline, workDir=None):
         good = False
 
     return (good, returnCode, stdOut, stdErr)
+
+
+def readCfg(folder, file, label, verbose=0, **kwargs):
+    settingsFile = f"{folder}/config/{file}.yml"
+    settings = readYaml(asFile=settingsFile, **kwargs)
+
+    if settings:
+        if verbose == 1:
+            console(f"{label} settings read from {settingsFile}")
+        good = True
+    else:
+        console(f"No {label} settings found, looked for {settingsFile}", error=True)
+        good = False
+
+    return (good, settings)

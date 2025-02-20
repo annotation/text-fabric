@@ -670,7 +670,7 @@ from .helpers import (
 )
 from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
-from ..core.helpers import console, versionSort, mergeDict
+from ..core.helpers import console, versionSort, mergeDict, readCfg
 from ..convert.walker import CV
 from ..core.timestamp import AUTO, DEEP, TERSE
 from ..core.command import readArgs
@@ -1139,7 +1139,6 @@ class TEI(CheckImport):
 
         refDir = f"{repoDir}{relative}"
         programDir = f"{refDir}/programs"
-        convertSpec = f"{programDir}/tei.yaml"
         convertCustom = f"{programDir}/tei.py"
 
         sourceRefDir = sourceBase if sourceBase else refDir
@@ -1148,7 +1147,11 @@ class TEI(CheckImport):
         schemaDir = f"{sourceRefDir}/schema"
         self.schemaDir = schemaDir
 
-        settings = readYaml(asFile=convertSpec, plain=True)
+        (ok, settings) = readCfg(
+            refDir, "tei", "conversion", verbose=verbose, plain=True
+        )
+        if not ok:
+            self.good = False
 
         customKeys = set(
             """

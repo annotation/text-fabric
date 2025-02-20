@@ -717,8 +717,9 @@ def parseIIIF(settings, prod, selector):
     """
 
     def applySwitches(prod, constants, switches):
-        for k, v in switches["prod" if prod else "dev"].items():
-            constants[k] = v
+        if len(switches):
+            for k, v in switches["prod" if prod else "dev"].items():
+                constants[k] = v
 
         return constants
 
@@ -751,8 +752,12 @@ def parseIIIF(settings, prod, selector):
 
         return data
 
-    constants = applySwitches(prod, settings["constants"], settings["switches"])
-    macros = applySwitches(prod, settings["macros"], settings["switches"])
+    constants = applySwitches(
+        prod, settings.get("constants", {}), settings.get("switches", {})
+    )
+    macros = applySwitches(
+        prod, settings.get("macros", {}), settings.get("switches", {})
+    )
 
     return AttrDict(
         {
