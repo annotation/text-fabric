@@ -505,7 +505,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2b3d73d18f475ccc5eed4dce83712d5fff77de73/tf/convert/tei.py#L1-L5111" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/2b3d73d18f475ccc5eed4dce83712d5fff77de73/tf/convert/tei.py#L1-L5125" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -2200,6 +2200,9 @@ class TEI(CheckImport):
                 result = A.fromrelax(schemaFiles[&#34;rng&#34;][model], schemaFileXsd)
 
                 if not result:
+                    console(
+                        f&#34;Could not convert relax schema {model} to xsd&#34;, error=True
+                    )
                     self.good = False
 
                     if result is None:
@@ -2620,7 +2623,7 @@ class TEI(CheckImport):
                     if validate:
                         console(&#34;Validation OK&#34;)
                     else:
-                        console(&#34;No validation performed&#34;)
+                        console(&#34;No validation performed&#34;, error=True)
 
         def writeNamespaces():
             errorFile = f&#34;{reportPath}/namespaces.txt&#34;
@@ -2653,10 +2656,13 @@ class TEI(CheckImport):
                     console(f&#34;{nProcins} processing instruction{plural} encountered.&#34;)
 
                 console(
-                    f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
-                    f&#34;written to {errorFile}&#34;
-                    if verbose &gt;= 0 or nErrors
-                    else &#34;Namespaces OK&#34;
+                    (
+                        f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
+                        f&#34;written to {errorFile}&#34;
+                        if verbose &gt;= 0 or nErrors
+                        else &#34;Namespaces OK&#34;
+                    ),
+                    error=nErrors &gt; 0,
                 )
 
         def writeReport():
@@ -3565,6 +3571,14 @@ class TEI(CheckImport):
 
             Chunks are the immediate children of the chapters, and they come in two
             kinds: the ones that are `&lt;p&gt;` elements, and the rest.
+
+            !!! note
+                This should be changed ... because we can have multiple level of
+                `&lt;div&gt;` elements.
+                The most generic is: the chapter level is the level of the top-level
+                divs, en the chunk level is the level of paragraphs.
+                The difficulty is when there is meterial outside the toplevel divs.
+                And the other difficulty is: how do we know that we are at chunk level?
 
             Deviation from this rule:
 
@@ -5783,7 +5797,7 @@ and the current directory is not used to determine them.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2b3d73d18f475ccc5eed4dce83712d5fff77de73/tf/convert/tei.py#L934-L5094" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/2b3d73d18f475ccc5eed4dce83712d5fff77de73/tf/convert/tei.py#L934-L5108" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI(CheckImport):
     def __init__(
@@ -6545,6 +6559,9 @@ and the current directory is not used to determine them.</dd>
                 result = A.fromrelax(schemaFiles[&#34;rng&#34;][model], schemaFileXsd)
 
                 if not result:
+                    console(
+                        f&#34;Could not convert relax schema {model} to xsd&#34;, error=True
+                    )
                     self.good = False
 
                     if result is None:
@@ -6965,7 +6982,7 @@ and the current directory is not used to determine them.</dd>
                     if validate:
                         console(&#34;Validation OK&#34;)
                     else:
-                        console(&#34;No validation performed&#34;)
+                        console(&#34;No validation performed&#34;, error=True)
 
         def writeNamespaces():
             errorFile = f&#34;{reportPath}/namespaces.txt&#34;
@@ -6998,10 +7015,13 @@ and the current directory is not used to determine them.</dd>
                     console(f&#34;{nProcins} processing instruction{plural} encountered.&#34;)
 
                 console(
-                    f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
-                    f&#34;written to {errorFile}&#34;
-                    if verbose &gt;= 0 or nErrors
-                    else &#34;Namespaces OK&#34;
+                    (
+                        f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
+                        f&#34;written to {errorFile}&#34;
+                        if verbose &gt;= 0 or nErrors
+                        else &#34;Namespaces OK&#34;
+                    ),
+                    error=nErrors &gt; 0,
                 )
 
         def writeReport():
@@ -7910,6 +7930,14 @@ and the current directory is not used to determine them.</dd>
 
             Chunks are the immediate children of the chapters, and they come in two
             kinds: the ones that are `&lt;p&gt;` elements, and the rest.
+
+            !!! note
+                This should be changed ... because we can have multiple level of
+                `&lt;div&gt;` elements.
+                The most generic is: the chapter level is the level of the top-level
+                divs, en the chunk level is the level of paragraphs.
+                The difficulty is when there is meterial outside the toplevel divs.
+                And the other difficulty is: how do we know that we are at chunk level?
 
             Deviation from this rule:
 

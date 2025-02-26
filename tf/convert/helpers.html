@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2b3d73d18f475ccc5eed4dce83712d5fff77de73/tf/convert/helpers.py#L1-L834" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/2b3d73d18f475ccc5eed4dce83712d5fff77de73/tf/convert/helpers.py#L1-L838" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from textwrap import dedent
@@ -725,7 +725,11 @@ def lookupSource(cv, cur, tokenAsSlot, specs):
         if not ok:
             continue
 
-        targetNode = cur[NODE][nodeType]
+        targetNode = cur[NODE].get(nodeType, None)
+
+        if targetNode is None:
+            return
+
         sourceNode = cur[TNEST][-1]
         slots = cv.linked(sourceNode)
         sourceText = (

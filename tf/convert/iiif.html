@@ -31,12 +31,13 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2b3d73d18f475ccc5eed4dce83712d5fff77de73/tf/convert/iiif.py#L1-L247" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/2b3d73d18f475ccc5eed4dce83712d5fff77de73/tf/convert/iiif.py#L1-L289" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.files import (
     readJson,
     writeJson,
     fileOpen,
+    fileExists,
     initTree,
     dirExists,
     dirCopy,
@@ -73,12 +74,23 @@ class IIIF:
         self.scanDir = scanDir
         coversDir = f&#34;{scanDir}/covers&#34;
         self.coversDir = coversDir
+
+        if dirExists(coversDir):
+            self.console(f&#34;Found covers in directory: {coversDir}&#34;)
+            doCovers = True
+        else:
+            self.console(f&#34;No cover directory: {coversDir}&#34;)
+            doCovers = False
+
+        self.doCovers = doCovers
+
         self.pagesDir = f&#34;{scanDir}/pages&#34;
         self.logoInDir = f&#34;{scanDir}/logo&#34;
         self.logoDir = f&#34;{staticDir}/logo&#34;
 
-        self.coversHtmlIn = f&#34;{repoLocation}/programs/covers.html&#34;
-        self.coversHtmlOut = f&#34;{staticDir}/covers.html&#34;
+        if doCovers:
+            self.coversHtmlIn = f&#34;{repoLocation}/programs/covers.html&#34;
+            self.coversHtmlOut = f&#34;{staticDir}/covers.html&#34;
 
         (ok, settings) = readCfg(
             repoLocation, &#34;iiif&#34;, &#34;IIIF&#34;, verbose=-1 if silent else 1, plain=True
@@ -89,12 +101,12 @@ class IIIF:
 
         self.settings = settings
         self.templates = parseIIIF(settings, prod, &#34;templates&#34;)
+        folders = [F.folder.v(f) for f in F.otype.s(&#34;folder&#34;)]
 
         self.getSizes()
         self.getRotations()
-        self.getPageSeq()
+        self.getPageSeq(folders)
         pages = self.pages
-        folders = [F.folder.v(f) for f in F.otype.s(&#34;folder&#34;)]
         self.folders = folders
 
         self.console(&#34;Collections:&#34;)
@@ -128,6 +140,10 @@ class IIIF:
         rotateInfo = {}
         self.rotateInfo = rotateInfo
 
+        if not fileExists(rotateFile):
+            console(f&#34;Rotation file not found: {rotateFile}&#34;, error=True)
+            return
+
         with fileOpen(rotateFile) as rh:
             next(rh)
             for line in rh:
@@ -143,10 +159,11 @@ class IIIF:
         prod = self.prod
         thumbDir = self.thumbDir
         scanDir = self.scanDir
+        doCovers = self.doCovers
 
         self.sizeInfo = {}
 
-        for kind in (&#34;covers&#34;, &#34;pages&#34;):
+        for kind in (&#34;covers&#34;, &#34;pages&#34;) if doCovers else (&#34;pages&#34;,):
             sizeFile = f&#34;{scanDir if prod else thumbDir}/sizes_{kind}.tsv&#34;
 
             sizeInfo = {}
@@ -159,6 +176,10 @@ class IIIF:
             totW, totH = 0, 0
 
             ws, hs = [], []
+
+            if not fileExists(sizeFile):
+                console(f&#34;Size file not found: {sizeFile}&#34;, error=True)
+                return
 
             with fileOpen(sizeFile) as rh:
                 next(rh)
@@ -188,20 +209,37 @@ class IIIF:
             self.console(f&#34;Average dimensions: W = {avW:&gt;4} H = {avH:&gt;4}&#34;)
             self.console(f&#34;Average deviation:  W = {devW:&gt;4} H = {devH:&gt;4}&#34;)
 
-    def getPageSeq(self):
+    def getPageSeq(self, folders):
         if self.error:
             return
 
-        coversDir = self.coversDir
+        doCovers = self.doCovers
+
+        if doCovers:
+            coversDir = self.coversDir
+            covers = sorted(
+                stripExt(f) for f in dirContents(coversDir)[0] if f is not DS_STORE
+            )
+            self.covers = covers
+
         pageInfoFile = self.pageInfoFile
 
-        covers = sorted(
-            stripExt(f) for f in dirContents(coversDir)[0] if f is not DS_STORE
-        )
-        self.covers = covers
-        self.pages = dict(
-            pages=readJson(asFile=pageInfoFile, plain=True), covers=dict(covers=covers)
-        )
+        if fileExists(pageInfoFile):
+            self.pages = dict(pages=readJson(asFile=pageInfoFile, plain=True))
+        else:
+            console(
+                f&#34;No page info file {pageInfoFile}, working with dummy page sequence&#34;,
+                error=True,
+            )
+            self.pages = dict(
+                pages={
+                    folder: [f&#34;page_{i:&gt;03}&#34; for i in range(1, 11)]
+                    for folder in folders
+                }
+            )
+
+        if doCovers:
+            self.pages[&#34;covers&#34;] = covers
 
     def genPages(self, kind, folder=None):
         if self.error:
@@ -253,23 +291,27 @@ class IIIF:
         manifestDir = self.manifestDir
         logoInDir = self.logoInDir
         logoDir = self.logoDir
-        coversHtmlIn = self.coversHtmlIn
-        coversHtmlOut = self.coversHtmlOut
+        doCovers = self.doCovers
+
         prod = self.prod
         settings = self.settings
-
-        with fileOpen(coversHtmlIn) as fh:
-            coversHtml = fh.read()
-
         server = settings[&#34;switches&#34;][&#34;prod&#34; if prod else &#34;dev&#34;][&#34;server&#34;]
-        coversHtml = coversHtml.replace(&#34;«server»&#34;, server)
-
-        with fileOpen(coversHtmlOut, &#34;w&#34;) as fh:
-            fh.write(coversHtml)
 
         initTree(manifestDir, fresh=True)
 
-        self.genPages(&#34;covers&#34;)
+        if doCovers:
+            coversHtmlIn = self.coversHtmlIn
+            coversHtmlOut = self.coversHtmlOut
+
+            with fileOpen(coversHtmlIn) as fh:
+                coversHtml = fh.read()
+
+            coversHtml = coversHtml.replace(&#34;«server»&#34;, server)
+
+            with fileOpen(coversHtmlOut, &#34;w&#34;) as fh:
+                fh.write(coversHtml)
+
+            self.genPages(&#34;covers&#34;)
 
         for folder in folders:
             self.genPages(&#34;pages&#34;, folder=folder)
@@ -300,7 +342,7 @@ class IIIF:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2b3d73d18f475ccc5eed4dce83712d5fff77de73/tf/convert/iiif.py#L17-L247" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/2b3d73d18f475ccc5eed4dce83712d5fff77de73/tf/convert/iiif.py#L18-L289" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class IIIF:
     def __init__(self, teiVersion, app, pageInfoFile, prod=False, silent=False):
@@ -326,12 +368,23 @@ class IIIF:
         self.scanDir = scanDir
         coversDir = f&#34;{scanDir}/covers&#34;
         self.coversDir = coversDir
+
+        if dirExists(coversDir):
+            self.console(f&#34;Found covers in directory: {coversDir}&#34;)
+            doCovers = True
+        else:
+            self.console(f&#34;No cover directory: {coversDir}&#34;)
+            doCovers = False
+
+        self.doCovers = doCovers
+
         self.pagesDir = f&#34;{scanDir}/pages&#34;
         self.logoInDir = f&#34;{scanDir}/logo&#34;
         self.logoDir = f&#34;{staticDir}/logo&#34;
 
-        self.coversHtmlIn = f&#34;{repoLocation}/programs/covers.html&#34;
-        self.coversHtmlOut = f&#34;{staticDir}/covers.html&#34;
+        if doCovers:
+            self.coversHtmlIn = f&#34;{repoLocation}/programs/covers.html&#34;
+            self.coversHtmlOut = f&#34;{staticDir}/covers.html&#34;
 
         (ok, settings) = readCfg(
             repoLocation, &#34;iiif&#34;, &#34;IIIF&#34;, verbose=-1 if silent else 1, plain=True
@@ -342,12 +395,12 @@ class IIIF:
 
         self.settings = settings
         self.templates = parseIIIF(settings, prod, &#34;templates&#34;)
+        folders = [F.folder.v(f) for f in F.otype.s(&#34;folder&#34;)]
 
         self.getSizes()
         self.getRotations()
-        self.getPageSeq()
+        self.getPageSeq(folders)
         pages = self.pages
-        folders = [F.folder.v(f) for f in F.otype.s(&#34;folder&#34;)]
         self.folders = folders
 
         self.console(&#34;Collections:&#34;)
@@ -381,6 +434,10 @@ class IIIF:
         rotateInfo = {}
         self.rotateInfo = rotateInfo
 
+        if not fileExists(rotateFile):
+            console(f&#34;Rotation file not found: {rotateFile}&#34;, error=True)
+            return
+
         with fileOpen(rotateFile) as rh:
             next(rh)
             for line in rh:
@@ -396,10 +453,11 @@ class IIIF:
         prod = self.prod
         thumbDir = self.thumbDir
         scanDir = self.scanDir
+        doCovers = self.doCovers
 
         self.sizeInfo = {}
 
-        for kind in (&#34;covers&#34;, &#34;pages&#34;):
+        for kind in (&#34;covers&#34;, &#34;pages&#34;) if doCovers else (&#34;pages&#34;,):
             sizeFile = f&#34;{scanDir if prod else thumbDir}/sizes_{kind}.tsv&#34;
 
             sizeInfo = {}
@@ -412,6 +470,10 @@ class IIIF:
             totW, totH = 0, 0
 
             ws, hs = [], []
+
+            if not fileExists(sizeFile):
+                console(f&#34;Size file not found: {sizeFile}&#34;, error=True)
+                return
 
             with fileOpen(sizeFile) as rh:
                 next(rh)
@@ -441,20 +503,37 @@ class IIIF:
             self.console(f&#34;Average dimensions: W = {avW:&gt;4} H = {avH:&gt;4}&#34;)
             self.console(f&#34;Average deviation:  W = {devW:&gt;4} H = {devH:&gt;4}&#34;)
 
-    def getPageSeq(self):
+    def getPageSeq(self, folders):
         if self.error:
             return
 
-        coversDir = self.coversDir
+        doCovers = self.doCovers
+
+        if doCovers:
+            coversDir = self.coversDir
+            covers = sorted(
+                stripExt(f) for f in dirContents(coversDir)[0] if f is not DS_STORE
+            )
+            self.covers = covers
+
         pageInfoFile = self.pageInfoFile
 
-        covers = sorted(
-            stripExt(f) for f in dirContents(coversDir)[0] if f is not DS_STORE
-        )
-        self.covers = covers
-        self.pages = dict(
-            pages=readJson(asFile=pageInfoFile, plain=True), covers=dict(covers=covers)
-        )
+        if fileExists(pageInfoFile):
+            self.pages = dict(pages=readJson(asFile=pageInfoFile, plain=True))
+        else:
+            console(
+                f&#34;No page info file {pageInfoFile}, working with dummy page sequence&#34;,
+                error=True,
+            )
+            self.pages = dict(
+                pages={
+                    folder: [f&#34;page_{i:&gt;03}&#34; for i in range(1, 11)]
+                    for folder in folders
+                }
+            )
+
+        if doCovers:
+            self.pages[&#34;covers&#34;] = covers
 
     def genPages(self, kind, folder=None):
         if self.error:
@@ -506,23 +585,27 @@ class IIIF:
         manifestDir = self.manifestDir
         logoInDir = self.logoInDir
         logoDir = self.logoDir
-        coversHtmlIn = self.coversHtmlIn
-        coversHtmlOut = self.coversHtmlOut
+        doCovers = self.doCovers
+
         prod = self.prod
         settings = self.settings
-
-        with fileOpen(coversHtmlIn) as fh:
-            coversHtml = fh.read()
-
         server = settings[&#34;switches&#34;][&#34;prod&#34; if prod else &#34;dev&#34;][&#34;server&#34;]
-        coversHtml = coversHtml.replace(&#34;«server»&#34;, server)
-
-        with fileOpen(coversHtmlOut, &#34;w&#34;) as fh:
-            fh.write(coversHtml)
 
         initTree(manifestDir, fresh=True)
 
-        self.genPages(&#34;covers&#34;)
+        if doCovers:
+            coversHtmlIn = self.coversHtmlIn
+            coversHtmlOut = self.coversHtmlOut
+
+            with fileOpen(coversHtmlIn) as fh:
+                coversHtml = fh.read()
+
+            coversHtml = coversHtml.replace(&#34;«server»&#34;, server)
+
+            with fileOpen(coversHtmlOut, &#34;w&#34;) as fh:
+                fh.write(coversHtml)
+
+            self.genPages(&#34;covers&#34;)
 
         for folder in folders:
             self.genPages(&#34;pages&#34;, folder=folder)
@@ -551,7 +634,7 @@ class IIIF:
 <div class="desc"></div>
 </dd>
 <dt id="tf.convert.iiif.IIIF.getPageSeq"><code class="name flex">
-<span>def <span class="ident">getPageSeq</span></span>(<span>self)</span>
+<span>def <span class="ident">getPageSeq</span></span>(<span>self, folders)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
