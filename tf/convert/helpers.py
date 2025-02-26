@@ -690,7 +690,11 @@ def lookupSource(cv, cur, tokenAsSlot, specs):
         if not ok:
             continue
 
-        targetNode = cur[NODE][nodeType]
+        targetNode = cur[NODE].get(nodeType, None)
+
+        if targetNode is None:
+            return
+
         sourceNode = cur[TNEST][-1]
         slots = cv.linked(sourceNode)
         sourceText = (

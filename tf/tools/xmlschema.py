@@ -746,7 +746,7 @@ class Analysis(CheckImport):
             if verbose >= 0 or not good:
                 console(stdErr, error=True)
 
-        if returnCode != 1:
+        if returnCode not in {0, 1}:
             severeError = True
 
         return None if severeError else good

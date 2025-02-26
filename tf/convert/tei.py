@@ -1691,6 +1691,9 @@ class TEI(CheckImport):
                 result = A.fromrelax(schemaFiles["rng"][model], schemaFileXsd)
 
                 if not result:
+                    console(
+                        f"Could not convert relax schema {model} to xsd", error=True
+                    )
                     self.good = False
 
                     if result is None:
@@ -2111,7 +2114,7 @@ class TEI(CheckImport):
                     if validate:
                         console("Validation OK")
                     else:
-                        console("No validation performed")
+                        console("No validation performed", error=True)
 
         def writeNamespaces():
             errorFile = f"{reportPath}/namespaces.txt"
@@ -2144,10 +2147,13 @@ class TEI(CheckImport):
                     console(f"{nProcins} processing instruction{plural} encountered.")
 
                 console(
-                    f"{nTags} tags of which {nErrors} with multiple namespaces "
-                    f"written to {errorFile}"
-                    if verbose >= 0 or nErrors
-                    else "Namespaces OK"
+                    (
+                        f"{nTags} tags of which {nErrors} with multiple namespaces "
+                        f"written to {errorFile}"
+                        if verbose >= 0 or nErrors
+                        else "Namespaces OK"
+                    ),
+                    error=nErrors > 0,
                 )
 
         def writeReport():
@@ -3056,6 +3062,14 @@ class TEI(CheckImport):
 
             Chunks are the immediate children of the chapters, and they come in two
             kinds: the ones that are `<p>` elements, and the rest.
+
+            !!! note
+                This should be changed ... because we can have multiple level of
+                `<div>` elements.
+                The most generic is: the chapter level is the level of the top-level
+                divs, en the chunk level is the level of paragraphs.
+                The difficulty is when there is meterial outside the toplevel divs.
+                And the other difficulty is: how do we know that we are at chunk level?
 
             Deviation from this rule:
 
