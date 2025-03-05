@@ -1,5 +1,6 @@
 from ..core.files import (
     readJson,
+    readYaml,
     writeJson,
     fileOpen,
     fileExists,
@@ -9,17 +10,98 @@ from ..core.files import (
     dirContents,
     stripExt,
 )
+from ..core.generic import AttrDict
 from ..core.helpers import console, readCfg
-from .helpers import parseIIIF, fillinIIIF
 
 DS_STORE = ".DS_Store"
 
 
+def fillinIIIF(data, **kwargs):
+    tpd = type(data)
+
+    if tpd is str:
+        for k, v in kwargs.items():
+            pattern = "{" + k + "}"
+
+            if type(v) is int and data == pattern:
+                data = v
+                break
+            else:
+                data = data.replace(pattern, str(v))
+
+        return data
+
+    if tpd is list:
+        return [fillinIIIF(item, **kwargs) for item in data]
+
+    if tpd is dict:
+        return {k: fillinIIIF(v, **kwargs) for (k, v) in data.items()}
+
+    return data
+
+
+def parseIIIF(settings, prod, selector):
+    """Parse the iiif yml file.
+
+    We fill in the parameters.
+    """
+
+    def applySwitches(prod, constants, switches):
+        if len(switches):
+            for k, v in switches["prod" if prod else "dev"].items():
+                constants[k] = v
+
+        return constants
+
+    def substituteConstants(data, macros, constants):
+        tpd = type(data)
+
+        if tpd is str:
+            for k, v in macros.items():
+                pattern = f"<{k}>"
+                data = data.replace(pattern, str(v))
+
+            for k, v in constants.items():
+                pattern = f"«{k}»"
+
+                if type(v) is int and data == pattern:
+                    data = v
+                    break
+                else:
+                    data = data.replace(pattern, str(v))
+
+            return data
+
+        if tpd is list:
+            return [substituteConstants(item, macros, constants) for item in data]
+
+        if tpd is dict:
+            return {
+                k: substituteConstants(v, macros, constants) for (k, v) in data.items()
+            }
+
+        return data
+
+    constants = applySwitches(
+        prod, settings.get("constants", {}), settings.get("switches", {})
+    )
+    macros = applySwitches(
+        prod, settings.get("macros", {}), settings.get("switches", {})
+    )
+
+    return AttrDict(
+        {
+            x: substituteConstants(xText, macros, constants)
+            for (x, xText) in settings[selector].items()
+        }
+    )
+
+
 class IIIF:
-    def __init__(self, teiVersion, app, pageInfoFile, prod=False, silent=False):
+    def __init__(self, teiVersion, app, pageInfoDir, prod=False, silent=False):
         self.teiVersion = teiVersion
         self.app = app
-        self.pageInfoFile = pageInfoFile
+        self.pageInfoDir = pageInfoDir
         self.prod = prod
         self.silent = silent
         self.error = False
@@ -65,6 +147,17 @@ class IIIF:
             return
 
         self.settings = settings
+
+        (ok, teiSettings) = readCfg(
+            repoLocation, "tei", "TEI", verbose=-1 if silent else 1, plain=False
+        )
+        zoneBased = False
+
+        if ok and teiSettings.zoneBased is not None:
+            zoneBased = teiSettings.zoneBased
+
+        self.zoneBased = zoneBased
+
         self.templates = parseIIIF(settings, prod, "templates")
         folders = [F.folder.v(f) for f in F.otype.s("folder")]
 
@@ -106,7 +199,7 @@ class IIIF:
         self.rotateInfo = rotateInfo
 
         if not fileExists(rotateFile):
-            console(f"Rotation file not found: {rotateFile}", error=True)
+            console(f"Rotation file not found: {rotateFile}")
             return
 
         with fileOpen(rotateFile) as rh:
@@ -179,6 +272,7 @@ class IIIF:
             return
 
         doCovers = self.doCovers
+        zoneBased = self.zoneBased
 
         if doCovers:
             coversDir = self.coversDir
@@ -187,13 +281,48 @@ class IIIF:
             )
             self.covers = covers
 
-        pageInfoFile = self.pageInfoFile
+        pageInfoDir = self.pageInfoDir
+        pageInfoFile = f"{pageInfoDir}/pageseq.json"
+        facsFile = f"{pageInfoDir}/facs.yml"
+
+        pages = None
 
         if fileExists(pageInfoFile):
-            self.pages = dict(pages=readJson(asFile=pageInfoFile, plain=True))
+            console(f"Using page info file {pageInfoFile}")
+            pages = readJson(asFile=pageInfoFile, plain=True)
+        elif fileExists(facsFile):
+            console(f"Using facs file info file {facsFile}")
+            pagesProto = readYaml(asFile=facsFile, plain=True, preferTuples=False)
+            pages = {}
+
+            if zoneBased:
+                facsMappingFile = f"{pageInfoDir}/facsMapping.yml"
+
+                if fileExists(facsMappingFile):
+                    console(f"Using facs mapping file {facsMappingFile}")
+                    facsMapping = readYaml(
+                        asFile=facsMappingFile, plain=True, preferTuples=False
+                    )
+
+                    for path, ps in pagesProto.items():
+                        folder = path.split("/")[0]
+                        mapping = facsMapping.get(path, {})
+                        pages.setdefault(folder, []).extend(
+                            [mapping.get(p, p) for p in ps]
+                        )
+                else:
+                    console(f"No facs mapping file {facsMappingFile}", error=True)
+            else:
+                for path, ps in pagesProto.items():
+                    (folder, file) = path.split("/")
+                    pages.setdefault(folder, []).extend(ps)
         else:
+            console("No page-facsimile relating information found", error=True)
+
+        if pages is None:
             console(
-                f"No page info file {pageInfoFile}, working with dummy page sequence",
+                "Could not assemble page sequence info, "
+                "working with dummy page sequence",
                 error=True,
             )
             self.pages = dict(
@@ -202,6 +331,8 @@ class IIIF:
                     for folder in folders
                 }
             )
+        else:
+            self.pages = dict(pages=pages)
 
         if doCovers:
             self.pages["covers"] = covers
@@ -210,13 +341,16 @@ class IIIF:
         if self.error:
             return
 
-        if kind == "covers":
-            folder = kind
+        zoneBased = self.zoneBased
+
         templates = self.templates
         sizeInfo = self.sizeInfo[kind]
         rotateInfo = None if kind == "covers" else self.rotateInfo
         pages = self.pages[kind]
-        thesePages = pages[folder]
+        thesePages = pages if folder is None else pages[folder]
+
+        if kind == "covers":
+            folder = "covers"
 
         pageItem = templates.coverItem if kind == "covers" else templates.pageItem
 
@@ -227,8 +361,15 @@ class IIIF:
             w, h = sizeInfo.get(p, (0, 0))
             rot = 0 if rotateInfo is None else rotateInfo.get(p, 0)
 
+            if zoneBased:
+                (p, region) = p.split("«»")
+            else:
+                region = "full"
+
             for k, v in pageItem.items():
-                v = fillinIIIF(v, folder=folder, page=p, width=w, height=h, rot=rot)
+                v = fillinIIIF(
+                    v, folder=folder, page=p, region=region, width=w, height=h, rot=rot
+                )
                 item[k] = v
 
             items.append(item)

@@ -492,7 +492,8 @@ from ..core.timestamp import DEEP
 from ..parameters import OTYPE, OSLOTS, URL_TF_DOCS
 from ..app import use
 
-from .helpers import parseIIIF, operationalize
+from .iiif import parseIIIF
+from .helpers import operationalize
 
 AFTER = "after"
 STR = "str"

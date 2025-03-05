@@ -2,7 +2,6 @@ import re
 from textwrap import dedent
 
 from ..core.helpers import console
-from ..core.generic import AttrDict
 
 
 PRE = "pre"
@@ -180,7 +179,8 @@ That information ends up in two keys:
 
 The TEI conversion is customizable by providing your own methods to several hooks
 in the program. These hooks may generate extra features, which you can give metadata
-in the `tei.yaml` file next to the `tei.py` file where you define the custom functions.
+in the `config/tei.yml` file close to the `programs/tei.py` file where you
+define the custom functions.
 
 It is advised to state appropriate values for the `conversionMethod` and
 `conversionCode` fields of these features.
@@ -714,63 +714,6 @@ def lookupSource(cv, cur, tokenAsSlot, specs):
         cv.feature(targetNode, **source)
 
 
-def parseIIIF(settings, prod, selector):
-    """Parse the iiif yaml file.
-
-    We fill in the parameters.
-    """
-
-    def applySwitches(prod, constants, switches):
-        if len(switches):
-            for k, v in switches["prod" if prod else "dev"].items():
-                constants[k] = v
-
-        return constants
-
-    def substituteConstants(data, macros, constants):
-        tpd = type(data)
-
-        if tpd is str:
-            for k, v in macros.items():
-                pattern = f"<{k}>"
-                data = data.replace(pattern, str(v))
-
-            for k, v in constants.items():
-                pattern = f"«{k}»"
-
-                if type(v) is int and data == pattern:
-                    data = v
-                    break
-                else:
-                    data = data.replace(pattern, str(v))
-
-            return data
-
-        if tpd is list:
-            return [substituteConstants(item, macros, constants) for item in data]
-
-        if tpd is dict:
-            return {
-                k: substituteConstants(v, macros, constants) for (k, v) in data.items()
-            }
-
-        return data
-
-    constants = applySwitches(
-        prod, settings.get("constants", {}), settings.get("switches", {})
-    )
-    macros = applySwitches(
-        prod, settings.get("macros", {}), settings.get("switches", {})
-    )
-
-    return AttrDict(
-        {
-            x: substituteConstants(xText, macros, constants)
-            for (x, xText) in settings[selector].items()
-        }
-    )
-
-
 def operationalize(data):
     scanInfo = {}
 
@@ -812,27 +755,3 @@ def operationalize(data):
             scanInfo.setdefault(nodeType, []).append((extraFeat, value, newVars))
 
     return scanInfo
-
-
-def fillinIIIF(data, **kwargs):
-    tpd = type(data)
-
-    if tpd is str:
-        for k, v in kwargs.items():
-            pattern = "{" + k + "}"
-
-            if type(v) is int and data == pattern:
-                data = v
-                break
-            else:
-                data = data.replace(pattern, str(v))
-
-        return data
-
-    if tpd is list:
-        return [fillinIIIF(item, **kwargs) for item in data]
-
-    if tpd is dict:
-        return {k: fillinIIIF(v, **kwargs) for (k, v) in data.items()}
-
-    return data

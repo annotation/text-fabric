@@ -33,14 +33,15 @@ that cannot be changed.
 
 # Configuration and customization
 
-We assume that you have a `programs` directory at the top-level of your repo.
-In this directory we'll look for two optional files:
+We assume that you have `config` and `programs` directories at the top-level of
+your repo.
+In these directories we'll look for two optional files:
 
-*   a file `tei.yaml` in which you specify a bunch of values to
+*   a file `config/tei.yml` in which you specify a bunch of values to
     get the conversion off the ground.
 
-*   a file `tei.py` in which you define custom functions that are executed at certain
-    specific hooks:
+*   a file `programs/tei.py` in which you define custom functions that are
+    executed at certain specific hooks:
 
     *   `transform(text)` which takes a text string argument and delivers a
         text string as result. The converter will call this on every TEI input
@@ -86,7 +87,7 @@ In this directory we'll look for two optional files:
             preceding TF nodes corresponding to the TEI sibling elements of the
             current TEI element.
 
-## Keys and values of the `tei.yaml` file
+## Keys and values of the `tei.yml` file
 
 ### `generic`
 
@@ -162,122 +163,6 @@ The meaning is:
 
         The identifier of a letter; the content is taken from sourceDesc/msDesc/msIdentifier/altIdentifier/idno[type=letterId]
 
-### `models`
-
-list, optional `[]`
-
-Which TEI-based schemas are to be used.
-For each model there should be an XSD or RNG file with that name in the `schema`
-directory. The `tei_all` schema is known to TF, no need to specify that one.
-
-We'll try a RelaxNG schema (`.rng`) first. If that exists, we use it for validation
-with JING, and we also convert it with TRANG to an XSD schema, which we use for
-analysing the schema: we want to know which elements are mixed and pure.
-
-If there is no RelaxNG schema, we try an XSD schema (`.xsd`). If that exists,
-we can do the analysis, and we will use it also for validation.
-
-!!! note "Problems with RelaxNG validation"
-    RelaxNG validation is not always reliable when performed with LXML, or any tool
-    based on `libxml`, for that matter. That's why we try to avoid it. Even if we
-    translate the RelaxNG schema to an XSD schema by means of TRANG, the resulting
-    validation is not always reliable. So we use JING to validate the RelaxNG schema.
-
-See also [JING-TRANG](https://code.google.com/archive/p/jing-trang/downloads).
-
-Suppose we have a model declared like so:
-
-```
-models:
-  - suriano
-```
-
-The model is typically referenced in the TEI source file like so (it calls for the
-`suriano` model):
-
-```
-<?xml-model
-    href="https://xmlschema.huygens.knaw.nl/suriano.rng"
-    type="application/xml"
-    schematypens="http://relaxng.org/ns/structure/1.0"
-?>
-```
-
-The convertor matches the `href` attribute with the `suriano` model by picking the
-trailing part without extension from the href attribute.
-
-In cases where this fails, you can specify the model as a dict in the yaml file.
-
-Suppose we have a href attribute like this, which refers to the `dracor` model:
-
-```
-<?xml-model
-    href="https://dracor.org/schema.rng"
-    type="application/xml"
-    schematypens="http://relaxng.org/ns/structure/1.0"
-?>
-```
-
-You can specify this in the yaml file as follows:
-
-```
-models:
-  - dracor: https://dracor.org/schema.rng
-```
-
-### `templates`
-
-list, optional `[]`
-
-Which template(s) are to be used.
-A template is just a keyword, associated with an XML file, that can be used to switch
-to a specific kind of processing, such as `letter`, `bibliolist`, `artworklist`.
-
-You may specify an element or processing instruction with an attribute
-that triggers the template for the file in which it is found.
-
-This will be retrieved from the file before XML parsing starts.
-For example,
-
-``` python
-    templateTrigger="?editem@template"
-```
-
-will read the file and extract the value of the `template` attribute of the `editem`
-processing instruction and use that as the template for this file.
-If no template is found in this way, the empty template is assumed.
-
-### `adaptations`
-
-list, optional `[]`
-
-Which adaptations(s) are to be used.
-An adaptation is just a keyword, associated with an XML file, that can be used to switch
-to a specific kind of processing.
-It is meant to trigger tweaks on top of the behaviour of a template.
-
-You may specify an element or processing instruction with an attribute
-that triggers the adaptation for the file in which it is found.
-
-This will be retrieved from the file before XML parsing starts.
-For example,
-
-``` python
-    adaptationTrigger="?editem@adaptation"
-```
-
-will read the file and extract the value of the `adaptation` attribute of the `editem`
-processing instruction and use that as the adaptation for this file.
-If no adaptation is found in this way, the empty adaptation is assumed.
-
-### `prelim`
-
-boolean, optional `True`
-
-Whether to work with the `pre` TF versions.
-Use this if you convert TEI to a preliminary TF dataset, which will
-receive NLP additions later on. That version will then lose the `pre`.
-
 ### `granularity`
 
 string, optional `token`
@@ -304,41 +189,6 @@ If not, the characters are taken as basic entities.
 If you use an NLP pipeline to detect tokens, use the value `False`.
 The preliminary dataset is then based on characters, but the final dataset that we build
 from there is based on tokens, which are mostly words and non-word characters.
-
-### `parentEdges`
-
-boolean, optional `True`
-
-Whether to create edges between nodes that correspond to XML elements and their parents.
-
-### `siblingEdges`
-
-boolean, optional `False`
-
-Whether to create edges between nodes that correspond to XML elements and siblings.
-Edges will be created between each sibling and its *preceding* siblings.
-If you use these edges in the binary way, you can also find the following siblings.
-The edges are labeled with the distance between the siblings, adjacent siblings
-get distance 1.
-
-!!! caution "Overwhelming space requirement"
-    If the corpus is divided into relatively few elements that each have very many
-    direct children, the number of sibling edges is comparable to the size of the
-    corpus squared. That means that the TF dataset will consist for 50-99% of
-    sibling edges!
-    An example is [ETCBC/nestle1904](https://github.com/ETCBC/nestle1904) (Greek New
-    Testament) where each book element has all of its sentences as direct children.
-    In that dataset, the siblings would occupy 40% of the size, and we have taken care
-    not to produce sibling edges for sentences.
-
-### `procins`
-
-boolean, optional `False`
-
-If True, processing instructions will be treated.
-Processing instruction `<?foo bar="xxx"?>` will be converted as if it were an empty
-element named `foo` with attribute `bar` with value `xxx`.
-
 
 ### `lineModel`
 
@@ -397,6 +247,112 @@ a paragraph, the first `ln` node of that paragraph gets no features.
 
 We do not create lines for `<lb>` outside `<p>` elements.
 
+### `models`, `templates` and `adaptations`
+
+list, optional `[]`
+
+Which TEI-based schemas and editem templates and adaptations are to be used.
+
+#### `models`
+
+For each *model* there should be an XSD or RNG file with that name in the `schema`
+directory. The `tei_all` schema is known to TF, no need to specify that one.
+
+We'll try a RelaxNG schema (`.rng`) first. If that exists, we use it for validation
+with JING, and we also convert it with TRANG to an XSD schema, which we use for
+analysing the schema: we want to know which elements are mixed and pure.
+
+If there is no RelaxNG schema, we try an XSD schema (`.xsd`). If that exists,
+we can do the analysis, and we will use it also for validation.
+
+!!! note "Problems with RelaxNG validation"
+    RelaxNG validation is not always reliable when performed with LXML, or any tool
+    based on `libxml`, for that matter. That's why we try to avoid it. Even if we
+    translate the RelaxNG schema to an XSD schema by means of TRANG, the resulting
+    validation is not always reliable. So we use JING to validate the RelaxNG schema.
+
+See also [JING-TRANG](https://code.google.com/archive/p/jing-trang/downloads).
+
+Suppose we have a model declared like so:
+
+```
+models:
+  - suriano
+```
+
+The model is typically referenced in the TEI source file like so (it calls for the
+`suriano` model):
+
+```
+<?xml-model
+    href="https://xmlschema.huygens.knaw.nl/suriano.rng"
+    type="application/xml"
+    schematypens="http://relaxng.org/ns/structure/1.0"
+?>
+```
+
+The convertor matches the `href` attribute with the `suriano` model by picking the
+trailing part without extension from the href attribute.
+
+In cases where this fails, you can specify the model as a dict in the yaml file.
+
+Suppose we have a href attribute like this, which refers to the `dracor` model:
+
+```
+<?xml-model
+    href="https://dracor.org/schema.rng"
+    type="application/xml"
+    schematypens="http://relaxng.org/ns/structure/1.0"
+?>
+```
+
+You can specify this in the yaml file as follows:
+
+```
+models:
+  - dracor: https://dracor.org/schema.rng
+```
+
+#### `templates`
+
+Which template(s) are to be used.
+A template is just a keyword, associated with an XML file, that can be used to switch
+to a specific kind of processing, such as `letter`, `bibliolist`, `artworklist`.
+
+You may specify an element or processing instruction with an attribute
+that triggers the template for the file in which it is found.
+
+This will be retrieved from the file before XML parsing starts.
+For example,
+
+``` python
+    templateTrigger="?editem@template"
+```
+
+will read the file and extract the value of the `template` attribute of the `editem`
+processing instruction and use that as the template for this file.
+If no template is found in this way, the empty template is assumed.
+
+#### `adaptations`
+
+Which adaptations(s) are to be used.
+An adaptation is just a keyword, associated with an XML file, that can be used to switch
+to a specific kind of processing.
+It is meant to trigger tweaks on top of the behaviour of a template.
+
+You may specify an element or processing instruction with an attribute
+that triggers the adaptation for the file in which it is found.
+
+This will be retrieved from the file before XML parsing starts.
+For example,
+
+``` python
+    adaptationTrigger="?editem@adaptation"
+```
+
+will read the file and extract the value of the `adaptation` attribute of the `editem`
+processing instruction and use that as the adaptation for this file.
+If no adaptation is found in this way, the empty adaptation is assumed.
 
 ### `pageModel`
 
@@ -469,6 +425,28 @@ But if you specify `pbAtTop=False`, we assume that the `<pb>` marks the end of
 the corresponding page element. We start the first page at the start of the enclosing
 element. If there is material at between the last `<pb>` till the end of the enclosing
 element, we generate an extra page node without features.
+
+### `parentEdges`
+
+boolean, optional `True`
+
+Whether to create edges between nodes that correspond to XML elements and their parents.
+
+### `prelim`
+
+boolean, optional `True`
+
+Whether to work with the `pre` TF versions.
+Use this if you convert TEI to a preliminary TF dataset, which will
+receive NLP additions later on. That version will then lose the `pre`.
+
+### `procins`
+
+boolean, optional `False`
+
+If True, processing instructions will be treated.
+Processing instruction `<?foo bar="xxx"?>` will be converted as if it were an empty
+element named `foo` with attribute `bar` with value `xxx`.
 
 
 ### `sectionModel`
@@ -561,6 +539,76 @@ levels=["file", "part", "chunk"],
 attributes={}
 ```
 
+### `siblingEdges`
+
+boolean, optional `False`
+
+Whether to create edges between nodes that correspond to XML elements and siblings.
+Edges will be created between each sibling and its *preceding* siblings.
+If you use these edges in the binary way, you can also find the following siblings.
+The edges are labeled with the distance between the siblings, adjacent siblings
+get distance 1.
+
+!!! caution "Overwhelming space requirement"
+    If the corpus is divided into relatively few elements that each have very many
+    direct children, the number of sibling edges is comparable to the size of the
+    corpus squared. That means that the TF dataset will consist for 50-99% of
+    sibling edges!
+    An example is [ETCBC/nestle1904](https://github.com/ETCBC/nestle1904) (Greek New
+    Testament) where each book element has all of its sentences as direct children.
+    In that dataset, the siblings would occupy 40% of the size, and we have taken care
+    not to produce sibling edges for sentences.
+
+### `zoneBased`
+
+boolean, optional `false`
+
+Whether the `facs` attributes in `pb` elements refer to identifiers of
+`surface` or `zone` elements.
+If not, the `facs` attributes refer directly to file names.
+
+These `surface` or `zone` elements must occur inside a `facsimile` element just
+after the tei header. Inside that referred element
+is a `graphics` element whose attribute `facs` contains the file name of the page
+scan. This file name is a path with or without leading directories but without
+extension.
+
+On the `zone` element we expect the attributes `ulx`, `uly`, `lrx`, `lry` which
+specify a region on the surface by their upper left and lower right points as
+percentages from the origin of the surface. The origin is the upper left corner
+of a surface. We transform these numbers into IIIF region specifications:
+
+`pct:`*ulx*`,`*uly*`,`*lrx-ulx*`,`*lry-uly*
+
+If we end up at a `surface`, instead of a `zone`, we provide the region specifier
+`full`.
+See the [IIIF Image API 3](https://iiif.io/api/image/3.0/#41-region).
+
+In either case a report file facs.yml will be generated.
+
+There is a key for each file for each file, and then a list of all `facs`
+attribute values on `pb` elements.
+
+If `zoneBased` is true, several more files are generated:
+
+*   `facsMapping.yml`:
+    a key for each file, and then for each declared surface or
+    zone id within the fascimile element in that file: the url value of the
+    graphics element encountered there, followed by `«»` and then the IIIF specification
+    of the region as explained above.
+
+*   `facsProblems.yml`:
+    Two top-level keys: `facsNotDeclared` and `facsNotUsed`.
+    Under each of these keys we have file keys and then:
+
+    *   in case of `facsNotDeclared`: facs-attribute values that have no entry in the
+        `facsMapping`;
+    *   in case of `facsNotUsed`: graphic-url values that are not referred to by any
+        `pb` element.
+
+*   `zoneErrors.yml`:
+    If zones lack one of their required metrics, they are listed here, plus the
+    default that has been filled in for them.
 
 # Usage
 
@@ -681,7 +729,6 @@ from ..core.files import (
     unexpanduser as ux,
     getLocation,
     initTree,
-    fileNm,
     dirNm,
     dirExists,
     dirContents,
@@ -892,6 +939,8 @@ REFERENCING = dict(
     ref="target",
     rs="ref",
 )
+
+ZONE_ATTS = (("ulx", 0), ("uly", 0), ("lrx", 100), ("lry", 100))
 
 
 def makeCssInfo():
@@ -1222,6 +1271,7 @@ class TEI(CheckImport):
         parentEdges = settings.get("parentEdges", True)
         siblingEdges = settings.get("siblingEdges", True)
         procins = settings.get("procins", False)
+        zoneBased = settings.get("zoneBased", False)
 
         lineModel = settings.get("lineModel", {})
         lineModel = checkModel(LINE, lineModel, verbose)
@@ -1323,6 +1373,7 @@ class TEI(CheckImport):
         self.parentEdges = parentEdges
         self.siblingEdges = siblingEdges
         self.procins = procins
+        self.zoneBased = zoneBased
 
         appDir = f"{refDir}/app"
         docsDir = f"{refDir}/docs"
@@ -1880,7 +1931,7 @@ class TEI(CheckImport):
 
             return tuple(sorted(xmlFiles))
 
-    def checkTask(self):
+    def checkTask(self, carryon=False):
         """Implementation of the "check" task.
 
         It validates the TEI, but only if a schema file has been passed explicitly
@@ -1919,6 +1970,15 @@ class TEI(CheckImport):
 
             It is recommended to pass `1` when in the initial stages, but as soon as
             validation is more or less OK, use the value `True`.
+
+        Parameters
+        ----------
+        carryon: boolean, optional False
+            Whether to carryon with making an inventory if validation has failed.
+            Normally, validation errors make it unlikely that further processing of
+            the XML will succeed. But if the validation errors appear to be mild,
+            and you want an inventory, you can pass the `True` to this parameter
+            at your own risk.
         """
         if not self.importOK():
             return
@@ -1939,6 +1999,7 @@ class TEI(CheckImport):
         reportPath = self.reportPath
         docsDir = self.docsDir
         sectionModel = self.sectionModel
+        zoneBased = self.zoneBased
 
         if verbose == 1:
             console(f"TEI to TF checking: {ux(teiPath)} => {ux(reportPath)}")
@@ -1977,7 +2038,22 @@ class TEI(CheckImport):
 
         lbParents = collections.Counter()
 
-        def analyse(root, analysis, xmlFile):
+        pageScans = {}
+        pageScanMap = {}
+        self.pageScanMap = {}
+        pageScanKind = {}
+        self.pageScanKind = {}
+        facsNotDeclared = {}
+        zoneRegionIncomplete = {}
+
+        nPagesNoFacs = 0
+
+        inFacsimile = False
+        surfaceId = None
+        zoneId = None
+        zoneRegion = None
+
+        def analyse(root, analysis, xmlPath):
             FORMAT_ATTS = set(
                 """
                 dim
@@ -2013,6 +2089,11 @@ class TEI(CheckImport):
 
             def nodeInfo(xnode):
                 nonlocal nProcins
+                nonlocal nPagesNoFacs
+                nonlocal inFacsimile
+                nonlocal surfaceId
+                nonlocal zoneId
+                nonlocal zoneRegion
 
                 if procins and isinstance(xnode, etree._ProcessingInstruction):
                     target = xnode.target
@@ -2031,6 +2112,64 @@ class TEI(CheckImport):
                 if tag == "lb":
                     parentTag = etree.QName(xnode.getparent().tag).localname
                     lbParents[parentTag] += 1
+                elif tag == "pb":
+                    facsv = atts.get("facs", "")
+
+                    if zoneBased:
+                        facsv = facsv.removeprefix("#")
+
+                        if facsv:
+                            scanName = pageScanMap[xmlPath].get(facsv, "")
+
+                            if not scanName:
+                                facsNotDeclared[xmlPath].add(facsv)
+
+                    if facsv:
+                        pageScans[xmlPath].append(facsv)
+                    else:
+                        nPagesNoFacs += 1
+                elif zoneBased:
+                    if tag == "facsimile":
+                        inFacsimile = True
+                    elif inFacsimile:
+                        if tag == "surface":
+                            surfaceId = atts.get("id", None)
+                        elif tag == "zone":
+                            zoneId = atts.get("id", None)
+                            zoneRegion = []
+
+                            for a, aDefault in ZONE_ATTS:
+                                aVal = atts.get(a, None)
+
+                                if aVal is None:
+                                    aVal = aDefault
+                                    zoneRegionIncomplete.setdefault(zoneId, {})[
+                                        a
+                                    ] = f"None => {aDefault}"
+                                elif aVal.isdecimal():
+                                    aVal = int(aVal)
+                                else:
+                                    zoneRegionIncomplete.setdefault(zoneId, {})[
+                                        a
+                                    ] = f"{aVal} => {aDefault}"
+
+                                zoneRegion.append(aVal)
+
+                            (ulx, uly, lrx, lry) = zoneRegion
+                            zoneRegion = f"pct:{ulx},{uly},{lrx - ulx},{lry - uly}"
+
+                        elif tag == "graphic":
+                            scanFile = atts.get("url", None)
+
+                            if scanFile is not None:
+                                if zoneId:
+                                    pageScanMap[xmlPath][
+                                        zoneId
+                                    ] = f"{scanFile}«»{zoneRegion}"
+                                    pageScanKind[xmlPath][zoneId] = "zone"
+                                elif surfaceId:
+                                    pageScanMap[xmlPath][surfaceId] = f"{scanFile}«»full"
+                                    pageScanKind[xmlPath][surfaceId] = "surface"
 
                 if len(atts) == 0:
                     kind = "rest"
@@ -2039,10 +2178,10 @@ class TEI(CheckImport):
                     idv = atts.get("id", None)
 
                     if idv is not None:
-                        ids[xmlFile][idv] += 1
+                        ids[xmlPath][idv] += 1
 
-                    for refAtt, targetFile, targetId in getRefs(tag, atts, xmlFile):
-                        refs[xmlFile][(targetFile, targetId)] += 1
+                    for refAtt, targetFile, targetId in getRefs(tag, atts, xmlPath):
+                        refs[xmlPath][(targetFile, targetId)] += 1
 
                     for k, v in atts.items():
                         kind = (
@@ -2068,6 +2207,15 @@ class TEI(CheckImport):
                     )
                 ):
                     nodeInfo(child)
+
+                if zoneBased:
+                    if tag == "facsimile":
+                        inFacsimile = False
+                    elif inFacsimile:
+                        if tag == "surface":
+                            surfaceId = None
+                        elif tag == "zone":
+                            zoneId = None
 
             nodeInfo(root)
 
@@ -2115,6 +2263,109 @@ class TEI(CheckImport):
                         console("Validation OK")
                     else:
                         console("No validation performed", error=True)
+
+        def writeFacs():
+            infoFile = f"{reportPath}/facs.yml"
+            nItems = sum(len(x) for x in pageScans.values())
+            nUnique = sum(len(set(x)) for x in pageScans.values())
+
+            writeYaml(pageScans, asFile=infoFile)
+
+            if verbose >= 0:
+                plural = "" if nPagesNoFacs == 1 else "s"
+                console(f"{nPagesNoFacs} pagebreak{plural} without facs attribute.")
+
+                plural = "" if nItems == 1 else "s"
+                console(f"{nItems} pagebreak{plural} encountered.")
+                plural = "" if nUnique == 1 else "s"
+                console(f"{nUnique} distinct scan{plural} referred to by pagebreaks.")
+
+            if not zoneBased:
+                return
+
+            infoFile = f"{reportPath}/facsKind.yml"
+            writeYaml(pageScanKind, asFile=infoFile)
+            infoFile = f"{reportPath}/facsMapping.yml"
+            writeYaml(pageScanMap, asFile=infoFile)
+
+            if verbose >= 0:
+                nSurfaces = sum(
+                    sum(1 for y in x.values() if y == "surface")
+                    for x in pageScanKind.values()
+                )
+                nZones = sum(
+                    sum(1 for y in x.values() if y == "zone")
+                    for x in pageScanKind.values()
+                )
+                plural = "" if nSurfaces == 1 else "s"
+                console(f"{nSurfaces} surface{plural} declared")
+                plural = "" if nZones == 1 else "s"
+                console(f"{nZones} zone{plural} declared")
+
+                nItems = sum(len(x) for x in pageScanMap.values())
+                plural = "" if nItems == 1 else "s"
+                console(f"{nItems} scan{plural} declared and mapped.")
+
+            infoFile = f"{reportPath}/facsProblems.yml"
+            facsNotUsed = {}
+
+            for xmlPath, mapping in pageScanMap.items():
+                facsEncountered = set(pageScans[xmlPath])
+                thisFacsNotUsed = []
+
+                for facs in mapping:
+                    if facs not in facsEncountered:
+                        thisFacsNotUsed.append(facs)
+
+                facsNotUsed[xmlPath] = thisFacsNotUsed
+
+            facsProblems = {}
+
+            nFacsNotDeclared = sum(len(x) for x in facsNotDeclared.values())
+            nFacsNotUsed = sum(len(x) for x in facsNotUsed.values())
+
+            if nFacsNotDeclared:
+                plural = "" if nFacsNotDeclared == 1 else "s"
+                console(f"{nFacsNotDeclared} undeclared scan{plural}", error=True)
+                facsProblems["facsNotDeclared"] = {
+                    xmlPath: sorted(x)
+                    for (xmlPath, x) in facsNotDeclared.items()
+                    if len(x)
+                }
+
+            if nFacsNotUsed:
+                nSurfaces = sum(
+                    sum(1 for y in x if pageScanKind[xmlPath][y] == "surface")
+                    for (xmlPath, x) in facsNotUsed.items()
+                )
+                nZones = sum(
+                    sum(1 for y in x if pageScanKind[xmlPath][y] == "zone")
+                    for (xmlPath, x) in facsNotUsed.items()
+                )
+                plural = "" if nFacsNotUsed == 1 else "s"
+                pls = "" if nSurfaces == 1 else "s"
+                plz = "" if nZones == 1 else "s"
+                console(
+                    f"{nFacsNotUsed} unused scan{plural} of which "
+                    f"{nSurfaces} surface{pls} and {nZones} zone{plz}",
+                    error=True,
+                )
+                facsProblems["facsNotUsed"] = facsNotUsed
+
+            writeYaml(facsProblems, asFile=infoFile)
+
+            infoFile = f"{reportPath}/zoneErrors.yml"
+            nIncomplete = len(zoneRegionIncomplete)
+            plural = "" if nIncomplete == 1 else "s"
+
+            if nIncomplete:
+                console(
+                    f"{nIncomplete} missing zone region specifier{plural}", error=True
+                )
+
+                console(f"See {infoFile}", error=True)
+
+            writeYaml(zoneRegionIncomplete, asFile=infoFile)
 
         def writeNamespaces():
             errorFile = f"{reportPath}/namespaces.txt"
@@ -2508,16 +2759,21 @@ class TEI(CheckImport):
             )
 
         def doXMLFile(xmlPath):
+            xmlFullPath = f"{teiPath}/{xmlPath}"
+            pageScans[xmlPath] = []
+            pageScanMap[xmlPath] = {}
+            pageScanKind[xmlPath] = {}
+            facsNotDeclared[xmlPath] = set()
+
             try:
-                tree = etree.parse(xmlPath, parser)
+                tree = etree.parse(xmlFullPath, parser)
             except Exception as e:
                 console(str(e), error=True)
                 return
 
             root = tree.getroot()
-            xmlFile = fileNm(xmlPath)
             ids[xmlFile][""] = 1
-            analyse(root, analysis, xmlFile)
+            analyse(root, analysis, xmlPath)
 
         xmlFilesByModel = collections.defaultdict(list)
 
@@ -2529,8 +2785,9 @@ class TEI(CheckImport):
                     console(f"\t{msg}folder {xmlFolder}")
 
                 for xmlFile in xmlFiles:
-                    xmlPath = f"{teiPath}/{xmlFolder}/{xmlFile}"
-                    (model, adapt, tpl) = self.getSwitches(xmlPath)
+                    xmlPath = f"{xmlFolder}/{xmlFile}"
+                    xmlFullPath = f"{teiPath}/{xmlPath}"
+                    (model, adapt, tpl) = self.getSwitches(xmlFullPath)
                     xmlFilesByModel[model].append(xmlPath)
 
         elif sectionModel == "II":
@@ -2540,14 +2797,14 @@ class TEI(CheckImport):
                 console("No XML files found!", error=True)
                 return False
 
-            xmlPath = f"{teiPath}/{xmlFile}"
-            (model, adapt, tpl) = self.getSwitches(xmlPath)
-            xmlFilesByModel[model].append(xmlPath)
+            xmlFullPath = f"{teiPath}/{xmlFile}"
+            (model, adapt, tpl) = self.getSwitches(xmlFullPath)
+            xmlFilesByModel[model].append(xmlFile)
 
         elif sectionModel == "III":
             for xmlFile in self.getXML():
-                xmlPath = f"{teiPath}/{xmlFile}"
-                (model, adapt, tpl) = self.getSwitches(xmlPath)
+                xmlFullPath = f"{teiPath}/{xmlFile}"
+                (model, adapt, tpl) = self.getSwitches(xmlFullPath)
                 xmlFilesByModel[model].append(xmlPath)
 
         good = True
@@ -2573,7 +2830,9 @@ class TEI(CheckImport):
                     continue
 
                 (thisGood, info, theseErrors) = A.validate(
-                    validate, schemaFile, xmlPaths
+                    validate,
+                    schemaFile,
+                    [f"{teiPath}/{xmlPath}" for xmlPath in xmlPaths],
                 )
                 if thisGood is None:  # severe error, validation machinery not good
                     severeError = True
@@ -2593,9 +2852,10 @@ class TEI(CheckImport):
                     break
 
                 errors.extend(theseErrors)
-                continue
+                if not carryon:
+                    continue
 
-            if good and verbose >= 0:
+            if (good or carryon) and verbose >= 0:
                 console("\tMaking inventory ...")
 
             for xmlPath in xmlPaths:
@@ -2612,7 +2872,8 @@ class TEI(CheckImport):
         if not self.severeError:
             writeErrors()
 
-        if good:
+        if good or carryon:
+            writeFacs()
             writeNamespaces()
             writeReport()
             writeIdRefs()
@@ -5041,6 +5302,7 @@ class TEI(CheckImport):
         browse=False,
         verbose=None,
         validate=None,
+        **extrakwargs,
     ):
         """Carry out any task, possibly modified by any flag.
 
@@ -5071,6 +5333,8 @@ class TEI(CheckImport):
             Produce no (-1), some (0) or many (1) progress and reporting messages
         validate: boolean, optional True
             Whether to perform XML validation during the check task
+        extrakwargs: dict, optional
+            remaining keyword args are selectively passed to the task
 
         Returns
         -------
@@ -5091,7 +5355,7 @@ class TEI(CheckImport):
             return False
 
         for condition, method, kwargs in (
-            (check, self.checkTask, {}),
+            (check, self.checkTask, dict(carryon=extrakwargs.get("carryon", False))),
             (convert, self.convertTask, {}),
             (load, self.loadTask, {}),
             (app, self.appTask, {}),
