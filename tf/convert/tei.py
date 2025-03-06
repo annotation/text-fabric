@@ -610,6 +610,11 @@ If `zoneBased` is true, several more files are generated:
     If zones lack one of their required metrics, they are listed here, plus the
     default that has been filled in for them.
 
+Last but not least, if `zoneBased` is True, the page nodes will get two extra features:
+
+*   `facsfile`: the filename without extension of the page scan
+*   `facsregion`: the region specifier of the page on the page scan
+
 # Usage
 
 ## Command-line
@@ -742,6 +747,8 @@ from ..core.files import (
 
 from ..tools.xmlschema import Analysis
 
+
+FACS_MAPPING_YML = "facsMapping.yml"
 
 TASKS_EXCLUDED = {"apptoken", "browse"}
 (HELP, TASKS, PARAMS, FLAGS) = setUp("TEI")
@@ -1302,6 +1309,9 @@ class TEI(CheckImport):
         self.makePageElems = makePageElems
         self.pageModel = pageModel
         self.pageProperties = pageProperties
+
+        if zoneBased:
+            self.facsMapping = None
 
         sectionModel = settings.get("sectionModel", {})
         sectionModel = checkModel("section", sectionModel, verbose)
@@ -2039,10 +2049,10 @@ class TEI(CheckImport):
         lbParents = collections.Counter()
 
         pageScans = {}
-        pageScanMap = {}
-        self.pageScanMap = {}
-        pageScanKind = {}
-        self.pageScanKind = {}
+        facsMapping = {} if zoneBased else {}
+        self.facsMapping = facsMapping
+        facsKind = {}
+        self.facsKind = {}
         facsNotDeclared = {}
         zoneRegionIncomplete = {}
 
@@ -2119,7 +2129,9 @@ class TEI(CheckImport):
                         facsv = facsv.removeprefix("#")
 
                         if facsv:
-                            scanName = pageScanMap[xmlPath].get(facsv, "")
+                            (scanName, scanRegion) = facsMapping[xmlPath].get(
+                                facsv, ["", "full"]
+                            )
 
                             if not scanName:
                                 facsNotDeclared[xmlPath].add(facsv)
@@ -2163,13 +2175,14 @@ class TEI(CheckImport):
 
                             if scanFile is not None:
                                 if zoneId:
-                                    pageScanMap[xmlPath][
-                                        zoneId
-                                    ] = f"{scanFile}«»{zoneRegion}"
-                                    pageScanKind[xmlPath][zoneId] = "zone"
+                                    facsMapping[xmlPath][zoneId] = [
+                                        scanFile,
+                                        zoneRegion,
+                                    ]
+                                    facsKind[xmlPath][zoneId] = "zone"
                                 elif surfaceId:
-                                    pageScanMap[xmlPath][surfaceId] = f"{scanFile}«»full"
-                                    pageScanKind[xmlPath][surfaceId] = "surface"
+                                    facsMapping[xmlPath][surfaceId] = [scanFile, "full"]
+                                    facsKind[xmlPath][surfaceId] = "surface"
 
                 if len(atts) == 0:
                     kind = "rest"
@@ -2284,32 +2297,31 @@ class TEI(CheckImport):
                 return
 
             infoFile = f"{reportPath}/facsKind.yml"
-            writeYaml(pageScanKind, asFile=infoFile)
-            infoFile = f"{reportPath}/facsMapping.yml"
-            writeYaml(pageScanMap, asFile=infoFile)
+            writeYaml(facsKind, asFile=infoFile)
+            infoFile = f"{reportPath}/{FACS_MAPPING_YML}"
+            writeYaml(facsMapping, asFile=infoFile)
 
             if verbose >= 0:
                 nSurfaces = sum(
                     sum(1 for y in x.values() if y == "surface")
-                    for x in pageScanKind.values()
+                    for x in facsKind.values()
                 )
                 nZones = sum(
-                    sum(1 for y in x.values() if y == "zone")
-                    for x in pageScanKind.values()
+                    sum(1 for y in x.values() if y == "zone") for x in facsKind.values()
                 )
                 plural = "" if nSurfaces == 1 else "s"
                 console(f"{nSurfaces} surface{plural} declared")
                 plural = "" if nZones == 1 else "s"
                 console(f"{nZones} zone{plural} declared")
 
-                nItems = sum(len(x) for x in pageScanMap.values())
+                nItems = sum(len(x) for x in facsMapping.values())
                 plural = "" if nItems == 1 else "s"
                 console(f"{nItems} scan{plural} declared and mapped.")
 
             infoFile = f"{reportPath}/facsProblems.yml"
             facsNotUsed = {}
 
-            for xmlPath, mapping in pageScanMap.items():
+            for xmlPath, mapping in facsMapping.items():
                 facsEncountered = set(pageScans[xmlPath])
                 thisFacsNotUsed = []
 
@@ -2335,11 +2347,11 @@ class TEI(CheckImport):
 
             if nFacsNotUsed:
                 nSurfaces = sum(
-                    sum(1 for y in x if pageScanKind[xmlPath][y] == "surface")
+                    sum(1 for y in x if facsKind[xmlPath][y] == "surface")
                     for (xmlPath, x) in facsNotUsed.items()
                 )
                 nZones = sum(
-                    sum(1 for y in x if pageScanKind[xmlPath][y] == "zone")
+                    sum(1 for y in x if facsKind[xmlPath][y] == "zone")
                     for (xmlPath, x) in facsNotUsed.items()
                 )
                 plural = "" if nFacsNotUsed == 1 else "s"
@@ -2761,8 +2773,8 @@ class TEI(CheckImport):
         def doXMLFile(xmlPath):
             xmlFullPath = f"{teiPath}/{xmlPath}"
             pageScans[xmlPath] = []
-            pageScanMap[xmlPath] = {}
-            pageScanKind[xmlPath] = {}
+            facsMapping[xmlPath] = {}
+            facsKind[xmlPath] = {}
             facsNotDeclared[xmlPath] = set()
 
             try:
@@ -2961,6 +2973,8 @@ class TEI(CheckImport):
 
         IN_WORD_HYPHENS = {HY, "-"}
 
+        zoneBased = self.zoneBased
+        facsMapping = self.facsMapping
         procins = self.procins
         verbose = self.verbose
         teiPath = self.teiPath
@@ -4031,19 +4045,33 @@ class TEI(CheckImport):
 
             if makePageElems:
                 if inPage and tag == "pb":
+                    regionAtts = {}
+
+                    if zoneBased:
+                        facs = atts.get("facs", "").removeprefix("#")
+
+                        xmlFolder = cur["xmlFolder"]
+                        xmlFile = cur["xmlFile"]
+                        sep = "/" if xmlFolder and xmlFile else ""
+                        xmlPath = f"{xmlFolder}{sep}{xmlFile}"
+
+                        mapping = facsMapping.get(xmlPath, {})
+
+                        (fileName, region) = mapping.get(facs, (facs, "full"))
+                        regionAtts = dict(facsfile=fileName, facsregion=region)
                     if pbAtTop:
                         if pageType in cur[NODE]:
                             endPage(cv, cur)
                         cur[NODE][pageType] = cv.node(pageType)
                         if len(atts):
-                            cv.feature(cur[NODE][pageType], **atts)
+                            cv.feature(cur[NODE][pageType], **atts, **regionAtts)
                     else:
                         if pageType in cur[NODE]:
                             if cur["pageAtts"] is not None and len(cur["pageAtts"]):
                                 cv.feature(cur[NODE][pageType], **cur["pageAtts"])
                             endPage(cv, cur)
                         cur[NODE][pageType] = cv.node(pageType)
-                        cur["pageAtts"] = atts
+                        cur["pageAtts"] = atts | regionAtts
 
             isBoundaryElem = (
                 makeLineElems
@@ -4410,6 +4438,7 @@ class TEI(CheckImport):
                     if verbose >= 0:
                         console(f"\t{msg}folder {xmlFolder}:")
 
+                    cur["xmlFolder"] = xmlFolder
                     cur[NODE][folderSection] = cv.node(folderSection)
                     value = {folderSection: xmlFolder}
                     cv.feature(cur[NODE][folderSection], **value)
@@ -4507,6 +4536,7 @@ class TEI(CheckImport):
                     del cur[NODE][folderSection]
 
             elif sectionModel == "II":
+                cur["xmlFolder"] = ""
                 xmlFile = self.getXML()
 
                 if xmlFile is None:
@@ -4566,6 +4596,7 @@ class TEI(CheckImport):
 
             elif sectionModel == "III":
                 fileSection = self.fileSection
+                cur["xmlFolder"] = ""
 
                 j = 0
 
@@ -4795,6 +4826,15 @@ class TEI(CheckImport):
         sectionModel = self.sectionModel
         tfPath = self.tfPath
         teiPath = self.teiPath
+        zoneBased = self.zoneBased
+        reportPath = self.reportPath
+
+        if zoneBased:
+            if self.facsMapping is None:
+                infoFile = f"{reportPath}/{FACS_MAPPING_YML}"
+                self.facsMapping = readYaml(
+                    asFile=infoFile, plain=True, preferTuples=False
+                )
 
         if verbose >= 0:
             if verbose == 1:
