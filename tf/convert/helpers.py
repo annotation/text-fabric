@@ -2,6 +2,7 @@ import re
 from textwrap import dedent
 
 from ..core.helpers import console
+from ..core.files import fileExists, readJson, readYaml
 
 
 PRE = "pre"
@@ -714,44 +715,49 @@ def lookupSource(cv, cur, tokenAsSlot, specs):
         cv.feature(targetNode, **source)
 
 
-def operationalize(data):
-    scanInfo = {}
+def getPageInfo(pageInfoDir, zoneBased, folders):
+    if pageInfoDir is None:
+        return {}
 
-    for extraFeat, featInfo in data.items():
-        for nodeType, info in featInfo.items():
-            variables = info["vars"]
-            value = info["value"]
+    pageInfoFile = f"{pageInfoDir}/pageseq.json"
+    facsFile = f"{pageInfoDir}/facs.yml"
 
-            newVars = {}
+    pages = None
 
-            for name, val in variables.items():
-                if val.endswith("-1"):
-                    newVal = val[0:-2]
-                    shift = -1
-                elif val.endswith("+1"):
-                    newVal = val[0:-2]
-                    shift = 1
-                else:
-                    newVal = val
-                    shift = 0
+    if fileExists(pageInfoFile):
+        console(f"Using page info file {pageInfoFile}")
+        pages = readJson(asFile=pageInfoFile, plain=True)
+    elif fileExists(facsFile):
+        console(f"Using facs file info file {facsFile}")
+        pagesProto = readYaml(asFile=facsFile, plain=True, preferTuples=False)
+        pages = {}
 
-                feat = tuple(newVal.split(".", 1))
+        if zoneBased:
+            facsMappingFile = f"{pageInfoDir}/facsMapping.yml"
 
-                if len(feat) == 1:
-                    parent = None
-                    child = None
-                    feat = feat[0]
-                else:
-                    parent, feat = feat
+            if fileExists(facsMappingFile):
+                console(f"Using facs mapping file {facsMappingFile}")
+                facsMapping = readYaml(
+                    asFile=facsMappingFile, plain=True, preferTuples=False
+                )
 
-                    if parent.startswith("-"):
-                        child = parent[1:]
-                        parent = None
-                    else:
-                        child = None
+                for path, ps in pagesProto.items():
+                    folder = path.split("/")[0]
+                    mapping = facsMapping.get(path, {})
+                    pages.setdefault(folder, []).extend([mapping.get(p, p) for p in ps])
+            else:
+                console(f"No facs mapping file {facsMappingFile}", error=True)
+        else:
+            for path, ps in pagesProto.items():
+                (folder, file) = path.split("/")
+                pages.setdefault(folder, []).extend(ps)
+    else:
+        console("No page-facsimile relating information found", error=True)
 
-                newVars[name] = (parent, child, feat, shift)
+    if pages is None:
+        console("Could not assemble page sequence info", error=True)
+        result = {}
+    else:
+        result = dict(pages=pages)
 
-            scanInfo.setdefault(nodeType, []).append((extraFeat, value, newVars))
-
-    return scanInfo
+    return result

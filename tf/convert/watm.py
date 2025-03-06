@@ -493,7 +493,7 @@ from ..parameters import OTYPE, OSLOTS, URL_TF_DOCS
 from ..app import use
 
 from .iiif import parseIIIF
-from .helpers import operationalize
+from .helpers import getPageInfo
 
 AFTER = "after"
 STR = "str"
@@ -677,10 +677,119 @@ def getResultDir(baseDir, headPart, version, prod, silent):
     return resultVersionDir
 
 
+def operationalize(data):
+    """Translates the scans part of iiif.yml file into annotation instructions.
+
+    The `scans` part of iiif.yml is structured as follows:
+
+    ```
+    feature:
+      nodeType1:
+        vars:
+            ndtp1: feat1 or expr1
+            ndtpn: featn or exprn
+        value: expression1
+     nodeType2:
+       ...
+    ```
+
+    `feature` is the name of the annotation.
+
+    The `nodeType`*i* specifies what values the annotation takes for nodes of this type.
+
+    `expression`*i* is a string that may contain place holders:
+
+    *   `<macroName>` refers to a macro defined under the `macros` top-level section.
+        Macros may contain other place holders.
+    *   `«parameter»` refers to values defined in the `switches` and `constants`
+        top-level sections. They may contain placeholders for variables, i.e. things
+        that will be filled in from the data, not from config settings.
+    *   `{variable}`.  Values obtained from the data.]
+        Variables are looked up when going through the (Text-Fabric) data, node by node.
+
+        For each node, we know what the relevant page scan is.
+
+        There is a limited supply of variables:
+
+        *   `region`: the region of interest on a scan, given as a IIIF region value:
+            `full` or *x,y,w,h* or `pct:`*x,y,w,h*.
+        *   `rot`: the rotation to be applied when showing a scan.
+        *   `page`: the page number of the page of the scan, not necessarily a number,
+            whatever is provided by the data.
+        *   `node`: the value of the node itself (i.e. the node number).
+
+    *Subtleties.*
+
+    The variables will be looked up from the feature values of the node in question.
+
+    How that must be done can be defined per node type in a `vars` declaration. You
+    can define the vars `region`, `rot`, `page` and `node`.
+
+    If you specify a name, it is the name of a feature, and its value for the node
+    in question will be retrieved.
+
+    But if there is a `.` in the name, the first part is a parent node type, and we
+    lookup the first parent of that node type. The second part is the feature name,
+    and we take the value of that feature from that parent.
+
+    Only for the variable `node` you have extra possibilities:
+
+    *   `=+1`: take the current node and add 1.
+    *   `=-1`: take the current node and subtract 1
+    *   In both cases: if the incremented or decremented node is no longer the
+        specified node type, None is returned.
+
+    Parameters
+    ----------
+    data: dict
+        The iiif.yml settings, and then the `scans` part.
+    """
+    scanInfo = {}
+
+    for extraFeat, featInfo in data.items():
+        for nodeType, info in featInfo.items():
+            variables = info["vars"]
+            value = info["value"]
+
+            newVars = {}
+
+            for name, val in variables.items():
+                if val.endswith("-1"):
+                    newVal = val[0:-2]
+                    shift = -1
+                elif val.endswith("+1"):
+                    newVal = val[0:-2]
+                    shift = 1
+                else:
+                    newVal = val
+                    shift = 0
+
+                feat = tuple(newVal.split(".", 1))
+
+                if len(feat) == 1:
+                    parent = None
+                    child = None
+                    feat = feat[0]
+                else:
+                    parent, feat = feat
+
+                    if parent.startswith("-"):
+                        child = parent[1:]
+                        parent = None
+                    else:
+                        child = None
+
+                newVars[name] = (parent, child, feat, shift)
+
+            scanInfo.setdefault(nodeType, []).append((extraFeat, value, newVars))
+
+    return scanInfo
+
+
 class WATM:
     """The export machinery is exposed as a class, wrapped around a TF dataset."""
 
-    def __init__(self, app, nsOrig, skipMeta=False, extra={}, silent=False, prod=False):
+    def __init__(self, app, nsOrig, pageInfoDir=None, skipMeta=False, extra={}, silent=False, prod=False):
         """Wrap the WATM exporter around a TF dataset.
 
         Given an already loaded TF dataset, we make an inventory of all data
@@ -696,6 +805,9 @@ class WATM:
             representation. For example `tei` for a TEI corpus, `pagexml` for a
             PageXML corpus. The namespace is not related to XML namespaces, it is
             merely a device to categorize the resulting annotations.
+        pageInfoDir: string, optional None
+            If supplied, extra page information will be looked up from files in this
+            directory.
         skipMeta: boolean, optional False
             Only relevant for TEI corpora. If True, all material in the TEI Header
             will not be converted to tokens in the text.
@@ -760,9 +872,10 @@ class WATM:
         if not ok:
             self.error = True
 
-        self.scanInfo = (
-            operationalize(parseIIIF(settings, prod, "scans")) if settings else {}
-        )
+        zoneBased = settings.zoneBased
+        self.zoneBased = zoneBased
+        iiifSettings = parseIIIF(settings, prod, "scans") if settings else {}
+        console(f"{iiifSettings=}")
 
         self.error = False
 
@@ -846,6 +959,9 @@ class WATM:
         self.rafterv = F.rafter.v if "rafter" in FAllSet else None
         is_metav = F.is_meta.v if "is_meta" in FAllSet else None
         self.is_metav = is_metav
+
+        folders = [F.folder.v(f) for f in F.otype.s("folder")]
+        self.pages = getPageInfo(pageInfoDir, zoneBased, folders)
 
         inheritFeatures = cfg.inheritFeatures or []
         self.inheritFeatures = inheritFeatures

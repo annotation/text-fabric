@@ -1,6 +1,4 @@
 from ..core.files import (
-    readJson,
-    readYaml,
     writeJson,
     fileOpen,
     fileExists,
@@ -12,6 +10,7 @@ from ..core.files import (
 )
 from ..core.generic import AttrDict
 from ..core.helpers import console, readCfg
+from .helpers import getPageInfo
 
 DS_STORE = ".DS_Store"
 
@@ -41,9 +40,33 @@ def fillinIIIF(data, **kwargs):
 
 
 def parseIIIF(settings, prod, selector):
-    """Parse the iiif yml file.
+    """Parse the iiif yml file and deliver a filled in section.
 
-    We fill in the parameters.
+    The iiif.yml file contains switches and constants and macros which then are used
+    to define IIIF things via templates.
+
+    The top-level section `scans` contains instructions to define extra annotations
+    on node types that need to refer to scans.
+    This is only used for WATM generation.
+
+    The top-level section `templates` contains fragments from which manifests can be
+    constructed. This is only used in this module.
+
+    This function fills in the switches, based on the parameter `prod`, then
+    prepares the constants, then prepares the macros, and then uses it all
+    to assemble either the `scans` section or the `templates` section; this
+    choice is based on the parameter `selector`.
+
+    Parameters
+    ----------
+    prod: string
+        Either `prod` or `dev`.
+        This determines whether we fill in a production value or a develop value
+        for each of the settings mentioned in the `switches` section of the iiif.yml
+        file.
+    selector: string
+        Either `scans` or `templates`.
+        Which top-level of sections we are going to grab out of the iiif.yml file.
     """
 
     def applySwitches(prod, constants, switches):
@@ -147,16 +170,6 @@ class IIIF:
             return
 
         self.settings = settings
-
-        (ok, teiSettings) = readCfg(
-            repoLocation, "tei", "TEI", verbose=-1 if silent else 1, plain=False
-        )
-        zoneBased = False
-
-        if ok and teiSettings.zoneBased is not None:
-            zoneBased = teiSettings.zoneBased
-
-        self.zoneBased = zoneBased
 
         self.templates = parseIIIF(settings, prod, "templates")
         folders = [F.folder.v(f) for f in F.otype.s("folder")]
@@ -272,7 +285,7 @@ class IIIF:
             return
 
         doCovers = self.doCovers
-        zoneBased = self.zoneBased
+        zoneBased = self.settings.zoneBased
 
         if doCovers:
             coversDir = self.coversDir
@@ -282,66 +295,19 @@ class IIIF:
             self.covers = covers
 
         pageInfoDir = self.pageInfoDir
-        pageInfoFile = f"{pageInfoDir}/pageseq.json"
-        facsFile = f"{pageInfoDir}/facs.yml"
 
-        pages = None
-
-        if fileExists(pageInfoFile):
-            console(f"Using page info file {pageInfoFile}")
-            pages = readJson(asFile=pageInfoFile, plain=True)
-        elif fileExists(facsFile):
-            console(f"Using facs file info file {facsFile}")
-            pagesProto = readYaml(asFile=facsFile, plain=True, preferTuples=False)
-            pages = {}
-
-            if zoneBased:
-                facsMappingFile = f"{pageInfoDir}/facsMapping.yml"
-
-                if fileExists(facsMappingFile):
-                    console(f"Using facs mapping file {facsMappingFile}")
-                    facsMapping = readYaml(
-                        asFile=facsMappingFile, plain=True, preferTuples=False
-                    )
-
-                    for path, ps in pagesProto.items():
-                        folder = path.split("/")[0]
-                        mapping = facsMapping.get(path, {})
-                        pages.setdefault(folder, []).extend(
-                            [mapping.get(p, p) for p in ps]
-                        )
-                else:
-                    console(f"No facs mapping file {facsMappingFile}", error=True)
-            else:
-                for path, ps in pagesProto.items():
-                    (folder, file) = path.split("/")
-                    pages.setdefault(folder, []).extend(ps)
-        else:
-            console("No page-facsimile relating information found", error=True)
-
-        if pages is None:
-            console(
-                "Could not assemble page sequence info, "
-                "working with dummy page sequence",
-                error=True,
-            )
-            self.pages = dict(
-                pages={
-                    folder: [f"page_{i:>03}" for i in range(1, 11)]
-                    for folder in folders
-                }
-            )
-        else:
-            self.pages = dict(pages=pages)
+        pages = getPageInfo(pageInfoDir, zoneBased, folders)
 
         if doCovers:
-            self.pages["covers"] = covers
+            pages["covers"] = covers
+
+        self.pages = pages
 
     def genPages(self, kind, folder=None):
         if self.error:
             return
 
-        zoneBased = self.zoneBased
+        zoneBased = self.settings.zoneBased
 
         templates = self.templates
         sizeInfo = self.sizeInfo[kind]
