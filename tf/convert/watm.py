@@ -872,10 +872,10 @@ class WATM:
         if not ok:
             self.error = True
 
-        zoneBased = settings.zoneBased
+        zoneBased = settings.get("zoneBased", False)
         self.zoneBased = zoneBased
         iiifSettings = parseIIIF(settings, prod, "scans") if settings else {}
-        console(f"{iiifSettings=}")
+        self.scanInfo = operationalize(iiifSettings)
 
         self.error = False
 
@@ -1230,7 +1230,13 @@ class WATM:
                             if parent is not None:
                                 refN = L.u(refN, otype=parent)[0]
                             elif child is not None:
-                                refN = L.d(refN, otype=child)[0]
+                                refNs = L.d(refN, otype=child)
+
+                                if refNs:
+                                    refN = refNs[0]
+                                else:
+                                    valuesOK = False
+                                    break
 
                             values[var] = refN if feat == "=" else Fs(feat).v(refN)
 
@@ -1426,6 +1432,12 @@ class WATM:
             This is needed if WATM is generated for a series of related datasets that
             have the same result base.
         """
+        error = self.error
+
+        if error:
+            self.console("Cannot run because of an earlier error")
+            return
+
         cfg = self.cfg
         extra = cfg.extra
         hyphenation = self.hyphenation
@@ -1433,12 +1445,6 @@ class WATM:
         maxSlotPlus = self.maxSlotPlus
 
         # text files
-
-        error = self.error
-
-        if error:
-            self.console("Cannot run because of an earlier error")
-            return
 
         silent = self.silent
         prod = self.prod

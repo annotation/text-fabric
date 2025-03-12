@@ -285,7 +285,7 @@ class IIIF:
             return
 
         doCovers = self.doCovers
-        zoneBased = self.settings.zoneBased
+        zoneBased = self.settings.get("zoneBased", False)
 
         if doCovers:
             coversDir = self.coversDir
@@ -307,7 +307,7 @@ class IIIF:
         if self.error:
             return
 
-        zoneBased = self.settings.zoneBased
+        zoneBased = self.settings.get("zoneBased", False)
 
         templates = self.templates
         sizeInfo = self.sizeInfo[kind]
@@ -323,14 +323,14 @@ class IIIF:
         items = []
 
         for p in thesePages:
+            if zoneBased:
+                (p, region) = p
+            else:
+                region = "full"
+
             item = {}
             w, h = sizeInfo.get(p, (0, 0))
             rot = 0 if rotateInfo is None else rotateInfo.get(p, 0)
-
-            if zoneBased:
-                (p, region) = p.split("«»")
-            else:
-                region = "full"
 
             for k, v in pageItem.items():
                 v = fillinIIIF(

@@ -227,7 +227,7 @@ Model I is the default, and nothing special happens to the `<lb>` elements.
 
 In model II the `<lb>` elements translate to nodes of type `ln`, which span
 content, whereas the original `lb` elements just mark positions.
-Instead of `ln`, you can also specify another node type by the parameter `element`.
+Instead of `ln`, you can also specify another node type by the parameter `nodeType`.
 
 We assume that the material that the `<lb>` elements divide up is the material
 that corresponds to their `<p>` parent element. Instead of `<p>`,
@@ -3523,7 +3523,7 @@ class TEI(CheckImport):
             return len(nest) > 1 and nest[-2][0] in cur["pureElems"][model]
 
         def hasParaAncestor(cur):
-            """Whether the current tag has a p element as ancestor.
+            """Whether the current tag is a p element or has a p element as ancestor.
 
             We use this to determine whether `<lb>` elements occur in a
             paragraph. Only such `<lb>` elements will be used to generate
@@ -3540,7 +3540,7 @@ class TEI(CheckImport):
             boolean
             """
             nest = cur[XNEST]
-            return any(n[0] == "p" for n in nest[0:-1])
+            return any(n[0] == "p" for n in nest)
 
         def hasMixedAncestor(cur):
             """Whether the current tag has an ancestor with mixed content.
