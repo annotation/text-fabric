@@ -137,12 +137,15 @@ class IIIF:
         staticDir = f"{repoLocation}/static{teiVersionRep}/{'prod' if prod else 'dev'}"
         self.staticDir = staticDir
         self.manifestDir = f"{staticDir}/manifests"
-        self.thumbDir = (
+        thumbDir = (
             f"{repoLocation}/{app.context.provenanceSpec['graphicsRelative']}"
         )
+        self.thumbDir = thumbDir
         scanDir = f"{repoLocation}/scans"
         self.scanDir = scanDir
-        coversDir = f"{scanDir}/covers"
+        scanRefDir = scanDir if prod else thumbDir
+        self.scanRefDir = scanRefDir
+        coversDir = f"{scanRefDir}/covers"
         self.coversDir = coversDir
 
         if dirExists(coversDir):
@@ -154,8 +157,8 @@ class IIIF:
 
         self.doCovers = doCovers
 
-        self.pagesDir = f"{scanDir}/pages"
-        self.logoInDir = f"{scanDir}/logo"
+        self.pagesDir = f"{scanRefDir}/pages"
+        self.logoInDir = f"{scanRefDir}/logo"
         self.logoDir = f"{staticDir}/logo"
 
         if doCovers:
@@ -202,11 +205,9 @@ class IIIF:
         if self.error:
             return
 
-        prod = self.prod
-        thumbDir = self.thumbDir
-        scanDir = self.scanDir
+        scanRefDir = self.scanRefDir
 
-        rotateFile = f"{scanDir if prod else thumbDir}/rotation_pages.tsv"
+        rotateFile = f"{scanRefDir}/rotation_pages.tsv"
 
         rotateInfo = {}
         self.rotateInfo = rotateInfo
@@ -227,15 +228,13 @@ class IIIF:
         if self.error:
             return
 
-        prod = self.prod
-        thumbDir = self.thumbDir
-        scanDir = self.scanDir
+        scanRefDir = self.scanRefDir
         doCovers = self.doCovers
 
         self.sizeInfo = {}
 
         for kind in ("covers", "pages") if doCovers else ("pages",):
-            sizeFile = f"{scanDir if prod else thumbDir}/sizes_{kind}.tsv"
+            sizeFile = f"{scanRefDir}/sizes_{kind}.tsv"
 
             sizeInfo = {}
             self.sizeInfo[kind] = sizeInfo
