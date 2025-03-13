@@ -573,7 +573,7 @@ def rep(status):
     return "OK" if status else "XX"
 
 
-def getResultDir(baseDir, headPart, version, prod, silent):
+def getResultDir(baseDir, headPart, version, prod, silent, withSuffix=True):
     """Determines the directory for the resulting WATM.
 
     The directory to which the resulting WATM is written, depends on a number of
@@ -587,10 +587,12 @@ def getResultDir(baseDir, headPart, version, prod, silent):
     of the repo.
 
     The version of the WATM is the version of the TF from which it is generated plus
-    a suffix, containing a sequence number.
+    a suffix, containing a sequence number. If `withSuffix` is False, the
+    suffix will be suppressed.
 
-    Whenever a pgeneration is executed, a new sequence number is chosen,
-    so that no previous version gets overwritten.
+    Whenever a generation is executed, a new sequence number is chosen,
+    so that no previous version gets overwritten. Of course, when `withSuffix` is False,
+    previous versions will be overwritten.
 
     If there is a file `latest` in the directory of the WATM versions, its number is
     taken as the previous version suffix. But if there are versions with a higher
@@ -615,6 +617,8 @@ def getResultDir(baseDir, headPart, version, prod, silent):
         Whether we are in a production or development run
     silent: boolean
         Whether we should operate silently.
+    withSuffix: boolean, True
+        If False, we suppress the suffix behind the TF version
 
     Returns
     -------
@@ -624,44 +628,47 @@ def getResultDir(baseDir, headPart, version, prod, silent):
     prodFix = "prod" if prod else "dev"
     resultDirBase = f"{baseDir}{headPart}/{TT_NAME}"
     initTree(resultDirBase, fresh=False)
-    latestFile = f"{resultDirBase}/latest"
 
-    prefix = f"{version}-"
-    numReps = {
-        pv.removeprefix(prefix)
-        for pv in dirContents(resultDirBase)[1]
-        if pv.startswith(prefix)
-    }
+    if withSuffix:
+        latestFile = f"{resultDirBase}/latest"
+        prefix = f"{version}-"
+        numReps = {
+            pv.removeprefix(prefix)
+            for pv in dirContents(resultDirBase)[1]
+            if pv.startswith(prefix)
+        }
 
-    maxNum = max(
-        (int(num) for numRep in numReps if (num := numRep.lstrip("0")).isdecimal()),
-        default=0,
-    )
+        maxNum = max(
+            (int(num) for numRep in numReps if (num := numRep.lstrip("0")).isdecimal()),
+            default=0,
+        )
 
-    if not fileExists(latestFile):
-        latestNum = 0
+        if not fileExists(latestFile):
+            latestNum = 0
+        else:
+            with fileOpen(latestFile) as fh:
+                contents = fh.read().strip().split("-", 1)
+                latestNumStr = (contents[1] if len(contents) == 2 else "").lstrip("0")
+                latestNum = int(latestNumStr) if latestNumStr.isdecimal() else 0
+
+        if prod:
+            newNum = max((latestNum, maxNum))
+
+            while True:
+                newNum += 1
+                newNumRep = f"{newNum:>03}"
+                if newNumRep in numReps:
+                    continue
+                break
+
+            with fileOpen(latestFile, "w") as fh:
+                fh.write(f"{version}-{newNumRep}\n")
+        else:
+            newNumRep = f"{latestNum:>03}"
+
+        resultVersionDir = f"{resultDirBase}/{version}/{prodFix}"
     else:
-        with fileOpen(latestFile) as fh:
-            contents = fh.read().strip().split("-", 1)
-            latestNumStr = (contents[1] if len(contents) == 2 else "").lstrip("0")
-            latestNum = int(latestNumStr) if latestNumStr.isdecimal() else 0
-
-    if prod:
-        newNum = max((latestNum, maxNum))
-
-        while True:
-            newNum += 1
-            newNumRep = f"{newNum:>03}"
-            if newNumRep in numReps:
-                continue
-            break
-
-        with fileOpen(latestFile, "w") as fh:
-            fh.write(f"{version}-{newNumRep}\n")
-    else:
-        newNumRep = f"{latestNum:>03}"
-
-    resultVersionDir = f"{resultDirBase}/{version}-{newNumRep}/{prodFix}"
+        resultVersionDir = f"{resultDirBase}/{version}-{newNumRep}/{prodFix}"
 
     if not silent:
         console(f"Writing {prodRep} data to {resultVersionDir}")
@@ -789,7 +796,17 @@ def operationalize(data):
 class WATM:
     """The export machinery is exposed as a class, wrapped around a TF dataset."""
 
-    def __init__(self, app, nsOrig, pageInfoDir=None, skipMeta=False, extra={}, silent=False, prod=False, **kwargs):
+    def __init__(
+        self,
+        app,
+        nsOrig,
+        pageInfoDir=None,
+        skipMeta=False,
+        extra={},
+        silent=False,
+        prod=False,
+        **kwargs,
+    ):
         """Wrap the WATM exporter around a TF dataset.
 
         Given an already loaded TF dataset, we make an inventory of all data
