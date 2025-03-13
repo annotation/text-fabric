@@ -39,7 +39,7 @@ def fillinIIIF(data, **kwargs):
     return data
 
 
-def parseIIIF(settings, prod, selector):
+def parseIIIF(settings, prod, selector, **kwargs):
     """Parse the iiif yml file and deliver a filled in section.
 
     The iiif.yml file contains switches and constants and macros which then are used
@@ -67,6 +67,10 @@ def parseIIIF(settings, prod, selector):
     selector: string
         Either `scans` or `templates`.
         Which top-level of sections we are going to grab out of the iiif.yml file.
+    kwargs: dict
+        Additional optional parameters to pass as key value pairs to
+        the iiif config file. These values will be filled in for place holders
+        of the form `[`*arg*`]`.
     """
 
     def applySwitches(prod, constants, switches):
@@ -76,7 +80,7 @@ def parseIIIF(settings, prod, selector):
 
         return constants
 
-    def substituteConstants(data, macros, constants):
+    def substituteConstants(data, macros, constants, kwargs):
         tpd = type(data)
 
         if tpd is str:
@@ -93,14 +97,27 @@ def parseIIIF(settings, prod, selector):
                 else:
                     data = data.replace(pattern, str(v))
 
+            if type(data) is str:
+                for k, v in kwargs.items():
+                    pattern = f"[{k}]"
+
+                    if type(v) is int and data == pattern:
+                        data = v
+                        break
+                    else:
+                        data = data.replace(pattern, str(v))
+
             return data
 
         if tpd is list:
-            return [substituteConstants(item, macros, constants) for item in data]
+            return [
+                substituteConstants(item, macros, constants, kwargs) for item in data
+            ]
 
         if tpd is dict:
             return {
-                k: substituteConstants(v, macros, constants) for (k, v) in data.items()
+                k: substituteConstants(v, macros, constants, kwargs)
+                for (k, v) in data.items()
             }
 
         return data
@@ -114,32 +131,66 @@ def parseIIIF(settings, prod, selector):
 
     return AttrDict(
         {
-            x: substituteConstants(xText, macros, constants)
+            x: substituteConstants(xText, macros, constants, kwargs)
             for (x, xText) in settings[selector].items()
         }
     )
 
 
 class IIIF:
-    def __init__(self, teiVersion, app, pageInfoDir, prod=False, silent=False):
+    def __init__(
+        self,
+        teiVersion,
+        app,
+        pageInfoDir,
+        outputDir=None,
+        prod=False,
+        silent=False,
+        **kwargs,
+    ):
+        """Class for generating IIIF manifests.
+
+        Parameters
+        ----------
+        teiVersion: string
+            Subdirectory within the static directory.
+            The manifests are generated in this subdirectory, which corresponds to
+            the version of the TEI source.
+        app: object
+            A loaded TF data source
+        pageInfoDir: string
+            Directory where the files with page information are, especially the
+            page sequence file.
+        outputDir: string, optional None
+            If present, manifests nad logo will be generated in this directory.
+            Otherwise a standard location is chosen: `static` at
+            the top-level of the repo and within that `prod` or `dev`
+        prod: boolean, optional False
+            Whether the manifests are for production (False means development)
+        silent: boolean, optional False
+            Whether to suppress output messages
+        kwargs: dict
+            Additional optional parameters to pass as key value pairs to
+            the iiif config file. These values will be filled in for place holders
+            of the form `[`*arg*`]`.
+        """
         self.teiVersion = teiVersion
         self.app = app
         self.pageInfoDir = pageInfoDir
         self.prod = prod
         self.silent = silent
         self.error = False
+        self.kwargs = kwargs
 
         teiVersionRep = f"/{teiVersion}" if teiVersion else teiVersion
 
         F = app.api.F
 
         repoLocation = app.repoLocation
-        staticDir = f"{repoLocation}/static{teiVersionRep}/{'prod' if prod else 'dev'}"
-        self.staticDir = staticDir
-        self.manifestDir = f"{staticDir}/manifests"
-        thumbDir = (
-            f"{repoLocation}/{app.context.provenanceSpec['graphicsRelative']}"
-        )
+        outputDir = f"{repoLocation}/static{teiVersionRep}/{'prod' if prod else 'dev'}" if outputDir is None else outputDir
+        self.outputDir = outputDir
+        self.manifestDir = f"{outputDir}/manifests"
+        thumbDir = f"{repoLocation}/{app.context.provenanceSpec['graphicsRelative']}"
         self.thumbDir = thumbDir
         scanDir = f"{repoLocation}/scans"
         self.scanDir = scanDir
@@ -159,11 +210,11 @@ class IIIF:
 
         self.pagesDir = f"{scanRefDir}/pages"
         self.logoInDir = f"{scanRefDir}/logo"
-        self.logoDir = f"{staticDir}/logo"
+        self.logoDir = f"{outputDir}/logo"
 
         if doCovers:
             self.coversHtmlIn = f"{repoLocation}/programs/covers.html"
-            self.coversHtmlOut = f"{staticDir}/covers.html"
+            self.coversHtmlOut = f"{outputDir}/covers.html"
 
         (ok, settings) = readCfg(
             repoLocation, "iiif", "IIIF", verbose=-1 if silent else 1, plain=True
@@ -174,7 +225,7 @@ class IIIF:
 
         self.settings = settings
 
-        self.templates = parseIIIF(settings, prod, "templates")
+        self.templates = parseIIIF(settings, prod, "templates", **kwargs)
         folders = [F.folder.v(f) for f in F.otype.s("folder")]
 
         self.getSizes()

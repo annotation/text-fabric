@@ -789,7 +789,7 @@ def operationalize(data):
 class WATM:
     """The export machinery is exposed as a class, wrapped around a TF dataset."""
 
-    def __init__(self, app, nsOrig, pageInfoDir=None, skipMeta=False, extra={}, silent=False, prod=False):
+    def __init__(self, app, nsOrig, pageInfoDir=None, skipMeta=False, extra={}, silent=False, prod=False, **kwargs):
         """Wrap the WATM exporter around a TF dataset.
 
         Given an already loaded TF dataset, we make an inventory of all data
@@ -837,6 +837,8 @@ class WATM:
 
             This mechanism helps you to ensure that you do not change existing
             versions in the `watm` directory.
+        kwargs: dict
+            Addtional parameters passed to the parsing of the IIIF config file
 
         """
         self.app = app
@@ -874,7 +876,7 @@ class WATM:
 
         zoneBased = settings.get("zoneBased", False)
         self.zoneBased = zoneBased
-        iiifSettings = parseIIIF(settings, prod, "scans") if settings else {}
+        iiifSettings = parseIIIF(settings, prod, "scans", **kwargs) if settings else {}
         self.scanInfo = operationalize(iiifSettings)
 
         self.error = False
