@@ -60,10 +60,10 @@ def parseIIIF(settings, prod, selector, **kwargs):
     Parameters
     ----------
     prod: string
-        Either `prod` or `dev`.
+        Either `prod` or `dev` or `preview`.
         This determines whether we fill in a production value or a develop value
-        for each of the settings mentioned in the `switches` section of the iiif.yml
-        file.
+        or a preview value for each of the settings mentioned in the `switches`
+        section of the iiif.yml file.
     selector: string
         Either `scans` or `templates`.
         Which top-level of sections we are going to grab out of the iiif.yml file.
@@ -75,7 +75,7 @@ def parseIIIF(settings, prod, selector, **kwargs):
 
     def applySwitches(prod, constants, switches):
         if len(switches):
-            for k, v in switches["prod" if prod else "dev"].items():
+            for k, v in switches[prod].items():
                 constants[k] = v
 
         return constants
@@ -144,7 +144,7 @@ class IIIF:
         app,
         pageInfoDir,
         outputDir=None,
-        prod=False,
+        prod="dev",
         silent=False,
         **kwargs,
     ):
@@ -164,9 +164,10 @@ class IIIF:
         outputDir: string, optional None
             If present, manifests nad logo will be generated in this directory.
             Otherwise a standard location is chosen: `static` at
-            the top-level of the repo and within that `prod` or `dev`
-        prod: boolean, optional False
-            Whether the manifests are for production (False means development)
+            the top-level of the repo and within that `prod` or `dev` or `preview`
+        prod: string, optional dev
+            Whether the manifests are for production (`prod`) or development (`dev`)
+            of preview (`preview`)
         silent: boolean, optional False
             Whether to suppress output messages
         kwargs: dict
@@ -177,7 +178,7 @@ class IIIF:
         self.teiVersion = teiVersion
         self.app = app
         self.pageInfoDir = pageInfoDir
-        self.prod = prod
+        self.prod = prod if prod in {"prod", "dev", "preview"} else "dev"
         self.silent = silent
         self.error = False
         self.kwargs = kwargs
@@ -187,14 +188,18 @@ class IIIF:
         F = app.api.F
 
         repoLocation = app.repoLocation
-        outputDir = f"{repoLocation}/static{teiVersionRep}/{'prod' if prod else 'dev'}" if outputDir is None else outputDir
+        outputDir = (
+            f"{repoLocation}/static{teiVersionRep}/{prod}"
+            if outputDir is None
+            else outputDir
+        )
         self.outputDir = outputDir
         self.manifestDir = f"{outputDir}/manifests"
         thumbDir = f"{repoLocation}/{app.context.provenanceSpec['graphicsRelative']}"
         self.thumbDir = thumbDir
         scanDir = f"{repoLocation}/scans"
         self.scanDir = scanDir
-        scanRefDir = scanDir if prod else thumbDir
+        scanRefDir = scanDir if prod == "prod" else thumbDir
         self.scanRefDir = scanRefDir
         coversDir = f"{scanRefDir}/covers"
         self.coversDir = coversDir
@@ -417,7 +422,7 @@ class IIIF:
 
         prod = self.prod
         settings = self.settings
-        server = settings["switches"]["prod" if prod else "dev"]["server"]
+        server = settings["switches"][prod]["server"]
 
         initTree(manifestDir, fresh=True)
 

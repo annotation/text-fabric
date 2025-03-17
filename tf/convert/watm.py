@@ -613,8 +613,8 @@ def getResultDir(baseDir, headPart, version, prod, silent, withSuffix=True):
         The path from the repo location to the `tf` directory.
     version: string
         The version of the TF on which the WATM is based
-    prod: boolean:
-        Whether we are in a production or development run
+    prod: string:
+        Whether we are in a production or development or preview run
     silent: boolean
         Whether we should operate silently.
     withSuffix: boolean, True
@@ -624,8 +624,8 @@ def getResultDir(baseDir, headPart, version, prod, silent, withSuffix=True):
     -------
     The path to the versioned dir where the WATM ends up.
     """
-    prodRep = "production" if prod else "development"
-    prodFix = "prod" if prod else "dev"
+    prodRep = "production" if prod == "prod" else "preview" if prod == "preview" else "development"
+    prodFix = prod if prod in {"prod", "dev", "preview"} else "dev"
     resultDirBase = f"{baseDir}{headPart}/{TT_NAME}"
     initTree(resultDirBase, fresh=False)
 
@@ -651,7 +651,7 @@ def getResultDir(baseDir, headPart, version, prod, silent, withSuffix=True):
                 latestNumStr = (contents[1] if len(contents) == 2 else "").lstrip("0")
                 latestNum = int(latestNumStr) if latestNumStr.isdecimal() else 0
 
-        if prod:
+        if prod == "prod":
             newNum = max((latestNum, maxNum))
 
             while True:
@@ -804,7 +804,7 @@ class WATM:
         skipMeta=False,
         extra={},
         silent=False,
-        prod=False,
+        prod="dev",
         **kwargs,
     ):
         """Wrap the WATM exporter around a TF dataset.
@@ -837,11 +837,11 @@ class WATM:
             value for each key is a dictionary that maps nodes to values.
         silent: boolean, optional False
             Whether to suppress output to the console
-        prod: boolean, optional False
-            If True, we make a production version, if False we make a
-            development version.
-            Production versions end up in the `watm` directory, development versions
-            in the `_temp/watm` directory.
+        prod: string, optional dev
+            If "prod", we make a production version, if "preview" we make a
+            preview version, otherwise we make development version.
+            Production versions end up in the `watm` directory, preview and
+            development versions in the `_temp/watm` directory.
 
             Production versions have an extra sequence number behind the TF version
             on which they are based, e.g. `2.1.0e-001`, `2.1.0e-002`.
@@ -849,8 +849,8 @@ class WATM:
             sequence number.
             The sequence number is stored in a file `latest` in the `watm` directory.
 
-            Development versions are always equal to the TF versions and can be
-            overwritten.
+            Development and preview versions are always equal to the TF
+            versions and can be overwritten.
 
             This mechanism helps you to ensure that you do not change existing
             versions in the `watm` directory.
@@ -862,7 +862,7 @@ class WATM:
         self.nsOrig = nsOrig
         self.extra = extra
         self.silent = silent
-        self.prod = prod
+        self.prod = prod if prod in {"prod", "dev", "preview"} else "dev"
         api = app.api
         F = api.F
         E = api.E
@@ -2729,7 +2729,7 @@ class WATMS:
         if not silent:
             console(msg, **kwargs)
 
-    def produce(self, doc=None, prod=False):
+    def produce(self, doc=None, prod="dev"):
         """Convert all relevant TF datasets.
 
         Parameters
@@ -2738,7 +2738,7 @@ class WATMS:
             Subdirectory where one of the TF datasets resides.
             If passed, only this dataset will be converted.
             Otherwise all datasets will be converted.
-        prod: boolean, optional False
+        prod: string, optional dev
             See `WATM.writeAll`
         """
         error = self.error
