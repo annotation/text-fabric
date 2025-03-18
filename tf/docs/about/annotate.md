@@ -38,8 +38,9 @@ to entities of different kinds.
 ## How entities exist in a corpus
 
 Your corpus may already have entities, marked up by an automatic tool such as
-Spacy (see `tf.tools.myspacy`). In that case there is already a node type
-`ent` and features `eid` and `kind`.
+Spacy, see
+[tff.convert.myspacy](https://annotation.github.io/text-fabric-factory/tff/tools/myspacy.html).
+In that case there is already a node type `ent` and features `eid` and `kind`.
 
 When you make manual annotations, the annotations are saved as TSV files.
 In order to create nodes for them in your corpus, you can use those TSV files,

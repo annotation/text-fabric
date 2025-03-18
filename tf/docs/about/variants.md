@@ -31,7 +31,7 @@ This module is to be used in the context of a `tf.convert.walker` conversion.
 It can be imported as
 
 ``` python
-from tf.convert.variants import Variants
+from tff.convert.variants import Variants
 ```
 
 It should be initialized in the `director()` function. It needs a storage
@@ -54,7 +54,8 @@ The node type of the "sentence" nodes can be customised, so you can use this
 module to insert any kind of node based on their boundary information. The name
 of the base text can also be customised. Usually it is `base`, but if one of
 the witnesses is also called `base`, you should pass another name.
-For more information, see `tf.convert.variants.Variants`.
+For more information, see
+[tff.convert.variants.Variants](https://annotation.github.io/text-fabric-factory/tff/convert/variants.html#tff.convert.variants.Variants).
 
 # Explanation
 

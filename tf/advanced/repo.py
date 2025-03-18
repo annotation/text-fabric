@@ -1040,7 +1040,7 @@ def fromString(string):
 def readInfo(filePathLocal):
     """Read the commit and release from a file.
 
-    This is assumed to be a file written by `tf.advanced.checkoutRepo()` after
+    This is assumed to be a file written by `tf.advanced.repo.checkoutRepo()` after
     downloading a local copy of an online folder.
 
     Parameters

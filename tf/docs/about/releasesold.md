@@ -23,7 +23,8 @@ See `tf.about.releases`.
 
 2025-01-13
 
-*   Improvements in various conversion modules (`tf.convert.tei`).
+*   Improvements in various conversion modules, e.g.
+    [tff.convert.tei](https://annotation.github.io/text-fabric-factory/tff/convert/tei.html).
 *   Small fixes in building and serving layered search clients
 
 #### 12.6.2
@@ -124,8 +125,9 @@ automatically.
 
 **WATM**
 
-Further development in converting TF data to WATM (see `tf.convert.watm`), including
-generating IIIF manifests for page scans.
+Further development in converting TF data to WATM, see
+[tff.convert.watm](https://annotation.github.io/text-fabric-factory/tff/convert/watm.html),
+including generating IIIF manifests for page scans.
 This is work in progress.
 The work is targeted at the
 [Suriano Letters](https://annotation.github.io/text-fabric/tf/about/corpora.html#knawhuygensing-and-gitlabhucknawnl).
@@ -256,7 +258,9 @@ Fix in display algorithm
     `tf.advanced.display.export` function, which did not have this bug.
 
 *   The pipeline from TEI or PageXML via TF to WATM is a complex thing to steer.
-    There is now a new class `tf.convert.makewatm` that takes care of this: it provides
+    There is now a new class
+    [tff.convert.makewatm](https://annotation.github.io/text-fabric-factory/tff/convert/makewatm.html)
+    that takes care of this: it provides
     a command line interface to perform the necessary convert steps.
 
     Moreover, you can use it as a base class and extend it with additional 
@@ -292,7 +296,9 @@ is working in.
 
 2024-04-19
 
-Improvements in `tf.convert.watm`: the resulting data is much more compact, because:
+Improvements in
+[tff.convert.watm](https://annotation.github.io/text-fabric-factory/tff/convert/watm.html):
+the resulting data is much more compact, because:
 
 *   you can choose to export it as TSV instead of JSON;
 *   no annotations of type `node` are produced anymore, they only served to map
@@ -305,7 +311,9 @@ Improvements in `tf.convert.watm`: the resulting data is much more compact, beca
 
 2024-04-16
 
-* Minimal fixes in `tf.convert.tei`: it can handle a biography.
+* Minimal fixes in 
+  [tff.convert.tei](https://annotation.github.io/text-fabric-factory/tff/convert/tei.html)
+  it can handle a biography.
 * Fixed `prettyTuple()` when passed `_asString=True`: it did not pass this on
   to `pretty()` which caused a Python error.
 
@@ -328,7 +336,9 @@ Improvements in `tf.convert.watm`: the resulting data is much more compact, beca
 
 2024-02-26
 
-The output of `tf.convert.watm` has been changed.
+The output of
+[tff.convert.watm](https://annotation.github.io/text-fabric-factory/tff/convert/watm.html)
+has been changed.
 It now generates token files per section, where you can configure the TF
 section level for that.
 
@@ -358,7 +368,8 @@ Minor improvements to the WATM converter, and an update of its docs.
 
 2024-02-08
 
-*   A new data export conversion, from TF to WATM. See `tf.convert.watm`.
+*   A new data export conversion, from TF to WATM. See
+    [tff.convert.watm](https://annotation.github.io/text-fabric-factory/tff/convert/watm.html).
     WATM is a not yet hardened data format that powers the publishing line
     for text and annotations built by Team Text at 
     [KNAW/HuC Digital Infrastructure](https://di.huc.knaw.nl/text-analysis-en.html).
@@ -370,7 +381,9 @@ Minor improvements to the WATM converter, and an update of its docs.
         later moved to
         [HuygensING/translatin-manif](https://github.com/HuygensING/translatin-manif)
 
-*   Small fixes in `tf.convert.addnlp`: when the NLP data is integrated in the
+*   Small fixes in
+    [tff.convert.addnlp](https://annotation.github.io/text-fabric-factory/tff/convert/addnlp.html):
+    when the NLP data is integrated in the
     TF dataset, the NLP-generated features will get some metadata
 
 ### 12.2
@@ -572,7 +585,9 @@ Deleted tf.tools.docsright again, but developed it further in
 
     These tools will let you save your work as files on your own computer.
 
-*   In `tf.convert.addnlp` we can now extract more NLP information besides tokens
+*   In
+    [tff.convert.addnlp](https://annotation.github.io/text-fabric-factory/tff/convert/addnlp.html)
+    we can now extract more NLP information besides tokens
     and sentences: part-of-speech, morphological tagging, lemmatisation, named
     entity recognition
 
@@ -743,7 +758,8 @@ See `tf.about.releasesold`.
 
 ##### Ongoing work on conversion
 
-*   `tf.convert.addnlp`: if generated tokens cross element boundaries, they will be
+*   [tff.convert.addnlp](https://annotation.github.io/text-fabric-factory/tff/convert/addnlp.html):
+    if generated tokens cross element boundaries, they will be
     split on those boundaries. These atomic tokens become the slots (type `t` by
     default), the original tokens are added as nodes of type `token`.
 
@@ -1003,15 +1019,18 @@ made more powerful and superfluous options have been removed.
 
 This new version is all about using the results of NLP pipelines in the creation
 of a TF dataset.
-We build on the TEI to TF conversion in `tf.convert.tei` and surround it with
-other data creation steps.
+We build on the TEI to TF conversion in
+[tff.convert.tei](https://annotation.github.io/text-fabric-factory/tff/convert/tei.html)
+and surround it with other data creation steps.
 The following workflow is now supported by means of simple commands.
 
 *   The TEI to TF conversion can now be extended with NLP generated tokens and
     sentences, there is single command to do this but the individual steps can
-    also be run in a notebook, see `tf.convert.addnlp`. Work in progress.
+    also be run in a notebook, see
+    [tff.convert.addnlp](https://annotation.github.io/text-fabric-factory/tff/convert/addnlp.html).
+    Work in progress.
 *   TF can now invoke a Spacy-based workflow to detect tokens and sentences.
-    See `tf.tools.myspacy`.
+    See [tff.convert.myspacy](https://annotation.github.io/text-fabric-factory/tff/tools/myspacy.html).
 *   TEI to TF conversion: usability improvements and fixes.
 *   `tf.dataset.modify` can now also replace the slot type in a dataset by an other
     node type. For example, you can use this function to add tokens to a dataset
@@ -1082,7 +1101,8 @@ The following workflow is now supported by means of simple commands.
     Handy for exploring new and unknown TF datasets, for example those which are
     converted literally from an intricate TEI nest of files.
 
-*   Improvements in the transcription document generated by the `tf.convert.tei`.
+*   Improvements in the transcription document generated by the
+    [tff.convert.tei](https://annotation.github.io/text-fabric-factory/tff/convert/tei.html).
 
 *   New conversion from TF to `tf.convert.pandas`, callable as
     `A.exportPandas()`. For examples see:
@@ -1122,8 +1142,11 @@ Other small fixes.
 
 2023-02-22
 
-Added `tf.convert.xml`, a straightforward, generic XML to TF converter, obtained from
-`tf.convert.tei` by stripping almost all intelligence from it.
+Added
+[tff.convert.xml](https://annotation.github.io/text-fabric-factory/tff/convert/xml.html),
+a straightforward, generic XML to TF converter, obtained from
+[tff.convert.tei](https://annotation.github.io/text-fabric-factory/tff/convert/tei.html)
+by stripping almost all intelligence from it.
 It serves as a stub to start off with your own XML to TF conversion program.
 
 For an example how to use it, see its application to the 
@@ -1138,15 +1161,20 @@ If you pass only an input directory, it creates an HTML index for that directory
 You can put that in the top of your `public` folder in GitLab,
 so that readers of the Pages documentation can navigate to all generated docs.
 
-A fix in `tf.tools.xmlschema`: while analysing definitions in an XSD file,
+A fix in
+[tff.tools.xmlschema](https://annotation.github.io/text-fabric-factory/tff/tools/xmlschema.html):
+while analysing definitions in an XSD file,
 the imports of other XSD files were not heeded. Now they are.
 But not recursively, because in the examples I saw, files imported
 each other mutually or with cycles.
 
-Various enhancements to the `tf.convert.tei` conversion:
+Various enhancements to the
+[tff.convert.tei](https://annotation.github.io/text-fabric-factory/tff/convert/tei.html)
+conversion:
 
 *   a fix in white-space handling (the white-space removal was a bit too aggressive),
-    the root cause of this was the aforementioned bug in `tf.tools.xmlschema`;
+    the root cause of this was the aforementioned bug in
+    [tff.tools.xmlschema](https://annotation.github.io/text-fabric-factory/tff/tools/xmlschema.html);
 *   a text format with layout is defined and set as the default;
 *   text within the TEI header and notes is displayed in a different color.
 
@@ -1166,7 +1194,8 @@ it into a valid and ready-to-use TF dataset.
 But it is also a somewhat smart, because it generates a TF app
 and documentation for the new dataset.
 
-See `tf.convert.tei`
+See
+[tff.convert.tei](https://annotation.github.io/text-fabric-factory/tff/convert/tei.html).
 
 #### New command-line tool: `nbconvert`
 
@@ -1188,7 +1217,8 @@ xmlschema analyse schema.xsd
 
 Derives meaningful information from an XML schema.
 
-See `tf.tools.xmlschema`
+See
+[tff.tools.xmlschema](https://annotation.github.io/text-fabric-factory/tff/tools/xmlschema.html) .
 
 #### New API function: `flexLink`
 
@@ -1459,7 +1489,9 @@ Improvement in the function `tf.volumes.collect.collect()`:
 
 2022-07-13
 
-Addition of a module `tf.convert.variants` that can be used in a
+Addition of a module
+[tff.convert.variants](https://annotation.github.io/text-fabric-factory/tff/convert/variants.html)
+that can be used in a
 `tf.convert.walker` conversion.
 It can be used to process TEI app-`lem`-`rdg` elements (critical apparatus).
 What it does for you is to create sentence-like nodes from sentence-boundary

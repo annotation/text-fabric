@@ -102,7 +102,8 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     a novel by Jacob van Lennep, 1840,
     **Jacob van Lennep - Ferdinand Huyck**;
     From [DBNL](https://www.dbnl.org/tekst/lenn006lotg01_01/), TEI-Lite;
-    Dirk Roorda (converter TEI to TF), see also `tf.convert.tei`
+    Dirk Roorda (converter TEI to TF), see also
+    [tff.convert.tei](https://annotation.github.io/text-fabric-factory/tff/convert/tei.html)
 
     *with NLP output from Spacy woven in*
 

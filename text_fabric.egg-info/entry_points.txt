@@ -1,10 +1,6 @@
 [console_scripts]
 tf = tf.browser.start:main
-tf-addnlp = tf.convert.addnlp:main
-tf-fromtei = tf.convert.tei:main
-tf-fromxml = tf.convert.xml:main
 tf-make = tf.client.make.build:main
 tf-nbconvert = tf.tools.nbconvert:main
-tf-xmlschema = tf.tools.xmlschema:main
 tf-zip = tf.advanced.zipdata:main
 tf-zipall = tf.zip:main
