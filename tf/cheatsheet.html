@@ -1359,19 +1359,6 @@ from tf.lib import writeSets
 </dl>
 <hr>
 <h2 id="interchange-with-external-annotation-tools">Interchange with external annotation tools</h2>
-<pre><code class="language-python">from tf.convert.addnlp import NLPipeline
-</code></pre>
-<dl>
-<dt><pre><code class="language-python">NLPipeline()
-</code></pre></dt>
-<dd>
-<p>generate plain text, feed into NLP, ingest results</p>
-</dd>
-<dd>
-<p><code><a title="tf.convert.addnlp" href="convert/addnlp.html">tf.convert.addnlp</a></code></p>
-</dd>
-</dl>
-<hr>
 <pre><code class="language-python">from convert.recorder import Recorder
 </code></pre>
 <dl>
@@ -1382,91 +1369,6 @@ from tf.lib import writeSets
 </dd>
 <dd>
 <p><code><a title="tf.convert.recorder" href="convert/recorder.html">tf.convert.recorder</a></code></p>
-</dd>
-</dl>
-<hr>
-<h2 id="xml-tei-import">XML / TEI import</h2>
-<pre><code class="language-python">from tf.convert.xml import XML
-</code></pre>
-<dl>
-<dt><pre><code class="language-python">X = XML(...)
-</code></pre></dt>
-<dd>
-<p>convert XML source to full-fledged TF dataset plus app but no docs;
-put in your own conversion code, if you wish;
-see <a href="https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb">Greek New Testament</a></p>
-</dd>
-<dd>
-<p><code><a title="tf.convert.xml" href="convert/xml.html">tf.convert.xml</a></code></p>
-</dd>
-</dl>
-<pre><code class="language-python">from tf.convert.tei import TEI
-</code></pre>
-<dl>
-<dt><pre><code class="language-python">T = TEI(...)
-</code></pre></dt>
-<dd>
-<p>convert TEI source to full-fledged TF dataset plus app plus docs</p>
-</dd>
-<dd>
-<p><code><a title="tf.convert.tei" href="convert/tei.html">tf.convert.tei</a></code></p>
-</dd>
-</dl>
-<hr>
-<h2 id="watm-export">WATM export</h2>
-<pre><code class="language-python">from tf.app import use
-from tf.convert.watm import WATM
-</code></pre>
-<dl>
-<dt><pre><code class="language-python">A = use(...)
-WA = WATM(A, ns, ...)
-WA.makeText()
-WA.makeAnno()
-WA.writeAll()
-WA.testAll()
-</code></pre></dt>
-<dd>
-<p>convert TF dataset to text tokens and annotations in JSON format,
-for consumption by TextRepo/AnnoRepo of
-<a href="https://di.huc.knaw.nl/text-analysis-en.html">KNAW/HuC Digital Infrastructure</a>.
-See
-<a href="https://github.com/annotation/mondriaan">Mondriaan Proeftuin</a>
-<a href="https://gitlab.huc.knaw.nl/suriano/letters">Suriano Letters</a>
-<a href="https://github.com/translatin-manif">HuygensING/translatin-manif</a></p>
-</dd>
-<dd>
-<p><code><a title="tf.convert.watm" href="convert/watm.html">tf.convert.watm</a></code></p>
-</dd>
-</dl>
-<pre><code class="language-python">from tf.convert.watm import WATMS
-</code></pre>
-<dl>
-<dt><pre><code class="language-python">W = WATM(org, repo, backend, ns, ...)
-W.produce()
-</code></pre></dt>
-<dd>
-<p>convert series of TF datasets to WATM</p>
-</dd>
-<dd>
-<p><code><a title="tf.convert.watm.WATMS" href="convert/watm.html#tf.convert.watm.WATMS">WATMS</a></code></p>
-</dd>
-</dl>
-<hr>
-<h2 id="nlp-import">NLP import</h2>
-<p><strong>in order to use this, install Spacy, see <code><a title="tf.tools.myspacy" href="tools/myspacy.html">tf.tools.myspacy</a></code></strong></p>
-<pre><code class="language-python">
-from tf.convert.addnlp import addTokensAndSentences
-</code></pre>
-<dl>
-<dt><pre><code class="language-python">newVersion = addTokensAndSenteces(A)
-</code></pre></dt>
-<dd>
-<p>add NLP output from Spacy to an existing
-TF dataset. See the docs how this is broken down in separate
-steps.</p>
-</dd>
-<dd>
-<p><code><a title="tf.convert.addnlp" href="convert/addnlp.html">tf.convert.addnlp</a></code></p>
 </dd>
 </dl>
 <hr>
@@ -1656,48 +1558,11 @@ GitHub / GitLab.</p>
 <dd>
 <p><code><a title="tf.tools.nbconvert" href="tools/nbconvert.html">tf.tools.nbconvert</a></code></p>
 </dd>
-<dt><pre><code class="language-sh">tf-xmlschema analysis {schema}.xsd
-</code></pre></dt>
-<dd>
-<p>Analyses an XML <em>schema</em> file and extracts meaningful information for processing
-the XML that adheres to that schema.</p>
-</dd>
-<dd>
-<p><code><a title="tf.tools.xmlschema" href="tools/xmlschema.html">tf.tools.xmlschema</a></code></p>
-</dd>
-<dt><pre><code class="language-sh">tf-fromxml
-</code></pre></dt>
-<dd>
-<p>When run in a repo it finds an XML source and converts it to TF.
-The resulting TF data is delivered in the repo.
-There is a hook to put your own conversion code in.</p>
-</dd>
-<dd>
-<p><code><a title="tf.convert.xml" href="convert/xml.html">tf.convert.xml</a></code></p>
-</dd>
-<dt><pre><code class="language-sh">tf-fromtei
-</code></pre></dt>
-<dd>
-<p>When run in a repo it finds a TEI source and converts it to TF.
-The resulting TF data is delivered in the repo.</p>
-</dd>
-<dd>
-<p><code><a title="tf.convert.tei" href="convert/tei.html">tf.convert.tei</a></code></p>
-</dd>
-<dt><pre><code class="language-sh">tf-addnlp
-</code></pre></dt>
-<dd>
-<p>When run in the repo of a TF dataset, it adds NLP output to it
-after running Spacy to get them.</p>
-</dd>
-<dd>
-<p><code><a title="tf.convert.addnlp" href="convert/addnlp.html">tf.convert.addnlp</a></code></p>
-</dd>
 </dl>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2550bbf9865ccdc92c0924ffbc71e2c2377f77e6/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1606be8081b05d38725496b91c9815487ac8e93c/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md
@@ -1811,9 +1676,6 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#custom-node-sets-for-search">Custom node sets for search</a></li>
 <li><a href="#export-to-excel_1">Export to Excel</a></li>
 <li><a href="#interchange-with-external-annotation-tools">Interchange with external annotation tools</a></li>
-<li><a href="#xml-tei-import">XML / TEI import</a></li>
-<li><a href="#watm-export">WATM export</a></li>
-<li><a href="#nlp-import">NLP import</a></li>
 <li><a href="#pandas-export">pandas export</a></li>
 <li><a href="#mql-interchange">MQL interchange</a></li>
 <li><a href="#walker-conversion">Walker conversion</a></li>
