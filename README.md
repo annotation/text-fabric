@@ -45,6 +45,10 @@ structure still sits in the data.
 All about Text-Fabric is in the
 [docs](https://annotation.github.io/text-fabric/tf).
 
+See also
+[text-fabric-factory](https://github.com/annotation/text-fabric-factory)
+for programs to convert other formats to TF.
+
 Want to contribute?
 
 Start with the [contribution notes](codestyle/contributing.md).

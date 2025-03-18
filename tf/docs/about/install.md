@@ -2,7 +2,7 @@
 
 ## If you have already Python on your machine
 
-Make sure you have at least Python 3.7.0
+Make sure you have at least Python 3.9.0
 
 Recommended: install JupyterLab:
 fire up a terminal (= command prompt) and say

@@ -47,7 +47,9 @@ redoing the annotation creation.
 *   Data Structures and Algorithms
     (`tf.about.datamodel`, `tf.about.searchdesign`, `tf.about.displaydesign`)
 *   File Format (`tf.about.fileformats`, `tf.about.optimizations`)
-*   Converting to TF (`tf.convert.walker`, `tf.convert.mql`)
+*   Converting to TF (`tf.convert.walker`, `tf.convert.mql`).
+    For converting from XML, TEI, PageXML etc. see
+    [text-fabric-factory](https://github.com/annotation/text-fabric-factory)
 *   Exporting data and re-importing it with enrichments (`tf.convert.recorder`)
 *   Dataset manipulation (`tf.dataset.modify` and `tf.dataset.nodemaps.Versions`)
 *   Crossing versions of datasets (`tf.dataset.nodemaps`)
