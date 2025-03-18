@@ -44,7 +44,8 @@ crossorigin>
 <h4 id="1263">12.6.3</h4>
 <p>2025-01-13</p>
 <ul>
-<li>Improvements in various conversion modules (<code>tf.convert.tei</code>).</li>
+<li>Improvements in various conversion modules, e.g.
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/tei.html">tff.convert.tei</a>.</li>
 <li>Small fixes in building and serving layered search clients</li>
 </ul>
 <h4 id="1262">12.6.2</h4>
@@ -113,8 +114,9 @@ can click on triggers to view their occurrences in a slightly other highlight co
 automatically.</p>
 <p><strong>NB:</strong> The docs are lagging behind on this point.</p>
 <p><strong>WATM</strong></p>
-<p>Further development in converting TF data to WATM (see <code>tf.convert.watm</code>), including
-generating IIIF manifests for page scans.
+<p>Further development in converting TF data to WATM, see
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/watm.html">tff.convert.watm</a>,
+including generating IIIF manifests for page scans.
 This is work in progress.
 The work is targeted at the
 <a href="https://annotation.github.io/text-fabric/tf/about/corpora.html#knawhuygensing-and-gitlabhucknawnl">Suriano Letters</a>.</p>
@@ -249,7 +251,9 @@ This new fix only affects the export function from the browser, not the
 </li>
 <li>
 <p>The pipeline from TEI or PageXML via TF to WATM is a complex thing to steer.
-There is now a new class <code>tf.convert.makewatm</code> that takes care of this: it provides
+There is now a new class
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/makewatm.html">tff.convert.makewatm</a>
+that takes care of this: it provides
 a command line interface to perform the necessary convert steps.</p>
 <p>Moreover, you can use it as a base class and extend it with additional
 convert steps and options, with minimal code.</p>
@@ -271,7 +275,9 @@ is working in.</p>
 <h3 id="123">12.3</h3>
 <h4 id="1237">12.3.7</h4>
 <p>2024-04-19</p>
-<p>Improvements in <code>tf.convert.watm</code>: the resulting data is much more compact, because:</p>
+<p>Improvements in
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/watm.html">tff.convert.watm</a>:
+the resulting data is much more compact, because:</p>
 <ul>
 <li>you can choose to export it as TSV instead of JSON;</li>
 <li>no annotations of type <code>node</code> are produced anymore, they only served to map
@@ -283,7 +289,9 @@ annotations.</li>
 <h4 id="1236">12.3.6</h4>
 <p>2024-04-16</p>
 <ul>
-<li>Minimal fixes in <code>tf.convert.tei</code>: it can handle a biography.</li>
+<li>Minimal fixes in
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/tei.html">tff.convert.tei</a>
+it can handle a biography.</li>
 <li>Fixed <code>prettyTuple()</code> when passed <code>_asString=True</code>: it did not pass this on
 to <code>pretty()</code> which caused a Python error.</li>
 </ul>
@@ -306,7 +314,9 @@ cases where it should.</p>
 </ul>
 <h4 id="1234">12.3.4</h4>
 <p>2024-02-26</p>
-<p>The output of <code>tf.convert.watm</code> has been changed.
+<p>The output of
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/watm.html">tff.convert.watm</a>
+has been changed.
 It now generates token files per section, where you can configure the TF
 section level for that.</p>
 <p>The syntax for targets has been changed: more things are possible.</p>
@@ -326,7 +336,8 @@ Do not forget to specify <code>branch: main</code> under the <code>provenanceSpe
 <p>2024-02-08</p>
 <ul>
 <li>
-<p>A new data export conversion, from TF to WATM. See <code>tf.convert.watm</code>.
+<p>A new data export conversion, from TF to WATM. See
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/watm.html">tff.convert.watm</a>.
 WATM is a not yet hardened data format that powers the publishing line
 for text and annotations built by Team Text at
 <a href="https://di.huc.knaw.nl/text-analysis-en.html">KNAW/HuC Digital Infrastructure</a>.
@@ -340,7 +351,9 @@ later moved to
 </ul>
 </li>
 <li>
-<p>Small fixes in <code>tf.convert.addnlp</code>: when the NLP data is integrated in the
+<p>Small fixes in
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/addnlp.html">tff.convert.addnlp</a>:
+when the NLP data is integrated in the
 TF dataset, the NLP-generated features will get some metadata</p>
 </li>
 </ul>
@@ -512,7 +525,9 @@ Reed more in <code><a title="tf.about.annotate" href="annotate.html">tf.about.an
 <p>These tools will let you save your work as files on your own computer.</p>
 </li>
 <li>
-<p>In <code>tf.convert.addnlp</code> we can now extract more NLP information besides tokens
+<p>In
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/addnlp.html">tff.convert.addnlp</a>
+we can now extract more NLP information besides tokens
 and sentences: part-of-speech, morphological tagging, lemmatisation, named
 entity recognition</p>
 </li>
@@ -678,7 +693,8 @@ to this map.</p>
 </ul>
 <h5 id="ongoing-work-on-conversion">Ongoing work on conversion</h5>
 <ul>
-<li><code>tf.convert.addnlp</code>: if generated tokens cross element boundaries, they will be
+<li><a href="https://annotation.github.io/text-fabric-factory/tff/convert/addnlp.html">tff.convert.addnlp</a>:
+if generated tokens cross element boundaries, they will be
 split on those boundaries. These atomic tokens become the slots (type <code>t</code> by
 default), the original tokens are added as nodes of type <code>token</code>.</li>
 </ul>
@@ -955,15 +971,18 @@ made more powerful and superfluous options have been removed.</p>
 <p>2023-04-21</p>
 <p>This new version is all about using the results of NLP pipelines in the creation
 of a TF dataset.
-We build on the TEI to TF conversion in <code>tf.convert.tei</code> and surround it with
-other data creation steps.
+We build on the TEI to TF conversion in
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/tei.html">tff.convert.tei</a>
+and surround it with other data creation steps.
 The following workflow is now supported by means of simple commands.</p>
 <ul>
 <li>The TEI to TF conversion can now be extended with NLP generated tokens and
 sentences, there is single command to do this but the individual steps can
-also be run in a notebook, see <code>tf.convert.addnlp</code>. Work in progress.</li>
+also be run in a notebook, see
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/addnlp.html">tff.convert.addnlp</a>.
+Work in progress.</li>
 <li>TF can now invoke a Spacy-based workflow to detect tokens and sentences.
-See <code>tf.tools.myspacy</code>.</li>
+See <a href="https://annotation.github.io/text-fabric-factory/tff/tools/myspacy.html">tff.convert.myspacy</a>.</li>
 <li>TEI to TF conversion: usability improvements and fixes.</li>
 <li><code><a title="tf.dataset.modify" href="../dataset/modify.html">tf.dataset.modify</a></code> can now also replace the slot type in a dataset by an other
 node type. For example, you can use this function to add tokens to a dataset
@@ -1047,7 +1066,8 @@ It works in the TF browser and in Jupyter notebooks.</p>
 converted literally from an intricate TEI nest of files.</p>
 </li>
 <li>
-<p>Improvements in the transcription document generated by the <code>tf.convert.tei</code>.</p>
+<p>Improvements in the transcription document generated by the
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/tei.html">tff.convert.tei</a>.</p>
 </li>
 <li>
 <p>New conversion from TF to <code><a title="tf.convert.pandas" href="../convert/pandas.html">tf.convert.pandas</a></code>, callable as
@@ -1086,8 +1106,11 @@ it in a tab-separated file.</p>
 <p>Other small fixes.</p>
 <h4 id="1122">11.2.2</h4>
 <p>2023-02-22</p>
-<p>Added <code>tf.convert.xml</code>, a straightforward, generic XML to TF converter, obtained from
-<code>tf.convert.tei</code> by stripping almost all intelligence from it.
+<p>Added
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/xml.html">tff.convert.xml</a>,
+a straightforward, generic XML to TF converter, obtained from
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/tei.html">tff.convert.tei</a>
+by stripping almost all intelligence from it.
 It serves as a stub to start off with your own XML to TF conversion program.</p>
 <p>For an example how to use it, see its application to the
 <a href="https://github.com/ETCBC/nestle1904">Greek New Testament, LOWFAT trees</a>.</p>
@@ -1097,14 +1120,19 @@ It serves as a stub to start off with your own XML to TF conversion program.</p>
 If you pass only an input directory, it creates an HTML index for that directory.
 You can put that in the top of your <code>public</code> folder in GitLab,
 so that readers of the Pages documentation can navigate to all generated docs.</p>
-<p>A fix in <code>tf.tools.xmlschema</code>: while analysing definitions in an XSD file,
+<p>A fix in
+<a href="https://annotation.github.io/text-fabric-factory/tff/tools/xmlschema.html">tff.tools.xmlschema</a>:
+while analysing definitions in an XSD file,
 the imports of other XSD files were not heeded. Now they are.
 But not recursively, because in the examples I saw, files imported
 each other mutually or with cycles.</p>
-<p>Various enhancements to the <code>tf.convert.tei</code> conversion:</p>
+<p>Various enhancements to the
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/tei.html">tff.convert.tei</a>
+conversion:</p>
 <ul>
 <li>a fix in white-space handling (the white-space removal was a bit too aggressive),
-the root cause of this was the aforementioned bug in <code>tf.tools.xmlschema</code>;</li>
+the root cause of this was the aforementioned bug in
+<a href="https://annotation.github.io/text-fabric-factory/tff/tools/xmlschema.html">tff.tools.xmlschema</a>;</li>
 <li>a text format with layout is defined and set as the default;</li>
 <li>text within the TEI header and notes is displayed in a different color.</li>
 </ul>
@@ -1118,7 +1146,8 @@ takes all information in a nest of TEI files and transforms
 it into a valid and ready-to-use TF dataset.</p>
 <p>But it is also a somewhat smart, because it generates a TF app
 and documentation for the new dataset.</p>
-<p>See <code>tf.convert.tei</code></p>
+<p>See
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/tei.html">tff.convert.tei</a>.</p>
 <h4 id="new-command-line-tool-nbconvert">New command-line tool: <code>nbconvert</code></h4>
 <pre><code class="language-sh">nbconvert inDirectory outDirectory
 </code></pre>
@@ -1131,7 +1160,8 @@ service of GitHub or GitLab, bypassing NBViewer.</p>
 <pre><code class="language-sh">xmlschema analyse schema.xsd
 </code></pre>
 <p>Derives meaningful information from an XML schema.</p>
-<p>See <code>tf.tools.xmlschema</code></p>
+<p>See
+<a href="https://annotation.github.io/text-fabric-factory/tff/tools/xmlschema.html">tff.tools.xmlschema</a> .</p>
 <h4 id="new-api-function-flexlink">New API function: <code>flexLink</code></h4>
 <p><code>A.flexLink()</code> generates an app-dependent link
 to a tutorial or document served via the Pages of GitHub or GitLab.</p>
@@ -1319,7 +1349,9 @@ argument into a keyword argument with default value <code>True</code>.</li>
 <h3 id="101">10.1</h3>
 <h4 id="1010">10.1.0</h4>
 <p>2022-07-13</p>
-<p>Addition of a module <code>tf.convert.variants</code> that can be used in a
+<p>Addition of a module
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/variants.html">tff.convert.variants</a>
+that can be used in a
 <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code> conversion.
 It can be used to process TEI app-<code>lem</code>-<code>rdg</code> elements (critical apparatus).
 What it does for you is to create sentence-like nodes from sentence-boundary
@@ -4009,7 +4041,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1606be8081b05d38725496b91c9815487ac8e93c/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76ac61c4c99cc11152ad95334f509f7542a77ef6/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releasesold.md

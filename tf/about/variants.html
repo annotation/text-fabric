@@ -57,7 +57,7 @@ the result looks like, and how the algorithm performs it steps.</p>
 <h1 id="usage">Usage</h1>
 <p>This module is to be used in the context of a <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code> conversion.
 It can be imported as</p>
-<pre><code class="language-python">from tf.convert.variants import Variants
+<pre><code class="language-python">from tff.convert.variants import Variants
 </code></pre>
 <p>It should be initialized in the <code>director()</code> function. It needs a storage
 dictionary in which it stores relevant information. Typically this dict is
@@ -77,7 +77,8 @@ called <code>cur</code> and it should be initialized before:</p>
 module to insert any kind of node based on their boundary information. The name
 of the base text can also be customised. Usually it is <code>base</code>, but if one of
 the witnesses is also called <code>base</code>, you should pass another name.
-For more information, see <code>tf.convert.variants.Variants</code>.</p>
+For more information, see
+<a href="https://annotation.github.io/text-fabric-factory/tff/convert/variants.html#tff.convert.variants.Variants">tff.convert.variants.Variants</a>.</p>
 <h1 id="explanation">Explanation</h1>
 <p>First we sketch what the result will look like, then we describe the algorithm
 to achieve that result, and finally we explain how you can invoke the Python
@@ -438,7 +439,7 @@ we rely on the automatic slot-linking machinery of the walker conversion.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1606be8081b05d38725496b91c9815487ac8e93c/tf/about/variants.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/76ac61c4c99cc11152ad95334f509f7542a77ef6/tf/about/variants.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/variants.md
