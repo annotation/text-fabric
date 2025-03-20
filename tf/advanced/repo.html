@@ -299,7 +299,7 @@ is being obtained.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/92deca6345652588b94864340ca5cdb205769578/tf/advanced/repo.py#L1-L2331" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6a2c76c5a4a22972682490b98f15fb6a8e9a8476/tf/advanced/repo.py#L1-L2339" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Auto downloading from a back-end repository
@@ -1557,7 +1557,8 @@ class Checkout:
 
             person = var(GLPERS(bMachine))
             if person:
-                conn = Gitlab(bUrl, private_token=person)
+                console(f&#34;{bUrl=}&#34;)
+                conn = Gitlab(bUrl, private_token=person, keep_base_url=True)
             else:
                 conn = Gitlab(bUrl)
 
@@ -2123,7 +2124,14 @@ class Checkout:
         self.info(f&#34;\tsaving {label}&#34;)
 
         cwd = getCwd()
-        destZip = dirNm(dirPathLocal) if shiftUp and withPaths else dirPathLocal
+        dataDirDepth = dataDir.strip(&#34;/&#34;).count(&#34;/&#34;) + 1
+
+        destZip = dirPathLocal
+
+        if shiftUp and withPaths:
+            for i in range(dataDirDepth):
+                destZip = dirNm(destZip)
+
         good = True
 
         if g:
@@ -2929,7 +2937,7 @@ The way in which the release version should be increased:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/92deca6345652588b94864340ca5cdb205769578/tf/advanced/repo.py#L1090-L2151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6a2c76c5a4a22972682490b98f15fb6a8e9a8476/tf/advanced/repo.py#L1090-L2159" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Checkout:
     &#34;&#34;&#34;Auxiliary class for `checkoutRepo`&#34;&#34;&#34;
@@ -3098,7 +3106,8 @@ The way in which the release version should be increased:</p>
 
             person = var(GLPERS(bMachine))
             if person:
-                conn = Gitlab(bUrl, private_token=person)
+                console(f&#34;{bUrl=}&#34;)
+                conn = Gitlab(bUrl, private_token=person, keep_base_url=True)
             else:
                 conn = Gitlab(bUrl)
 
@@ -3664,7 +3673,14 @@ The way in which the release version should be increased:</p>
         self.info(f&#34;\tsaving {label}&#34;)
 
         cwd = getCwd()
-        destZip = dirNm(dirPathLocal) if shiftUp and withPaths else dirPathLocal
+        dataDirDepth = dataDir.strip(&#34;/&#34;).count(&#34;/&#34;) + 1
+
+        destZip = dirPathLocal
+
+        if shiftUp and withPaths:
+            for i in range(dataDirDepth):
+                destZip = dirNm(destZip)
+
         good = True
 
         if g:
@@ -4184,7 +4200,7 @@ The way in which the release version should be increased:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/92deca6345652588b94864340ca5cdb205769578/tf/advanced/repo.py#L551-L824" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6a2c76c5a4a22972682490b98f15fb6a8e9a8476/tf/advanced/repo.py#L551-L824" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Repo:
     &#34;&#34;&#34;Auxiliary class for `releaseData`&#34;&#34;&#34;
