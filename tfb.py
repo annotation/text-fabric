@@ -76,6 +76,7 @@ r2    : version becomes r1.r2+1.0
 r3    : version becomes r1.r2.r3+1
 ship  : build and ship as a release to pypi
 shipt : build and ship as a release to test-pypi
+shipb : as shipt, but without docs generation and committing and tagging
 shipo : ship to pypi, skip build and commit and tag (after having done a shipt)
 apps  : commit and push all tf apps
 tut   : commit and push the tutorials repo
@@ -111,6 +112,7 @@ def readArgs():
         "pb",
         "ship",
         "shipt",
+        "shipb",
         "shipo",
         "data",
         "apps",
@@ -330,7 +332,7 @@ def main():
         showVersion()
     elif task in {"r", "r1", "r2", "r3"}:
         adjustVersion(task)
-    elif task in {"ship", "shipt", "shipo"}:
+    elif task in {"ship", "shipb", "shipt", "shipo"}:
         showVersion()
         if not currentVersion:
             console("No current version")
@@ -339,12 +341,12 @@ def main():
         answer = input("right version ? [yn]")
         if answer != "y":
             return
-        if task != "shipo":
+        if task not in {"shipb", "shipo"}:
             shipDocs(ORG, REPO, PKG)
 
-        makeDist(test=task == "shipt")
+        makeDist(test=task in {"shipt", "shipb"})
 
-        if task != "shipo":
+        if task not in {"shipb", "shipo"}:
             commit(task, msg)
 
 
