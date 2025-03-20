@@ -18,6 +18,13 @@ which kan be pip installed separately.
 
 ### 13.0
 
+#### 13.0.1
+
+2025-03-18
+
+GitLab backends: downloading deeper-than-toplevel subfolders from a repo led to
+a wrong directory structure of the downloaded files. This has been fixed.
+
 #### 13.0.0
 
 2025-03-18

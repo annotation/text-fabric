@@ -1254,7 +1254,8 @@ class Checkout:
 
             person = var(GLPERS(bMachine))
             if person:
-                conn = Gitlab(bUrl, private_token=person)
+                console(f"{bUrl=}")
+                conn = Gitlab(bUrl, private_token=person, keep_base_url=True)
             else:
                 conn = Gitlab(bUrl)
 
@@ -1820,7 +1821,14 @@ class Checkout:
         self.info(f"\tsaving {label}")
 
         cwd = getCwd()
-        destZip = dirNm(dirPathLocal) if shiftUp and withPaths else dirPathLocal
+        dataDirDepth = dataDir.strip("/").count("/") + 1
+
+        destZip = dirPathLocal
+
+        if shiftUp and withPaths:
+            for i in range(dataDirDepth):
+                destZip = dirNm(destZip)
+
         good = True
 
         if g:
