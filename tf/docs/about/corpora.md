@@ -68,14 +68,13 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     earliest extant Greek translation of Hebrew Bible books;
     Oliver Glanz, Adrian Negrea
 
-[CenterBLC/NA](https://github.com/CenterBLC/NA)
+[CenterBLC/N1904](https://github.com/CenterBLC/N1904)
 :   *Greek*
     New Testament, 100 - 400,
     **GNT Nestle-Aland edition 1904 with new features by CenterBLC**,
-    converted from 
-    [biblicalhumanities/Nestle1904](https://github.com/biblicalhumanities/Nestle1904)
-    contributed by Ulrik Sandborg Petersen, Jonathan Robie;
-    Oliver Glanz
+    using data from 
+    [Clear Bible - Macula Greek](https://github.com/Clear-Bible/macula-greek/tree/main/Nestle1904/lowfat);
+    Tony Jurg, Saulo Oliveira de Cantanhêde, Oliver Glanz, Willem van Peursen
 
 [CenterBLC/SBLGNT](https://github.com/CenterBLC/SBLGNT)
 :   *Greek*
