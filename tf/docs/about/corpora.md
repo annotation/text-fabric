@@ -29,25 +29,21 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     **[Consider Phlebas](https://read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system)**,
     Dirk Roorda
 
-    *to see the details*
-
 [annotation/mobydick](https://github.com/annotation/mobydick)
 :   *English*
     Herman Melville, 1819 - 1891,
     Novel, 1851;
     converted from TEI in the Oxford Text Archive,
+    *with NLP output from Spacy woven in*;
     Dirk Roorda
-
-    *with NLP output from Spacy woven in*
 
 [annotation/mondriaan](https://github.com/annotation/mondriaan)
 :   *English*
     Piet Mondriaan, 1872 - 1944,
-    Test corpus of 14 letters (proeftuin);
+    Test corpus of 14 letters (proeftuin),
+    *with NLP output from Spacy woven in*;
     converted from TEI from the Huygens Institute, together with RKD and HuC;
     many people involved
-
-    *with NLP output from Spacy woven in*
 
 ## [Cambridge Semitics Lab](https://github.com/CambridgeSemiticsLab)
 
@@ -55,9 +51,8 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 :   *Aramaic*
     North Eastern Neo-Aramaic Corpus, 2000,
     **[Nena Cambridge](https://nena.ames.cam.ac.uk)**,
+    *with a client-side, offline search interface in JavaScript*;
     Cody Kingham
-
-    *with a client-side, offline search interface in JavaScript*
 
 ## [CenterBLC Andrews University](https://github.com/CenterBLC)
 
@@ -88,23 +83,22 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 [CLARIAH/descartes-tf](https://github.com/CLARIAH/descartes-tf)
 :   *French*, *Latin*, *Dutch* 
     Letters from and to Descartes, 1619 - 1650,
-    **René Descartes - Correspondance**;
+    **René Descartes - Correspondance**,
+    *with math display and illustrations*;
     Ch. Adam et G. Milhaud (eds. and illustrations, 1896-1911);
     Katsuzo Murakami, Meguru Sasaki, Takehumi Tokoro (ASCII digitization, 1998);
     Erik-Jan Bos (ed, 2011); 
     Dirk Roorda (converter TEI, 2011 and TF 2023)
 
-    *with math display and illustrations*
-
 [CLARIAH/wp6-ferdinandhuyck](https://github.com/CLARIAH/wp6-ferdinandhuyck)
 :   *Dutch* 
     a novel by Jacob van Lennep, 1840,
-    **Jacob van Lennep - Ferdinand Huyck**;
+    **Jacob van Lennep - Ferdinand Huyck**,
+    *with NLP output from Spacy woven in*;
     From [DBNL](https://www.dbnl.org/tekst/lenn006lotg01_01/), TEI-Lite;
     Dirk Roorda (converter TEI to TF), see also
     [tff.convert.tei](https://annotation.github.io/text-fabric-factory/tff/convert/tei.html)
 
-    *with NLP output from Spacy woven in*
 
 [CLARIAH/wp6-missieven](https://github.com/CLARIAH/wp6-missieven)
 :   *Dutch* 
@@ -117,10 +111,9 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     Dagh Registers Batavia, 1640 - 1641,
     **Daily events at Batavia, Indonesia, historical source for
     the operation of the Dutch East-Indian Company**,
+    *work in progress, currently only volume 4*,
+    *with many OCR errors and an attempt to detect them*,
     Lodewijk Petram, Dirk Roorda.
-    *work in progress, currently only volume 4*
-
-    *with many OCR errors and an attempt to detect them*
 
 ## [Cody Kingham](https://github.com/codykingham)
 
@@ -151,9 +144,8 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 :   *Hebrew*
     Bible (Old Testament), 1000 BCE - 900 AD,
     **[Biblia Hebraica Stuttgartensia (Amstelodamensis)](https://ETCBC.github.io/bhsa/)**,
+    *the canonical TF dataset, where it all started*;
     ETCBC + Dirk Roorda
-
-    *the canonical TF dataset, where it all started*
 
 [ETCBC/dhammapada](https://github.com/ETCBC/dhammapada)
 :   *Pāli* and *Latin*
@@ -195,30 +187,25 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     Complete Works of W.F. Hermans.
     The conversion to TF is work in progress.
     So far these works have been done:
-
-    *   Paranoia
-    *   Sadistisch Universum
-    *   Nooit meer slapen
-
+    Paranoia,
+    Sadistisch Universum,
+    Nooit meer slapen,
+    **Not publicly accessible, the book is under copyright.**,
+    *with a critical apparatus*;
     Bram Oostveen, Peter Kegel, Dirk Roorda
-
-    **Not publicly accessible, the book is under copyright.**
-
-    *with a critical apparatus*
 
 [mondriaan/letters](https://github.com/annotation/mondriaan)
 :   *Dutch*
-    Letters of Piet Mondriaan , 1892-1923.
+    Letters of Piet Mondriaan , 1892-1923,
+    **Work in progress, test set only ("proeftuin"),**
+    *with NLP output from Spacy woven in*.
     Straight conversion from TEI to TF,
     Peter Boot et al., Dirk Roorda
 
-    **Work in progress, test set only ("proeftuin").**
-
-    *with NLP output from Spacy woven in*
-
 [HuygensING/suriano](https://github.com/HuygensING/suriano)
 :   *Italian*
-    Correspondence of Christofforo Suriano , 1616-1623.
+    Correspondence of Christofforo Suriano , 1616-1623,
+    **with additional meta data, named entities, and page scans.**.
     Complex conversion from DOCX through simple TEI to TF,
     From the TF a stream of annotations is generated
     (WATM) that drives the publishing machinery of
@@ -228,16 +215,13 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     Nina Lamal, Helmer Helmers, Sebastiaan van Dalen, Bram Buitendijk, Hayco de Jong,
     Hennie Brugman, Dirk Roorda
 
-    **with additional meta data, named entities, and page scans.**
-
 [HuygensING/translatin-manif](https://github.com/translatin-manif)
 :   *Latin*
     The transnational impact of Latin drama from the early modern Netherlands,
-    a qualitative and computational analysis.
+    a qualitative and computational analysis,
+    **Work in progress**.
     Conversion from PageXML to TF,
     Jirsi Reinders, Hayco de Jong, et al., Dirk Roorda
-
-    **Work in progress*.*
 
 ## [NINO Cuneiform](https://github.com/Nino-cunei)
 
@@ -263,7 +247,7 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 :   *proto-cuneiform*
     Uruk, 4000 - 3100 BCE,
     **Archaic tablets from Uruk**
-    *with lots of illustrations*,
+    *with lots of illustrations*;
     Cale Johnson, Dirk Roorda
     
 ## [Protestant Theological University](https://github.com/pthu)
