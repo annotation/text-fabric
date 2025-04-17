@@ -262,11 +262,10 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
 [Nino-cunei/uruk](https://github.com/Nino-cunei/uruk)
 :   *proto-cuneiform*
     Uruk, 4000 - 3100 BCE,
-    **Archaic tablets from Uruk**,
+    **Archaic tablets from Uruk**
+    *with lots of illustrations*,
     Cale Johnson, Dirk Roorda
-
-    *with lots of illustrations*
-
+    
 ## [Protestant Theological University](https://github.com/pthu)
 
 [Greek Literature](https://github.com/pthu/greek_literature)
