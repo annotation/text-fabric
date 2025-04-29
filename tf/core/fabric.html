@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.core.fabric API documentation</title>
 <meta name="description" content="`FabricCore` …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -41,7 +41,7 @@ By leaving out volume support, volume support can use <code><a title="tf.core.fa
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/fabric.py#L1-L1053" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/fabric.py#L1-L1053" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # `FabricCore`
@@ -1206,7 +1206,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/fabric.py#L131-L1053" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/fabric.py#L131-L1053" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FabricCore:
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -2188,6 +2188,36 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../inde
 </div>
 <h2 id="see-also">See Also</h2>
 <p><code><a title="tf.clean" href="../clean.html">tf.clean</a></code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/fabric.py#L536-L559" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def clearCache(self):
+    &#34;&#34;&#34;Clears the cache of compiled TF data.
+
+    TF pre-computes data for you, so that it can be loaded faster.
+    If the original data is updated, TF detects it,
+    and will recompute that data.
+
+    But there are cases, when the algorithms of TF have changed,
+    without any changes in the data, where you might want to clear the cache
+    of pre-computed results.
+
+    Calling this function just does it, and it is equivalent with manually removing
+    all `.tfx` files inside the hidden `.tf` directory inside your dataset.
+
+    !!! hint &#34;No need to load&#34;
+        It is not needed to execute a `TF.load()` first.
+
+    See Also
+    --------
+    tf.clean
+    &#34;&#34;&#34;
+
+    for (fName, fObj) in self.features.items():
+        fObj.cleanDataBin()</code></pre>
+</details>
 </dd>
 <dt id="tf.core.fabric.FabricCore.explore"><code class="name flex">
 <span>def <span class="ident">explore</span></span>(<span>self, silent='auto', show=True)</span>
@@ -2223,6 +2253,88 @@ see <code><a title="tf.core.computed.Computeds" href="computed.html#tf.core.comp
 <p>The sets do not indicate whether a feature is loaded or not.
 There are other functions that give you the loaded features:
 <code><a title="tf.core.api.Api.Fall" href="api.html#tf.core.api.Api.Fall">Api.Fall()</a></code> for nodes and <code><a title="tf.core.api.Api.Eall" href="api.html#tf.core.api.Api.Eall">Api.Eall()</a></code> for edges.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/fabric.py#L443-L518" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def explore(self, silent=SILENT_D, show=True):
+    &#34;&#34;&#34;Makes categorization of all features in the dataset.
+
+    Parameters
+    ----------
+    silent: string, optional tf.core.timestamp.SILENT_D
+        See `tf.core.timestamp.Timestamp`
+    show: boolean, optional True
+        If `False`, the resulting dictionary is delivered in `TF.featureSets`;
+        if `True`, the dictionary is returned as function result.
+
+    Returns
+    -------
+    dict | None
+        A dictionary  with keys `nodes`, `edges`, `configs`, `computeds`.
+        Under each key there is the set of feature names in that category.
+        How this dictionary is delivered, depends on the parameter *show*.
+
+    Notes
+    -----
+    !!! explanation &#34;`configs`&#34;
+        These are configuration features, with metadata only, no data. E.g. `otext`.
+
+    !!! explanation &#34;`computeds`&#34;
+        These are blocks of pre-computed data, available under the `C` API,
+        see `tf.core.computed.Computeds`.
+
+    The sets do not indicate whether a feature is loaded or not.
+    There are other functions that give you the loaded features:
+    `tf.core.api.Api.Fall` for nodes and `tf.core.api.Api.Eall` for edges.
+    &#34;&#34;&#34;
+
+    silent = silentConvert(silent)
+    tmObj = self.tmObj
+    isSilent = tmObj.isSilent
+    setSilent = tmObj.setSilent
+    info = tmObj.info
+
+    wasSilent = isSilent()
+    setSilent(silent)
+    nodes = set()
+    edges = set()
+    configs = set()
+    computeds = set()
+
+    for (fName, fObj) in self.features.items():
+        fObj.load(silent=silent, metaOnly=True)
+        dest = None
+        if fObj.method:
+            dest = computeds
+        elif fObj.isConfig:
+            dest = configs
+        elif fObj.isEdge:
+            dest = edges
+        else:
+            dest = nodes
+        dest.add(fName)
+    info(
+        &#34;Feature overview: {} for nodes; {} for edges; {} configs; {} computed&#34;.format(
+            len(nodes),
+            len(edges),
+            len(configs),
+            len(computeds),
+        )
+    )
+    self.featureSets = dict(
+        nodes=nodes, edges=edges, configs=configs, computeds=computeds
+    )
+    setSilent(wasSilent)
+    if show:
+        return dict(
+            (kind, tuple(sorted(kindSet)))
+            for (kind, kindSet) in sorted(
+                self.featureSets.items(), key=lambda x: x[0]
+            )
+        )</code></pre>
+</details>
 </dd>
 <dt id="tf.core.fabric.FabricCore.load"><code class="name flex">
 <span>def <span class="ident">load</span></span>(<span>self, features, add=False, silent='auto')</span>
@@ -2251,6 +2363,173 @@ of features for nothing.</dd>
 Otherwise, the result is a new <code><a title="tf.core.api.Api" href="api.html#tf.core.api.Api">Api</a></code>
 if the feature could be loaded, else <code>False</code>.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/fabric.py#L281-L441" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def load(self, features, add=False, silent=SILENT_D):
+    &#34;&#34;&#34;Loads features from disk into RAM memory.
+
+    Parameters
+    ----------
+
+    features: string | iterable
+        Either a string containing space separated feature names, or an
+        iterable of feature names.
+        The feature names are just the names of `.tf` files
+        without directory information and without extension.
+    add: boolean, optional False
+        The features will be added to the same currently loaded features, managed
+        by the current API.
+        Meant to be able to dynamically load features without reloading lots
+        of features for nothing.
+    silent: string, optional tf.core.timestamp.SILENT_D
+        See `tf.core.timestamp.Timestamp`
+
+    Returns
+    -------
+    boolean | object
+        If `add` is `True` a boolean indicating success is returned.
+        Otherwise, the result is a new `tf.core.api.Api`
+        if the feature could be loaded, else `False`.
+    &#34;&#34;&#34;
+
+    silent = silentConvert(silent)
+    tmObj = self.tmObj
+    isSilent = tmObj.isSilent
+    setSilent = tmObj.setSilent
+    indent = tmObj.indent
+    debug = tmObj.debug
+    warning = tmObj.warning
+    error = tmObj.error
+    cache = tmObj.cache
+    reset = tmObj.reset
+    featuresOnly = self.featuresOnly
+
+    wasSilent = isSilent()
+    setSilent(silent)
+    indent(level=0, reset=True)
+    self.sectionsOK = True
+    self.structureOK = True
+    self.good = True
+
+    if self.good:
+        featuresRequested = sorted(fitemize(features))
+        if add:
+            self.featuresRequested += featuresRequested
+        else:
+            self.featuresRequested = featuresRequested
+        for fName in (OTYPE, OSLOTS, OTEXT):
+            self._loadFeature(fName, optional=fName == OTEXT or featuresOnly)
+
+    self.textFeatures = set()
+
+    if self.good and not featuresOnly:
+        if OTEXT in self.features:
+            otextMeta = self.features[OTEXT].metaData
+            for otextMod in self.features:
+                if otextMod.startswith(OTEXT + &#34;@&#34;):
+                    self._loadFeature(otextMod)
+                    otextMeta.update(self.features[otextMod].metaData)
+            self.sectionFeats = itemize(otextMeta.get(&#34;sectionFeatures&#34;, &#34;&#34;), &#34;,&#34;)
+            self.sectionTypes = itemize(otextMeta.get(&#34;sectionTypes&#34;, &#34;&#34;), &#34;,&#34;)
+            self.structureFeats = itemize(
+                otextMeta.get(&#34;structureFeatures&#34;, &#34;&#34;), &#34;,&#34;
+            )
+            self.structureTypes = itemize(otextMeta.get(&#34;structureTypes&#34;, &#34;&#34;), &#34;,&#34;)
+            (self.cformats, self.formatFeats) = collectFormats(otextMeta)
+
+            if not (0 &lt; len(self.sectionTypes) &lt;= 3) or not (
+                0 &lt; len(self.sectionFeats) &lt;= 3
+            ):
+                if not add:
+                    warning(
+                        f&#34;Dataset without sections in {OTEXT}:&#34;
+                        f&#34;no section functions in the T-API&#34;
+                    )
+                self.sectionsOK = False
+            else:
+                self.textFeatures |= set(self.sectionFeats)
+                self.sectionFeatsWithLanguage = tuple(
+                    f
+                    for f in self.features
+                    if f == self.sectionFeats[0]
+                    or f.startswith(f&#34;{self.sectionFeats[0]}@&#34;)
+                )
+                self.textFeatures |= set(self.sectionFeatsWithLanguage)
+            if not self.structureTypes or not self.structureFeats:
+                if not add:
+                    debug(
+                        f&#34;Dataset without structure sections in {OTEXT}:&#34;
+                        f&#34;no structure functions in the T-API&#34;
+                    )
+                self.structureOK = False
+            else:
+                self.textFeatures |= set(self.structureFeats)
+
+            formatFeats = set(self.formatFeats)
+            self.textFeatures |= formatFeats
+
+            for fName in self.textFeatures:
+                self._loadFeature(fName, optional=fName in formatFeats)
+
+            dep1Feats = self.dep1Feats
+            if dep1Feats:
+                cformats = self.cformats
+                tFormats = {}
+                tFeats = set()
+                for (fmt, (otpl, tpl, featData)) in cformats.items():
+                    feats = set(chain.from_iterable(x[0] for x in featData))
+                    tFormats[fmt] = tuple(sorted(feats))
+                    tFeats |= feats
+                tFeats = tuple(sorted(tFeats))
+                extraDependencies = [tFormats]
+                for tFeat in tFeats:
+                    featData = self.features[tFeat].data
+                    extraDependencies.append((tFeat, featData))
+                for cFeat in dep1Feats:
+                    self.features[cFeat].dependencies += extraDependencies
+
+        else:
+            self.sectionsOK = False
+            self.structureOK = False
+
+    if self.good and not featuresOnly:
+        self._precompute()
+
+    if self.good:
+        reset()
+        for fName in self.featuresRequested:
+            self._loadFeature(fName)
+            if not self.good:
+                indent(level=0)
+                cache()
+                error(&#34;Not all features could be loaded / computed&#34;)
+                result = False
+                break
+            reset()
+
+    if self.good:
+        if add:
+            try:
+                self._updateApi()
+                result = True
+            except MemoryError:
+                console(MEM_MSG)
+                result = False
+        else:
+            try:
+                result = self._makeApi()
+            except MemoryError:
+                console(MEM_MSG)
+                result = False
+    else:
+        result = False
+
+    setSilent(wasSilent)
+    return result</code></pre>
+</details>
 </dd>
 <dt id="tf.core.fabric.FabricCore.loadAll"><code class="name flex">
 <span>def <span class="ident">loadAll</span></span>(<span>self, silent='auto')</span>
@@ -2262,9 +2541,30 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
 <dd>See <code><a title="tf.core.timestamp.Timestamp" href="timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/fabric.py#L520-L534" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def loadAll(self, silent=SILENT_D):
+    &#34;&#34;&#34;Load all loadable features.
+
+    Parameters
+    ----------
+    silent: string, optional tf.core.timestamp.SILENT_D
+        See `tf.core.timestamp.Timestamp`
+    &#34;&#34;&#34;
+
+    silent = silentConvert(silent)
+    api = self.load(&#34;&#34;, silent=silent)
+    allFeatures = self.explore(silent=silent, show=True)
+    loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
+    self.load(loadableFeatures, add=True, silent=silent)
+    return api</code></pre>
+</details>
 </dd>
 <dt id="tf.core.fabric.FabricCore.save"><code class="name flex">
-<span>def <span class="ident">save</span></span>(<span>self, nodeFeatures: Dict[str, Dict[int, Union[str, int]]] = {}, edgeFeatures: Dict[str, Dict[int, Union[Set[int], Dict[int, Union[str, int]]]]] = {}, metaData: Dict[str, Dict[str, str]] = {}, location=None, module=None, silent='auto')</span>
+<span>def <span class="ident">save</span></span>(<span>self, nodeFeatures: Dict[str, Dict[int, str | int]] = {}, edgeFeatures: Dict[str, Dict[int, Set[int] | Dict[int, str | int]]] = {}, metaData: Dict[str, Dict[str, str]] = {}, location=None, module=None, silent='auto')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Saves newly generated data to disk as TF features, nodes and / or edges.</p>
@@ -2342,6 +2642,238 @@ TF will save in <code>path1/path2</code>.</p>
 <dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
 <dd>See <code><a title="tf.core.timestamp.Timestamp" href="timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/fabric.py#L561-L786" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def save(
+    self,
+    nodeFeatures: nodeFeatureDict = {},
+    edgeFeatures: edgeFeatureDict = {},
+    metaData: metaDataDict = {},
+    location=None,
+    module=None,
+    silent=SILENT_D,
+):
+    &#34;&#34;&#34;Saves newly generated data to disk as TF features, nodes and / or edges.
+
+    If you have collected feature data in dictionaries, keyed by the
+    names of the features, and valued by their feature data,
+    then you can save that data to `.tf` feature files on disk.
+
+    It is this easy to export new data as features:
+    collect the data and metadata of the features and feed it in an orderly way
+    to `TF.save()` and there you go.
+
+    Parameters
+    ----------
+    nodeFeatures: dict of dict
+        The data of a node feature is a dictionary with nodes as keys (integers!)
+        and strings or numbers as (feature) values.
+        This parameter holds all those dictionaries, keyed by feature name.
+
+    edgeFeatures: dict of dict
+        The data of an edge feature is a dictionary with nodes as keys, and sets or
+        dictionaries as values. These sets should be sets of nodes (integers!),
+        and these dictionaries should have nodes as keys and strings or numbers
+        as values.
+        This parameter holds all those dictionaries, keyed by feature name.
+
+    metaData: dict of  dict
+        The meta data for every feature to be saved is a key-value dictionary.
+        This parameter holds all those dictionaries, keyed by feature name.
+
+        !!! explanation &#34;value types&#34;
+            The type of the feature values (`int` or `str`) should be specified
+            under key `valueType`.
+
+        !!! explanation &#34;edge values&#34;
+            If you save an edge feature, and there are values in that edge feature,
+            you have to say so, by specifying `edgeValues=True`
+            in the metadata for that feature.
+
+        !!! explanation &#34;generic metadata&#34;
+            This parameter may also contain fields under the empty name.
+            These fields will be added to all features in `nodeFeatures` and
+            `edgeFeatures`.
+
+        !!! explanation &#34;configuration features&#34;
+            If you need to write the *configuration* feature `otext`,
+            which is a metadata-only feature, just
+            add the metadata under key `otext` in this parameter and make sure
+            that `otext` is not a key in `nodeFeatures` nor in
+            `edgeFeatures`.
+            These fields will be written into the separate configuration
+            feature `otext`, with no data associated.
+
+    location: dict
+        The (meta)data will be written to the very last directory that TF searched
+        when looking for features (this is determined by the
+        `locations` and `modules` parameters in `tf.fabric.Fabric`.
+
+        If both `locations` and `modules` are empty, writing will take place
+        in the current directory.
+
+        But you can override it:
+
+        If you pass `location=something`, TF will save in `something/mod`,
+        where `mod` is the last member of the `modules` parameter of TF.
+
+    module: dict
+        This is an additional way of overriding the default location
+        where TF saves new features. See the *location* parameter.
+
+        If you pass `module=something`, TF will save in `loc/something`,
+        where `loc` is the last member of the `locations` parameter of TF.
+
+        If you pass `location=path1` and `module=path2`,
+        TF will save in `path1/path2`.
+
+    silent: string, optional tf.core.timestamp.SILENT_D
+        See `tf.core.timestamp.Timestamp`
+    &#34;&#34;&#34;
+
+    silent = silentConvert(silent)
+    tmObj = self.tmObj
+    isSilent = tmObj.isSilent
+    setSilent = tmObj.setSilent
+    indent = tmObj.indent
+    info = tmObj.info
+    error = tmObj.error
+
+    good = True
+    wasSilent = isSilent()
+    setSilent(silent)
+    indent(level=0, reset=True)
+    self._getWriteLoc(location=location, module=module)
+    configFeatures = dict(
+        f
+        for f in metaData.items()
+        if f[0] != &#34;&#34; and f[0] not in nodeFeatures and f[0] not in edgeFeatures
+    )
+    info(
+        &#34;Exporting {} node and {} edge and {} configuration features to {}:&#34;.format(
+            len(nodeFeatures),
+            len(edgeFeatures),
+            len(configFeatures),
+            self.writeDir,
+        )
+    )
+    todo = []
+    for fName in sorted(nodeFeatures):
+        todo.append((fName, nodeFeatures[fName], False, False))
+    for fName in sorted(edgeFeatures):
+        todo.append((fName, edgeFeatures[fName], True, False))
+    for fName in sorted(configFeatures):
+        todo.append((fName, configFeatures[fName], None, True))
+    total = collections.Counter()
+    failed = collections.Counter()
+    maxSlot = None
+    maxNode = None
+    slotType = None
+    if OTYPE in nodeFeatures:
+        info(f&#34;VALIDATING {OSLOTS} feature&#34;)
+        otypeData = nodeFeatures[OTYPE]
+        if type(otypeData) is tuple:
+            (otypeData, slotType, maxSlot, maxNode) = otypeData
+        elif 1 in otypeData:
+            slotType = otypeData[1]
+            maxSlot = max(n for n in otypeData if otypeData[n] == slotType)
+            maxNode = max(otypeData)
+    if OSLOTS in edgeFeatures:
+        info(f&#34;VALIDATING {OSLOTS} feature&#34;)
+        oslotsData = edgeFeatures[OSLOTS]
+        if type(oslotsData) is tuple:
+            (oslotsData, maxSlot, maxNode) = oslotsData
+        if maxSlot is None or maxNode is None:
+            error(f&#34;ERROR: cannot check validity of {OSLOTS} feature&#34;)
+            good = False
+        else:
+            info(f&#34;maxSlot={maxSlot:&gt;11}&#34;)
+            info(f&#34;maxNode={maxNode:&gt;11}&#34;)
+            maxNodeInData = max(oslotsData)
+            minNodeInData = min(oslotsData)
+
+            mappedSlotNodes = []
+            unmappedNodes = []
+            fakeNodes = []
+
+            start = min((maxSlot + 1, minNodeInData))
+            end = max((maxNode, maxNodeInData))
+            for n in range(start, end + 1):
+                if n in oslotsData:
+                    if n &lt;= maxSlot:
+                        mappedSlotNodes.append(n)
+                    elif n &gt; maxNode:
+                        fakeNodes.append(n)
+                else:
+                    if maxSlot &lt; n &lt;= maxNode:
+                        unmappedNodes.append(n)
+
+            if mappedSlotNodes:
+                error(f&#34;ERROR: {OSLOTS} maps slot nodes&#34;)
+                error(makeExamples(mappedSlotNodes), tm=False)
+                good = False
+            if fakeNodes:
+                error(f&#34;ERROR: {OSLOTS} maps nodes that are not in {OTYPE}&#34;)
+                error(makeExamples(fakeNodes), tm=False)
+                good = False
+            if unmappedNodes:
+                error(f&#34;ERROR: {OSLOTS} fails to map nodes:&#34;)
+                unmappedByType = {}
+                for n in unmappedNodes:
+                    unmappedByType.setdefault(
+                        otypeData.get(n, &#34;_UNKNOWN_&#34;), []
+                    ).append(n)
+                for (nType, nodes) in sorted(
+                    unmappedByType.items(),
+                    key=lambda x: (-len(x[1]), x[0]),
+                ):
+                    error(f&#34;--- unmapped {nType:&lt;10} : {makeExamples(nodes)}&#34;)
+                good = False
+
+        if good:
+            info(f&#34;OK: {OSLOTS} is valid&#34;)
+
+    for (fName, data, isEdge, isConfig) in todo:
+        edgeValues = False
+        fMeta = {}
+        fMeta.update(metaData.get(&#34;&#34;, {}))
+        fMeta.update(metaData.get(fName, {}))
+        if fMeta.get(&#34;edgeValues&#34;, False):
+            edgeValues = True
+        if &#34;edgeValues&#34; in fMeta:
+            del fMeta[&#34;edgeValues&#34;]
+        fObj = Data(
+            f&#34;{self.writeDir}/{fName}.tf&#34;,
+            self.tmObj,
+            data=data,
+            metaData=fMeta,
+            isEdge=isEdge,
+            isConfig=isConfig,
+            edgeValues=edgeValues,
+        )
+        tag = &#34;config&#34; if isConfig else &#34;edge&#34; if isEdge else &#34;node&#34;
+        if fObj.save(nodeRanges=fName == OTYPE, overwrite=True, silent=silent):
+            total[tag] += 1
+        else:
+            failed[tag] += 1
+    indent(level=0)
+    info(
+        f&#34;&#34;&#34;Exported {total[&#34;node&#34;]} node features&#34;&#34;&#34;
+        f&#34;&#34;&#34; and {total[&#34;edge&#34;]} edge features&#34;&#34;&#34;
+        f&#34;&#34;&#34; and {total[&#34;config&#34;]} config features&#34;&#34;&#34;
+        f&#34;&#34;&#34; to {self.writeDir}&#34;&#34;&#34;
+    )
+    if len(failed):
+        for (tag, nf) in sorted(failed.items()):
+            error(f&#34;Failed to export {nf} {tag} features&#34;)
+        good = False
+
+    setSilent(wasSilent)
+    return good</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -2440,7 +2972,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

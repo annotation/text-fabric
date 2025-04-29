@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.advanced.app API documentation</title>
 <meta name="description" content="" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/advanced/app.py#L1-L820" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/app.py#L1-L820" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types
 import traceback
@@ -913,6 +913,291 @@ If given, it overrides the semi-baked in <code>~/text-fabric-data</code> value.<
 <dd>If true, accept that a legacy-app is called.
 Do not give warning, and do not try to load the app in the non-legacy way.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/app.py#L456-L734" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def findApp(
+    appName,
+    checkoutApp,
+    dataLoc,
+    backend,
+    _browse,
+    *args,
+    silent=SILENT_D,
+    version=None,
+    legacy=False,
+    dest=None,
+    **kwargs,
+):
+    &#34;&#34;&#34;Find a TF app by name and initialize an object of its main class.
+
+    Parameters
+    ----------
+    appName: string or None
+        Either:
+
+        *   None, but then `dataLoc` should have a value
+        *   `app:path/to/tf/app` (not literally)
+        *   `org/repo` (not literally)
+        *   `org/repo/relative` (not literally)
+        *   `app`, i.e. the plain name of an official TF app
+            (e.g. `bhsa`, `oldbabylonian`)
+
+        The last case is legacy: instead of `app`, pass `org/repo`.
+
+    dataLoc: string or None
+        Either:
+
+        *   None, but then `appName` should have a value
+        *   path to a local directory
+        *   `org/repo`
+        *   `org/repo/relative`
+
+        Except for the first two cases, a trailing checkout specifier
+        is allowed, like `:clone`, `:local`, `:latest`, `:hot`
+
+        It is assumed that the location is a TF data directory;
+        a vanilla app without extra configuration is initialized.
+
+    checkoutApp: string
+        The checkout specifier for the TF app. See `tf.advanced.app.App`.
+
+    args: mixed
+        Arguments that will be passed to the initializer of the `tf.advanced.app.App`
+        class.
+
+    backend: string
+        `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
+
+    dest: string, optional empty string
+        The base of your local cache of downloaded TF feature files.
+        If given, it overrides the semi-baked in `~/text-fabric-data` value.
+
+    kwargs: mixed
+        Keyword arguments that will be passed to the initializer of the
+        `tf.advanced.app.App` class.
+
+    legacy: boolean, optional False
+        If true, accept that a legacy-app is called.
+        Do not give warning, and do not try to load the app in the non-legacy way.
+    &#34;&#34;&#34;
+
+    versionGiven = version
+
+    (commit, release, local) = (None, None, None)
+    extraMod = None
+
+    appLoc = None
+    if appName is not None and appName.startswith(&#34;app:&#34;):
+        appLoc = normpath(appName[4:])
+    else:
+        appName = normpath(appName)
+
+    if dataLoc is None and appName is None:
+        console(&#34;No TF app and no data location specified&#34;, error=True)
+        return None
+
+    if dataLoc is not None and appName is not None:
+        console(&#34;Both a TF app and a data location are specified&#34;, error=True)
+        return None
+
+    dataOrg = None
+    dataRepo = None
+    dataFolder = None
+    inNb = runsInNotebook()
+
+    if silent not in {TERSE, DEEP}:
+        dm(&#34;**Locating corpus resources ...**&#34;, inNb=inNb)
+
+    if dataLoc is None:
+        if appLoc:
+            if &#34;:&#34; in appLoc:
+                console(
+                    &#34;When passing an app by `app:fullpath` you cannot use :-specifiers&#34;
+                )
+                return None
+            appPath = ex(appLoc) if appLoc else &#34;&#34;
+            absPath = abspath(appPath)
+
+            if isDir(absPath):
+                appDir = absPath
+                appBase = &#34;&#34;
+            else:
+                console(f&#34;{absPath} is not an existing directory&#34;, error=True)
+                appBase = False
+                appDir = None
+            appPath = appDir
+        elif &#34;/&#34; in appName:
+            (dataOrg, rest) = appName.split(&#34;/&#34;, maxsplit=1)
+            (dataRepo, *rest) = rest.split(&#34;/&#34;)
+            dataRelative = kwargs.get(&#34;relative&#34;, None) or RELATIVE
+
+            if len(rest) &gt; 0 and rest[-1] == APP_APP:
+                appParts = rest
+                dataParts = rest[0:-1] + [dataRelative]
+            elif len(rest) &gt; 0 and rest[-1] == RELATIVE:
+                appParts = rest[0:-1] + [APP_APP]
+                dataParts = rest
+            else:
+                dataParts = rest + [dataRelative]
+                appParts = rest + [APP_APP]
+            appFolder = prefixSlash(&#34;/&#34;.join(appParts))
+            dataFolder = prefixSlash(&#34;/&#34;.join(x for x in dataParts if x))
+
+            (commit, release, local, appBase, appDir) = checkoutRepo(
+                backend,
+                _browse=_browse,
+                org=dataOrg,
+                repo=dataRepo,
+                folder=appFolder,
+                checkout=checkoutApp,
+                dest=dest,
+                withPaths=True,
+                keep=False,
+                silent=silent,
+                label=&#34;app&#34;,
+            )
+            appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
+            appPath = f&#34;{appBaseRep}{appDir}&#34;
+        else:
+            (commit, release, local, appBase, appDir) = checkoutRepo(
+                backend,
+                _browse=_browse,
+                org=ORG,
+                repo=f&#34;app-{appName}&#34;,
+                folder=APP_CODE,
+                checkout=checkoutApp,
+                dest=dest,
+                withPaths=True,
+                keep=False,
+                silent=silent,
+                label=&#34;app&#34;,
+            )
+            appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
+            appPath = f&#34;{appBaseRep}{appDir}&#34;
+            cfg = findAppConfig(appName, appPath, commit, release, local, backend)
+            provenanceSpec = kwargs.get(&#34;provenanceSpec&#34;, {})
+            if provenanceSpec:
+                for k in (&#34;org&#34;, &#34;repo&#34;, &#34;relative&#34;):
+                    value = provenanceSpec.get(k, None)
+                    if value:
+                        if k == &#34;relative&#34;:
+                            value = prefixSlash(value)
+                        cfg[k] = value
+
+            dataOrg = cfg.get(&#34;provenanceSpec&#34;, {}).get(&#34;org&#34;, None)
+            dataRepo = cfg.get(&#34;provenanceSpec&#34;, {}).get(&#34;repo&#34;, None)
+
+            if not legacy:
+                if dataOrg:
+                    console(
+                        (
+                            &#34;WARNING: in the future, pass &#34;
+                            f&#34;`{dataOrg}/{appName}` instead of `{appName}`&#34;
+                        ),
+                        error=True,
+                    )
+                    (commit, release, local, appBase, appDir) = checkoutRepo(
+                        backend,
+                        _browse=_browse,
+                        org=dataOrg,
+                        repo=dataRepo,
+                        folder=APP_APP,
+                        checkout=checkoutApp,
+                        dest=dest,
+                        withPaths=True,
+                        keep=False,
+                        silent=silent,
+                        label=&#34;app&#34;,
+                    )
+                    appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
+                    appPath = f&#34;{appBaseRep}{appDir}&#34;
+    else:
+        parts = dataLoc.split(&#34;:&#34;, maxsplit=1)
+        if len(parts) == 1:
+            parts.append(&#34;&#34;)
+        (dataLoc, checkoutData) = parts
+        if checkoutData == &#34;&#34;:
+            appPath = ex(dataLoc) if dataLoc else &#34;&#34;
+            absPath = abspath(appPath)
+
+            if isDir(absPath):
+                (appDir, appName) = splitPath(absPath)
+                appBase = &#34;&#34;
+            else:
+                console(f&#34;{absPath} is not an existing directory&#34;, error=True)
+                appBase = False
+                appDir = None
+            appPath = appDir
+        else:
+            appBase = &#34;&#34;
+            appDir = &#34;&#34;
+            appPath = &#34;&#34;
+            extraMod = f&#34;{dataLoc}:{checkoutData}&#34;
+
+    cfg = findAppConfig(
+        appName,
+        appPath,
+        commit,
+        release,
+        local,
+        backend,
+        org=dataOrg,
+        repo=dataRepo,
+        relative=dataFolder,
+        version=version,
+    )
+    version = cfg[&#34;provenanceSpec&#34;].get(&#34;version&#34;, None)
+    isCompatible = cfg[&#34;isCompatible&#34;]
+    if isCompatible is None:
+        appClass = App
+    elif not isCompatible:
+        return None
+    else:
+        appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
+        appPath = f&#34;{appBaseRep}{appDir}&#34;
+
+        appClass = findAppClass(appName, appPath) or App
+
+    mod = kwargs.get(&#34;mod&#34;, [])
+    mod = [] if mod is None else mod.split(&#34;,&#34;) if type(mod) is str else list(mod)
+    if extraMod:
+        if len(mod) &gt; 0:
+            mod = [extraMod, *mod]
+        else:
+            mod = [extraMod]
+    kwargs[&#34;mod&#34;] = mod
+    try:
+        app = appClass(
+            cfg,
+            appName,
+            appPath,
+            commit,
+            release,
+            local,
+            backend,
+            _browse,
+            *args,
+            version=version,
+            dest=dest,
+            versionOverride=not not versionGiven,
+            silent=silent,
+            **kwargs,
+        )
+    except Exception as e:
+        if appClass is not App:
+            console(
+                f&#34;There was an error loading corpus {appName}&#34;,
+                error=True,
+            )
+            console(repr(e), error=True)
+        traceback.print_exc()
+        console(&#34;TF is not loaded&#34;, error=True)
+        return None
+    return app</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.app.loadApp"><code class="name flex">
 <span>def <span class="ident">loadApp</span></span>(<span>silent='deep')</span>
@@ -932,6 +1217,45 @@ The default is as silent as possible.</dd>
 <dt><strong><code>app</code></strong> :&ensp;<code>object|void</code></dt>
 <dd>The handle to the loaded TF dataset, if it is successfully loaded, else <code>None</code>.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/app.py#L788-L820" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def loadApp(silent=DEEP):
+    &#34;&#34;&#34;Loads a given TF app or loads the TF app based on the working directory.
+
+    It assumes that the dataset sits in a clone from a back-end (`github` / `gitlab`),
+    and it will load this data.
+
+    Parameters
+    ----------
+    silent: string, optional &#34;deep&#34;
+        The level of silence in which the loading will happen.
+        The default is as silent as possible.
+
+    Returns
+    -------
+    app: object|void
+        The handle to the loaded TF dataset, if it is successfully loaded, else `None`.
+    &#34;&#34;&#34;
+    (backend, org, repo, relative) = getLocation()
+
+    if any(s is None for s in (backend, org, repo, relative)):
+        console(
+            &#34;Not working in a repo: &#34;
+            f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
+        )
+        return None
+
+    (appName, checkoutApp, dataLoc, backend) = useApp(
+        f&#34;{org}/{repo}{relative}:clone&#34;, backend
+    )
+
+    return findApp(
+        appName, checkoutApp, dataLoc, backend, False, checkout=&#34;clone&#34;, silent=silent
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.app.useApp"><code class="name flex">
 <span>def <span class="ident">useApp</span></span>(<span>appName, backend)</span>
@@ -961,6 +1285,61 @@ a customization of it.</dd>
 </dl>
 <h2 id="see-also">See Also</h2>
 <p><code><a title="tf.advanced.app.App" href="#tf.advanced.app.App">App</a></code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/app.py#L737-L785" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def useApp(appName, backend):
+    &#34;&#34;&#34;Make use of a corpus.
+
+    For a detailed description, see `tf.about.usefunc`.
+
+    Parameters
+    ----------
+    appName: string
+
+    backend: string, optional None
+        If present, it is `github` or `gitlab`
+        or a GitLab instance such as `gitlab.huc.knaw.nl`.
+        If absent, `None` or empty, it is `github`.
+
+    args: mixed
+        Do not pass any other positional argument!
+
+    kwargs: mixed
+        Used to initialize the corpus app that we use.
+        That is either an uncustomised `tf.advanced.app.App` or
+        a customization of it.
+
+    Returns
+    -------
+    A: object
+        The object whose attributes and methods constitute the advanced API.
+
+    See Also
+    --------
+    tf.advanced.app.App
+    &#34;&#34;&#34;
+
+    if appName.startswith(&#34;data:&#34;):
+        dataLoc = appName[5:]
+        appName = None
+        checkoutApp = None
+    elif appName.startswith(&#34;app:&#34;):
+        dataLoc = None
+        checkoutApp = None
+    else:
+        dataLoc = None
+        parts = appName.split(&#34;:&#34;, maxsplit=1)
+        if len(parts) == 1:
+            parts.append(&#34;&#34;)
+        (appName, checkoutApp) = parts
+
+    backend = backendRep(backend, &#34;norm&#34;)
+
+    return (appName, checkoutApp, dataLoc, backend)</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -1011,7 +1390,7 @@ loading features. Used to experiment with performance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/advanced/app.py#L58-L453" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/app.py#L58-L453" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -1438,6 +1817,71 @@ the feature has defined values.</p>
 a dict is returned, keyed by features and the value for each feature
 is the list of types for which it has defined values.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/app.py#L395-L453" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def featureTypes(self, show=True):
+    &#34;&#34;&#34;For which node types is each feature defined?
+
+    It computes on the fly for each feature the node types for which
+    the feature has defined values.
+
+    Parameters
+    ----------
+    show: boolean, optional True
+        Whether to output the result in pretty markdown.
+
+    Returns
+    -------
+    dict
+        If `show` is true, None is returned, but if `show` is false,
+        a dict is returned, keyed by features and the value for each feature
+        is the list of types for which it has defined values.
+    &#34;&#34;&#34;
+    if hasattr(self, &#34;featureTypeMap&#34;):
+        info = self.featureTypeMap
+    else:
+        api = self.api
+        F = api.F
+        Fs = api.Fs
+        Fall = api.Fall
+
+        nodesByType = {}
+
+        allFeatures = [p for p in Fall() if p != OTYPE]
+        allTypes = F.otype.all
+
+        for tp in allTypes:
+            nodesByType[tp] = set(F.otype.s(tp))
+
+        info = {}
+
+        for feat in allFeatures:
+            featNodes = {i[0] for i in Fs(feat).items()}
+
+            for tp in allTypes:
+                if len(featNodes &amp; nodesByType[tp]) &gt; 0:
+                    info.setdefault(feat, []).append(tp)
+
+        self.featureTypeMap = info
+
+    if show:
+        md = []
+        md.extend([&#34;&#34;&#34;feature | node types&#34;&#34;&#34;, &#34;&#34;&#34;:- | :-&#34;&#34;&#34;])
+
+        for feat, tps in sorted(info.items()):
+            tpsRep = &#34;*&#34; + &#34;*, *&#34;.join(tps) + &#34;*&#34;
+            md.append(f&#34;&#34;&#34;**{feat}** | {tpsRep}&#34;&#34;&#34;)
+
+        self.dm(&#34;\n&#34;.join(md))
+        self.dm(
+            &#34;To get this overview in a dict, &#34; &#34;call `A.featureTypes(show=False)`\n&#34;
+        )
+    else:
+        return info</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.app.App.hoist"><code class="name flex">
 <span>def <span class="ident">hoist</span></span>(<span>self, hoist, silent=None)</span>
@@ -1460,6 +1904,52 @@ method.</dd>
 <dd>If passed, it is the verbosity. Otherwise the verbosity will be taken
 from <code>self</code>.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/app.py#L258-L297" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def hoist(self, hoist, silent=None):
+    &#34;&#34;&#34;Hoist the API handles of this TF app to the global scope.
+
+    You can use this if you have loaded a dataset without the `hoist=globals()`
+    parameter, and want to hoist the API handles in the global scope after all,
+    without loading the data.
+
+    Or, if you have multiple datasets loaded, you can switch for which dataset
+    you have the API handles in global scope.
+
+    Parameters
+    ----------
+    hoist: dict
+        A dict of variables.
+        It makes only sense if you provide `globals()` for this parameter.
+        That is the dict of global variables in the scope where you call this
+        method.
+    silent: string, optional None
+        If passed, it is the verbosity. Otherwise the verbosity will be taken
+        from `self`.
+    &#34;&#34;&#34;
+    if silent is None:
+        silent = self.silent
+
+    if self.api:
+        self.api.makeAvailableIn(hoist)
+        if silent in {VERBOSE, AUTO, TERSE}:
+            if self.inNb:
+                dh(
+                    &#34;&lt;div&gt;&lt;b&gt;TF API:&lt;/b&gt; names &#34;
+                    + outLink(
+                        &#34;N F E L T S C TF Fs Fall Es Eall Cs Call&#34;,
+                        APIREF,
+                        title=&#34;doc&#34;,
+                        asHtml=True,
+                    )
+                    + &#34; directly usable&lt;/div&gt;&lt;hr&gt;&#34;
+                )
+    else:
+        console(&#34;No api activated for this dataset. No hoisting will take place&#34;)</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.app.App.load"><code class="name flex">
 <span>def <span class="ident">load</span></span>(<span>self, features, silent='auto')</span>
@@ -1482,6 +1972,37 @@ without directory information and without extension.</dd>
 <dt><code>boolean</code></dt>
 <dd>Whether the feature has been successfully loaded.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/app.py#L299-L323" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def load(self, features, silent=SILENT_D):
+    &#34;&#34;&#34;Loads extra features in addition to the main dataset.
+
+    This is the same as `tf.fabric.Fabric.load` when called with `add=True`.
+
+    Parameters
+    ----------
+    features: string | iterable
+        Either a string containing space separated feature names, or an
+        iterable of feature names.
+        The feature names are just the names of `.tf` files
+        without directory information and without extension.
+    silent: string, optional tf.core.timestamp.SILENT_D
+        See `tf.core.timestamp.Timestamp`
+
+    Returns
+    -------
+    boolean
+        Whether the feature has been successfully loaded.
+    &#34;&#34;&#34;
+
+    TF = self.TF
+
+    silent = silentConvert(silent)
+    return TF.load(features, add=True, silent=silent)</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.app.App.reinit"><code class="name flex">
 <span>def <span class="ident">reinit</span></span>(<span>self)</span>
@@ -1489,6 +2010,18 @@ without directory information and without extension.</dd>
 <dd>
 <div class="desc"><p>TF Apps may override this method.
 It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/app.py#L325-L330" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def reinit(self):
+    &#34;&#34;&#34;TF Apps may override this method.
+    It is called by `reuse`. Hence it needs to be present.
+    &#34;&#34;&#34;
+
+    pass</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.app.App.reuse"><code class="name flex">
 <span>def <span class="ident">reuse</span></span>(<span>self, hoist=False)</span>
@@ -1512,6 +2045,74 @@ without the costly re-loading of the data in every cycle.</p>
 the configuration settings in detail, you can conveniently
 call <code>reuse</code>.</p>
 </div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/app.py#L332-L393" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def reuse(self, hoist=False):
+    &#34;&#34;&#34;Re-initialize the app.
+
+    The app&#39;s settings are read again, the app&#39;s code is re-imported,
+    the app&#39;s stylesheets are applied again.
+    But the data is left untouched, and no time-consuming reloading of data
+    takes place.
+
+    Handy when you are developing a new app and want to experiment with it
+    without the costly re-loading of the data in every cycle.
+
+    Parameters
+    ----------
+    hoist: boolean, optional False
+        Same as in `App`.
+
+    !!! hint &#34;the effect of the configuration settings&#34;
+        If you are developing a TF app and need to see the effects of
+        the configuration settings in detail, you can conveniently
+        call `reuse`.
+    &#34;&#34;&#34;
+
+    backend = self.backend
+    aContext = self.context
+    appPath = aContext.appPath
+    appName = aContext.appName
+    local = aContext.local
+    commit = aContext.commit
+    release = aContext.release
+    version = aContext.version
+    api = self.api
+
+    cfg = findAppConfig(
+        appName,
+        appPath,
+        commit,
+        release,
+        local,
+        backend,
+        org=aContext.org,
+        repo=aContext.repo,
+        relative=prefixSlash(aContext.relative),
+        version=version,
+    )
+    findAppClass(appName, appPath)
+
+    setAppSpecs(self, cfg, reset=True)
+
+    if api:
+        TF = self.TF
+        TF._makeApi()
+        api = TF.api
+        self.api = api
+        self.reinit()  # may be used by custom TF apps
+        linksApi(self, silent=DEEP)
+        searchApi(self)
+        sectionsApi(self)
+        setAppSpecsApi(self, cfg)
+        displayApi(self, silent=DEEP)
+        textApi(self)
+        if hoist:
+            api.makeAvailableIn(hoist)</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -1608,7 +2209,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

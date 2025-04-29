@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.advanced.options API documentation</title>
 <meta name="description" content="Display Settings …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -392,7 +392,7 @@ The node type of slot nodes is never displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/advanced/options.py#L1-L714" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/options.py#L1-L714" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display Settings.
@@ -1144,7 +1144,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/advanced/options.py#L545-L714" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/options.py#L545-L714" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Options:
     def __init__(self, app):
@@ -1324,36 +1324,219 @@ class Options:
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/options.py#L648-L697" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def check(self, msg, options):
+    app = self.app
+    api = app.api
+    Fotype = api.F.otype
+    aContext = app.context
+    allowedValues = aContext.allowedValues
+    error = app.error
+    current = self.current
+
+    good = True
+    for (option, value) in options.items():
+        if option not in current:
+            error(f&#39;ERROR in {msg}(): unknown display option &#34;{option}={value}&#34;&#39;)
+            good = False
+        if option in {&#34;baseTypes&#34;, &#34;condenseType&#34;, &#34;hiddenTypes&#34;, &#34;edgeFeatures&#34;}:
+            legalValues = set(allowedValues[option])
+            if value is not None:
+                if option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;, &#34;edgeFeatures&#34;}:
+                    testVal = setFromValue(value)
+                    isLegal = all(v in legalValues for v in testVal)
+                else:
+                    isLegal = value in legalValues
+                if not isLegal:
+                    thing = (
+                        &#34;edge feature&#34; if option == &#34;edgeFeatures&#34; else &#34;node type&#34;
+                    )
+                    error(
+                        f&#39;ERROR in {msg}(): illegal {thing} in &#34;{option}={value}&#34;&#39;
+                    )
+                    legalRep = &#34;, &#34;.join(sorted(legalValues))
+                    error(f&#34;Legal values are: {legalRep}&#34;)
+                    good = False
+        elif option == &#34;extraFeatures&#34;:
+            if value is not None:
+                if (
+                    type(value) in SEQ_TYPES1
+                    and len(value) == 2
+                    and type(value[0]) in SEQ_TYPES2
+                    and type(value[1]) is dict
+                ):
+                    indirect = value[1]
+                    legalValues = set(Fotype.all)
+                    isLegal = all(v in legalValues for v in indirect)
+                    if not isLegal:
+                        error(
+                            f&#34;ERROR in {msg}(): illegal node type in&#34;
+                            f&#39; &#34;{option}={value}&#34;&#39;
+                        )
+                        good = False
+    return good</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.options.Options.consume"><code class="name flex">
 <span>def <span class="ident">consume</span></span>(<span>self, options, *remove)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/options.py#L713-L714" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def consume(self, options, *remove):
+    return {o: options[o] for o in options if o not in remove}</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.options.Options.distill"><code class="name flex">
 <span>def <span class="ident">distill</span></span>(<span>self, options)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/options.py#L699-L711" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def distill(self, options):
+    defaults = self.defaults
+    current = self.current
+
+    normOptions = {}
+
+    for option in defaults:
+        value = options.get(option, current.get(option, defaults[option]))
+        normValue = self.normalize(option, value)
+        if normValue:
+            normOptions[option] = normValue[1]
+
+    return OptionsCurrent(normOptions)</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.options.Options.normalize"><code class="name flex">
 <span>def <span class="ident">normalize</span></span>(<span>self, option, value)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/options.py#L594-L646" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def normalize(self, option, value):
+    app = self.app
+    api = app.api
+    aContext = app.context
+    allowedValues = aContext.allowedValues
+    error = app.error
+    defaults = self.defaults
+
+    if option not in defaults:
+        error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
+        return None
+
+    if option == &#34;extraFeatures&#34;:
+        (bare, indirect) = parseFeatures(value)
+        api.ensureLoaded(bare)
+        value = (bare, indirect)
+    elif option == &#34;tupleFeatures&#34;:
+        api.ensureLoaded(value)
+        if type(value) is str:
+            value = value.split() if value else []
+    elif option in {&#34;suppress&#34;}:
+        if type(value) is str:
+            value = set(value.split()) if value else set()
+    elif option in {&#34;skipCols&#34;}:
+        if not value:
+            value = set()
+        elif type(value) is str:
+            value = {int(v) for v in value.split()} if value else set()
+        elif type(value) not in {set, frozenset}:
+            value = set(value)
+    elif option in {&#34;withPassage&#34;}:
+        if not value:
+            value = False
+        elif type(value) is str:
+            value = {int(v) for v in value.split()} if value else set()
+        elif type(value) in {list, tuple, dict}:
+            value = set(value)
+        elif type(value) is not set:
+            value = True
+    elif option == &#34;highlights&#34;:
+        if value is not None and type(value) is not dict:
+            value = {m: &#34;&#34; for m in value}
+    elif option == &#34;edgeHighlights&#34;:
+        if value is None:
+            value = {}
+        for (edge, highlights) in value.items():
+            if highlights is not None and type(highlights) is not dict:
+                value[edge] = {m: &#34;&#34; for m in highlights}
+    elif option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;, &#34;edgeFeatures&#34;}:
+        legalValues = set(allowedValues[option])
+        values = setFromValue(value)
+        value = {tp for tp in values if tp in legalValues}
+    return (True, value)</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.options.Options.reset"><code class="name flex">
 <span>def <span class="ident">reset</span></span>(<span>self, *options)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/options.py#L563-L578" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def reset(self, *options):
+    app = self.app
+    error = app.error
+    # info = app.info
+    defaults = self.defaults
+
+    if options:
+        current = self.current
+        for option in options:
+            if option not in defaults:
+                # info(defaults)
+                error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
+                continue
+            current[option] = defaults[option]
+    else:
+        self.current = {k: v for (k, v) in defaults.items()}</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.options.Options.setup"><code class="name flex">
 <span>def <span class="ident">setup</span></span>(<span>self, *options, **overrides)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/options.py#L580-L592" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setup(self, *options, **overrides):
+    app = self.app
+    info = app.info
+    current = self.current
+
+    for option in options:
+        info(f&#34;{option} = {current.get(option, None)}&#34;, tm=False)
+
+    for (option, value) in overrides.items():
+        normValue = self.normalize(option, value)
+        if not normValue:
+            continue
+        current[option] = normValue[1]</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -1366,7 +1549,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/advanced/options.py#L531-L542" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/options.py#L531-L542" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OptionsCurrent:
     def __init__(self, options):
@@ -1388,12 +1571,29 @@ class Options:
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/options.py#L537-L538" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def get(self, k, v=None):
+    return getattr(self, k, v)</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.options.OptionsCurrent.set"><code class="name flex">
 <span>def <span class="ident">set</span></span>(<span>self, k, v)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/options.py#L540-L542" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def set(self, k, v):
+    self.allKeys.add(k)
+    setattr(self, k, v)</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -1500,7 +1700,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

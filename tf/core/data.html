@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.core.data API documentation</title>
 <meta name="description" content="" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/data.py#L1-L720" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/data.py#L1-L720" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import array
 import gc
@@ -773,7 +773,7 @@ class Data:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/data.py#L45-L720" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/data.py#L45-L720" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data:
     def __init__(
@@ -1459,6 +1459,14 @@ class Data:
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/data.py#L675-L676" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def cleanDataBin(self):
+    fileRemove(self.binPath)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.data.Data.load"><code class="name flex">
 <span>def <span class="ident">load</span></span>(<span>self, metaOnly=False, silent='auto')</span>
@@ -1468,18 +1476,159 @@ class Data:
 <p>_withGc: boolean, optional True
 If False, it disables the Python garbage collector before
 loading features. Used to experiment with performance.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/data.py#L78-L186" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def load(self, metaOnly=False, silent=SILENT_D, _withGc=True):
+    &#34;&#34;&#34;Load a feature.
+
+    _withGc: boolean, optional True
+        If False, it disables the Python garbage collector before
+        loading features. Used to experiment with performance.
+    &#34;&#34;&#34;
+
+    silent = silentConvert(silent)
+    tmObj = self.tmObj
+    isSilent = tmObj.isSilent
+    setSilent = tmObj.setSilent
+    indent = tmObj.indent
+    info = tmObj.info
+    error = tmObj.error
+
+    wasSilent = isSilent()
+    setSilent(silent)
+    indent(level=True, reset=True)
+    origTime = self._getModified()
+    binTime = self._getModified(bin=True)
+    sourceRep = (
+        &#34;, &#34;.join(
+            dep.fileName for dep in self.dependencies if isinstance(dep, Data)
+        )
+        if self.method
+        else self.dirName
+    )
+    sourceRep = ux(sourceRep)
+    msgFormat = &#34;{:&lt;1} {:&lt;20} from {}&#34;
+    actionRep = &#34;&#34;
+    good = True
+
+    if self.dataError:
+        # there has been an error in an earlier
+        # computation/compiling/loading of this feature
+        actionRep = &#34;E&#34;
+        good = False
+    elif self.dataLoaded and (
+        self.isConfig
+        or (
+            (not origTime or self.dataLoaded &gt;= origTime)
+            and (not binTime or self.dataLoaded &gt;= binTime)
+        )
+    ):
+        actionRep = &#34;=&#34;  # loaded and up to date
+    elif not origTime and not binTime:
+        actionRep = &#34;X&#34;  # no source and no binary present
+        good = False
+    else:
+        try:
+            if not origTime:
+                actionRep = &#34;b&#34;
+                good = self._readDataBin(_withGc=_withGc)
+                if not good:
+                    actionRep = &#34;X&#34;  # no source and no readable binary present
+            elif not binTime or origTime &gt; binTime:
+                actionRep = &#34;C&#34; if self.method else &#34;T&#34;
+                good = (
+                    self._compute(metaOnly=metaOnly)
+                    if self.method
+                    else self._readTf(metaOnly=metaOnly)
+                )
+                if good:
+                    if self.isConfig or metaOnly:
+                        actionRep = &#34;M&#34;
+                    else:
+                        self._writeDataBin()
+            else:
+                actionRep = &#34;B&#34;
+                good = True if self.method else self._readTf(metaOnly=True)
+                if good:
+                    if self.isConfig or metaOnly:
+                        actionRep = &#34;M&#34;
+                    else:
+                        good = self._readDataBin(_withGc=_withGc)
+                        if not good:
+                            actionRep = &#34;C&#34; if self.method else &#34;T&#34;
+                            good = (
+                                self._compute(metaOnly=metaOnly)
+                                if self.method
+                                else self._readTf(metaOnly=metaOnly)
+                            )
+                            if good:
+                                self._writeDataBin()
+        except MemoryError:
+            console(MEM_MSG)
+            good = False
+        except Exception as e:
+            console(f&#34;{FATAL_MSG}: {e}&#34;)
+            good = False
+    if self.isConfig:
+        self.cleanDataBin()
+    if good:
+        if actionRep != &#34;=&#34; and not (
+            actionRep == &#34;M&#34; or (actionRep == &#34;B&#34; and self.method)
+        ):
+            pass
+        info(
+            msgFormat.format(actionRep, self.fileName, sourceRep),
+            cache=1 if actionRep in &#34;CT&#34; else -1,
+        )
+    else:
+        self.dataError = True
+        error(msgFormat.format(actionRep, self.fileName, sourceRep))
+
+    setSilent(wasSilent)
+    indent(level=False)
+    return good</code></pre>
+</details>
 </dd>
 <dt id="tf.core.data.Data.save"><code class="name flex">
 <span>def <span class="ident">save</span></span>(<span>self, overwrite=False, nodeRanges=False, silent='auto')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/data.py#L192-L202" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def save(self, overwrite=False, nodeRanges=False, silent=SILENT_D):
+    silent = silentConvert(silent)
+    tmObj = self.tmObj
+    isSilent = tmObj.isSilent
+    setSilent = tmObj.setSilent
+
+    wasSilent = isSilent()
+    setSilent(silent)
+    result = self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
+    setSilent(wasSilent)
+    return result</code></pre>
+</details>
 </dd>
 <dt id="tf.core.data.Data.unload"><code class="name flex">
 <span>def <span class="ident">unload</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/data.py#L188-L190" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def unload(self):
+    self.data = None
+    self.dataLoaded = False</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -1567,7 +1716,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

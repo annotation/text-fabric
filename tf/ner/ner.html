@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.ner.ner API documentation</title>
 <meta name="description" content="Named Entity Recognition by Triggers …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -165,7 +165,7 @@ section where the occurrences have been found.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/ner/ner.py#L1-L564" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/ner/ner.py#L1-L564" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Named Entity Recognition by Triggers.
 
@@ -859,7 +859,7 @@ it specifies whether the triggers should be treated case-sensitively.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/ner/ner.py#L187-L564" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/ner/ner.py#L187-L564" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NER(Sheets, Sets, Show):
     &#34;&#34;&#34;API for Named Entity marking.
@@ -1277,6 +1277,185 @@ the <code>ent</code> nodes that correspond to their occurrences.</p>
 <dd>The new dataset gets a version like the original dataset, but extended
 with this string.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/ner/ner.py#L383-L555" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def bakeEntities(self, versionExtension=&#34;e&#34;):
+    &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
+
+    This operation is not allowed if the current set is the read-only set with the
+    empty name, because these entities are already present as nodes in the
+    TF dataset.
+
+    Entities and entity occurrences are stored as nodes of type `entity` and `ent`
+    respectively.
+
+    Nodes of both types will get the features `eid` (entity id) and `kind` (type
+    of entity, e.g. `PER`, `LOC`).
+
+    Additionally, nodes of type `entity` will also get the feature `ename`: the
+    full name of the entity. But this can be done only if the set of entities
+    belongs to a spreadsheet.
+
+    There will also be an edge feature `eoccs` that goes from `entity` nddes to
+    the `ent` nodes that correspond to their occurrences.
+
+    `entity` nodes will also be linked to all slots occupied by their occurrences.
+
+    Parameters
+    ----------
+    versionExtension: string, optional &#34;e&#34;
+        The new dataset gets a version like the original dataset, but extended
+        with this string.
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
+    silent = self.silent
+    setNameRep = self.setNameRep
+    setIsSrc = self.setIsSrc
+    setIsX = self.setIsX
+
+    if setIsSrc:
+        console(f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True)
+        return False
+
+    version = self.version
+    settings = self.settings
+    features = settings.features
+    featureMeta = settings.featureMeta
+    setData = self.getSetData()
+
+    slotLink = {}
+    nodeFeatures = AttrDict({feat: {} for feat in features})
+    edgeFeatures = AttrDict(eoccs={})
+    entities = {}
+
+    if setIsX:
+        sheetData = self.getSheetData()
+        nameMap = sheetData.nameMap
+        eNameFeature = settings.eNameFeature
+        eNameFeat = list(eNameFeature)[0]
+        featureMeta[eNameFeat] = eNameFeature[eNameFeat]
+        nodeFeatures[eNameFeat] = {}
+
+    # Data preparation for the modify function
+
+    entityOccs = sorted(set(setData.entities.values()))
+    self.console(
+        f&#34;Entity consolidation for {len(entityOccs)} entity occurrences &#34;
+        f&#34;into version {version}{versionExtension}&#34;
+    )
+
+    n = 0
+
+    for fVals, slots in entityOccs:
+        n += 1
+        slotLink[n] = slots
+
+        for feat, fVal in zip(features, fVals):
+            nodeFeatures[feat][n] = fVal
+
+        entities.setdefault(fVals, []).append(n)
+
+    nEntityOccs = len(entityOccs)
+    occEdge = edgeFeatures.eoccs
+
+    for fVals, occs in entities.items():
+        n += 1
+        occEdge[n] = set(occs)
+        slotLink[n] = tuple(chain.from_iterable(slotLink[m] for m in occs))
+
+        for feat, fVal in zip(features, fVals):
+            nodeFeatures[feat][n] = fVal
+
+        if setIsX:
+            eName = nameMap[fVals]
+            nodeFeatures[eNameFeat][n] = eName
+
+    nEntities = len(entities)
+
+    self.console(f&#34;{nEntityOccs:&gt;6} entity occurrences&#34;)
+    self.console(f&#34;{nEntities:&gt;6} distinct entities&#34;)
+
+    featureMeta.eoccs = dict(
+        valueType=&#34;str&#34;,
+        description=&#34;from entity nodes to their occurrence nodes&#34;,
+    )
+
+    addTypes = dict(
+        ent=dict(
+            nodeFrom=1,
+            nodeTo=nEntityOccs,
+            nodeSlots=slotLink,
+            nodeFeatures=nodeFeatures,
+        ),
+        entity=dict(
+            nodeFrom=nEntityOccs + 1,
+            nodeTo=nEntityOccs + nEntities,
+            nodeSlots=slotLink,
+            nodeFeatures=nodeFeatures,
+            edgeFeatures=edgeFeatures,
+        ),
+    )
+    self.featureMeta = featureMeta
+
+    # Call the modify function
+
+    app = self.app
+    context = app.context
+    appPath = context.appPath
+    relative = context.relative
+    dataPath = f&#34;{dirNm(appPath)}/{relative}&#34;
+
+    origTf = f&#34;{dataPath}/{app.version}&#34;
+    newTf = f&#34;{origTf}{versionExtension}&#34;
+    newVersion = f&#34;{app.version}{versionExtension}&#34;
+
+    if dirExists(newTf):
+        dirRemove(newTf)
+
+    app.indent(reset=True)
+
+    if not silent:
+        app.info(&#34;Creating a dataset with entity nodes ...&#34;)
+
+    good = modify(
+        origTf,
+        newTf,
+        targetVersion=newVersion,
+        addTypes=addTypes,
+        featureMeta=featureMeta,
+        silent=DEEP if silent else SILENT_D,
+    )
+
+    if not silent:
+        app.info(&#34;Done&#34;)
+
+    if not good:
+        return False
+
+    self.console(f&#34;The dataset with entities is now in version {newVersion}&#34;)
+
+    # tweak the app
+
+    config = f&#34;{appPath}/{APP_CONFIG}&#34;
+
+    with fileOpen(config) as fh:
+        text = fh.read()
+
+    text = text.replace(f&#34;version: {version}&#34;, f&#39;version: &#34;{newVersion}&#34;&#39;)
+    text = text.replace(f&#39;version: &#34;{version}&#34;&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
+
+    with fileOpen(config, mode=&#34;w&#34;) as fh:
+        fh.write(text)
+
+    self.console(&#34;The dataset with entities is now the standard version&#34;)
+
+    return True</code></pre>
+</details>
 </dd>
 <dt id="tf.ner.ner.NER.getTasks"><code class="name flex">
 <span>def <span class="ident">getTasks</span></span>(<span>self)</span>
@@ -1285,6 +1464,30 @@ with this string.</dd>
 <div class="desc"><p>Get a list of task names.</p>
 <p>Sheets will be listed by just their main name, although they are associated
 with two sets, due to the optional case sensitivity.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/ner/ner.py#L364-L381" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getTasks(self):
+    &#34;&#34;&#34;Get a list of task names.
+
+    Sheets will be listed by just their main name, although they are associated
+    with two sets, due to the optional case sensitivity.
+    &#34;&#34;&#34;
+    setNames = self.setNames
+
+    tasks = set()
+
+    for setName in setNames:
+        tasks.add(
+            setName.removesuffix(&#34;-no-case&#34;).removesuffix(&#34;-with-case&#34;)
+            if setName.startswith(&#34;.&#34;)
+            else setName
+        )
+
+    return tasks</code></pre>
+</details>
 </dd>
 <dt id="tf.ner.ner.NER.setTask"><code class="name flex">
 <span>def <span class="ident">setTask</span></span>(<span>self, task, force=False, caseSensitive=None)</span>
@@ -1312,12 +1515,66 @@ taken in a case-sensitive way, and one for the sheet taken in a
 case-insensitive way.</p>
 </dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/ner/ner.py#L329-L362" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setTask(self, task, force=False, caseSensitive=None):
+    &#34;&#34;&#34;Switch to a named NER task.
+
+    After the switch, the data associated with this task will be looked up
+    from disk if it is not already in memory. If no data can be found, the data will
+    be generated and stored.
+
+    Parameters
+    ----------
+    task: string
+        The name of the NER task to switch to.
+    force: boolean, optional False
+        If True, the data for this task will be generated from scratch, bypassing
+        earlier stored data.
+    caseSenstive: boolean, optional None
+        Whether to use the triggers of sheets in a case-sensitive way.
+        If `None`, the value is taken from the NER instance, otherwise you can
+        override it here.
+
+        **N.B.:** Case sensitivity is only relevant for sheets. When the task is
+        a sheet, it is associated with potentially two *sets*, one for the sheet
+        taken in a case-sensitive way, and one for the sheet taken in a
+        case-insensitive way.
+    &#34;&#34;&#34;
+    if caseSensitive is None:
+        caseSensitive = self.caseSensitive
+
+    (newSetNameRep, newSetRo, newSetSrc, newSetX) = self.setInfo(task)
+    self.setSet(task)
+    self.setSheet(
+        task[1:] if newSetX else None,
+        force=force,
+        caseSensitive=caseSensitive,
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.ner.ner.NER.variantDetection"><code class="name flex">
 <span>def <span class="ident">variantDetection</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/ner/ner.py#L557-L564" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def variantDetection(self):
+    setIsX = self.setIsX
+
+    if not setIsX:
+        console(&#34;You can only do variant analysis on sheets&#34;, error=True)
+        return None
+
+    return Detect(self)</code></pre>
+</details>
 </dd>
 </dl>
 <h3>Inherited members</h3>
@@ -1507,7 +1764,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

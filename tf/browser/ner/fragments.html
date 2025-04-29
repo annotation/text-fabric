@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.browser.ner.fragments API documentation</title>
 <meta name="description" content="Wraps various pieces into HTML …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -33,7 +33,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/browser/ner/fragments.py#L1-L1034" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L1-L1034" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Wraps various pieces into HTML.
 
@@ -1088,7 +1088,7 @@ class Fragments:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/browser/ner/fragments.py#L20-L1034" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L20-L1034" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fragments:
     def wrapMessages(self):
@@ -2117,6 +2117,27 @@ class Fragments:
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for the active entity.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L986-L1000" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapActive(self):
+    &#34;&#34;&#34;HTML for the active entity.&#34;&#34;&#34;
+    v = self.v
+
+    activeVal = v.activeval
+
+    v.activevalrep = H.join(
+        H.input(
+            type=&#34;hidden&#34;,
+            id=f&#34;{feat}_active&#34;,
+            name=f&#34;{feat}_active&#34;,
+            value=val or &#34;&#34;,
+        )
+        for (feat, val) in activeVal.items()
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapAppearance"><code class="name flex">
 <span>def <span class="ident">wrapAppearance</span></span>(<span>self)</span>
@@ -2125,12 +2146,101 @@ class Fragments:
 <div class="desc"><p>HTML for the appearance widget.</p>
 <p>The appearance widget lets the user choose how inline entities should
 appear: with or without underlining, identifier, kind, frequency.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L184-L245" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapAppearance(self):
+    &#34;&#34;&#34;HTML for the appearance widget.
+
+    The appearance widget lets the user choose how inline entities should
+    appear: with or without underlining, identifier, kind, frequency.
+    &#34;&#34;&#34;
+    v = self.v
+    ner = self.ner
+    settings = ner.settings
+    features = settings.features
+
+    formattingDo = v.formattingdo
+    formattingState = v.formattingstate
+    v.formattingbuttons = H.join(
+        H.span(
+            H.input(
+                type=&#34;hidden&#34;,
+                name=&#34;formattingdo&#34;,
+                value=&#34;v&#34; if formattingDo else &#34;x&#34;,
+            ),
+            H.button(
+                &#34;decorated&#34; if formattingDo else &#34;plain&#34;,
+                type=&#34;button&#34;,
+                main=&#34;v&#34;,
+                title=&#34;toggle plain or decorated formatting of entities&#34;,
+                cls=&#34;mono&#34;,
+            ),
+        ),
+        H.span(
+            [
+                H.span(
+                    H.input(
+                        type=&#34;hidden&#34;,
+                        name=f&#34;{feat}_appearance&#34;,
+                        value=&#34;v&#34; if formattingState[feat] else &#34;x&#34;,
+                    ),
+                    H.button(
+                        (
+                            &#34;stats&#34;
+                            if feat == &#34;_stat_&#34;
+                            else &#34;underlining&#34; if feat == &#34;_entity_&#34; else feat
+                        ),
+                        feat=feat,
+                        type=&#34;button&#34;,
+                        title=(
+                            &#34;toggle display of statistics&#34;
+                            if feat == &#34;_stat_&#34;
+                            else (
+                                &#34;toggle formatting of entities&#34;
+                                if feat == &#34;_entity&#34;
+                                else f&#34;toggle formatting for feature {feat}&#34;
+                            )
+                        ),
+                        cls=&#34;active&#34; if formattingState[feat] else &#34;&#34;,
+                    ),
+                )
+                for feat in features + (&#34;_stat_&#34;, &#34;_entity_&#34;)
+            ],
+            id=&#34;decoratewidget&#34;,
+        ),
+        sep=&#34; &#34;,
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapCaption"><code class="name flex">
 <span>def <span class="ident">wrapCaption</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for the caption of the entity list.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L141-L155" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapCaption(self):
+    &#34;&#34;&#34;HTML for the caption of the entity list.&#34;&#34;&#34;
+    v = self.v
+    ner = self.ner
+    setNameRep = ner.setNameRep
+    setIsSrc = ner.setIsSrc
+    setIsRo = ner.setIsRo
+    v.caption = H.p(H.b(setNameRep)) + H.p(
+        &#34;Entities as &#34;
+        + (
+            &#34;given in the source&#34;
+            if setIsSrc
+            else &#34;specified by a spreadsheet&#34; if setIsRo else &#34;marked up by hand&#34;
+        )
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapEntity"><code class="name flex">
 <span>def <span class="ident">wrapEntity</span></span>(<span>self)</span>
@@ -2140,6 +2250,69 @@ appear: with or without underlining, identifier, kind, frequency.</p></div>
 <p>The entity widget shows the occurrence or entity that is selected.
 This function computed the relevant values and stores them in
 hidden input elements.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L329-L385" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapEntity(self):
+    &#34;&#34;&#34;Basic data for the selected entity widget.
+
+    The entity widget shows the occurrence or entity that is selected.
+    This function computed the relevant values and stores them in
+    hidden input elements.
+    &#34;&#34;&#34;
+    v = self.v
+    ner = self.ner
+    settings = ner.settings
+    features = settings.features
+
+    activeEntity = v.activeentity
+    activeTrigger = v.activetrigger
+    tokenStart = v.tokenstart
+    tokenEnd = v.tokenend
+
+    hasEnt = activeEntity is not None
+    hasOcc = tokenStart is not None and tokenEnd is not None
+
+    if hasEnt:
+        v.tokenstart = None
+        v.tokenend = None
+        txt = &#34;&#34;
+        eTxt = repIdent(features, activeEntity, active=&#34;active&#34;)
+    elif hasOcc:
+        v.activeentity = None
+        v.activetrigger = None
+        txt = (
+            ner.textFromSlots(range(tokenStart, tokenEnd + 1))
+            if tokenStart and tokenEnd
+            else &#34;&#34;
+        )
+        eTxt = &#34;&#34;
+    else:
+        v.activeentity = None
+        v.activetrigger = None
+        v.tokenstart = None
+        v.tokenend = None
+        txt = &#34;&#34;
+        eTxt = &#34;&#34;
+
+    v.activeentityrep = &#34;⊙&#34;.join(activeEntity) if activeEntity else &#34;&#34;
+    v.activetriggerrep = &#34;⊙&#34;.join(activeTrigger) if activeTrigger else &#34;&#34;
+    tokenStart = v.tokenstart
+    tokenEnd = v.tokenend
+
+    startRep = H.input(
+        type=&#34;hidden&#34;, name=&#34;tokenstart&#34;, id=&#34;tokenstart&#34;, value=tokenStart or &#34;&#34;
+    )
+    endRep = H.input(
+        type=&#34;hidden&#34;, name=&#34;tokenend&#34;, id=&#34;tokenend&#34;, value=tokenEnd or &#34;&#34;
+    )
+    v.entityinit = startRep + endRep
+
+    v.txt = txt
+    v.etxt = eTxt</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapEntityFeats"><code class="name flex">
 <span>def <span class="ident">wrapEntityFeats</span></span>(<span>self)</span>
@@ -2149,18 +2322,192 @@ hidden input elements.</p></div>
 <p>All feature values of entities that occupy the selected occurrences are
 shown, with the possibility that the user selects some of these values,
 thereby selecting a subset of the original set of occurrences.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L532-L627" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapEntityFeats(self):
+    &#34;&#34;&#34;HTML for the entity feature value selection.
+
+    All feature values of entities that occupy the selected occurrences are
+    shown, with the possibility that the user selects some of these values,
+    thereby selecting a subset of the original set of occurrences.
+    &#34;&#34;&#34;
+    v = self.v
+    ner = self.ner
+    setIsX = ner.setIsX
+    bucketType = ner.bucketType
+    settings = ner.settings
+    features = settings.features
+
+    setData = ner.getSetData()
+
+    txt = v.txt
+    eTxt = v.etxt
+    valSelect = v.valselect
+    scopeInit = v.scopeinit
+    scopeFilter = v.scopefilter
+
+    hasOcc = txt != &#34;&#34;
+    hasEnt = eTxt != &#34;&#34;
+
+    featuresW = {
+        feat: (
+            valSelect[feat]
+            if hasEnt
+            else setData.entityTextVal[feat].get(txt, set())
+        )
+        for feat in features
+    }
+    content = []
+    inputContent = []
+
+    for feat, theseVals in featuresW.items():
+        thisValSelect = valSelect[feat]
+
+        valuesContent = []
+
+        inputContent.append(
+            H.input(
+                type=&#34;hidden&#34;,
+                name=f&#34;{feat}_select&#34;,
+                id=f&#34;{feat}_select&#34;,
+                value=&#34;,&#34;.join(thisValSelect),
+            )
+        )
+
+        if hasEnt or hasOcc:
+            for val in [NONE] + sorted(theseVals):
+                valuesContent.append(
+                    H.button(
+                        val,
+                        self.wrapEntityStat(val, feat),
+                        type=&#34;button&#34;,
+                        name=val or EMPTY,
+                        cls=f&#34;{feat}_sel alt&#34;,
+                        st=&#34;v&#34; if val in thisValSelect else &#34;x&#34;,
+                        title=(
+                            f&#34;{feat} not marked&#34;
+                            if val == NONE
+                            else f&#34;{feat} marked as {val}&#34;
+                        ),
+                    )
+                )
+            titleContent = H.div(H.i(f&#34;{feat}:&#34;), cls=&#34;feattitle&#34;)
+        else:
+            titleContent = &#34;&#34;
+
+        content.append(H.div(titleContent, valuesContent, cls=&#34;featwidget&#34;))
+
+    total = self.wrapEntityStat(None, &#34;&#34;)
+    v.selectentities = (
+        H.div(
+            H.join(inputContent),
+            (
+                H.div(
+                    H.span(&#34;&#34; if setIsX else H.b(&#34;Select&#34;), scopeInit, scopeFilter),
+                    H.span(H.span(f&#34;{total} {bucketType}(s)&#34;)),
+                )
+                if hasEnt
+                else H.join(
+                    H.div(
+                        H.p(H.b(&#34;Select&#34;), scopeInit, scopeFilter),
+                        H.p(H.span(f&#34;{total} {bucketType}(s)&#34;)),
+                    ),
+                    H.div(content, id=&#34;selectsubwidget&#34;),
+                )
+            ),
+            id=&#34;selectwidget&#34;,
+        )
+        if hasEnt or hasOcc
+        else H.join(inputContent)
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapEntityHeaders"><code class="name flex">
 <span>def <span class="ident">wrapEntityHeaders</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for the header of the entity table, dependent on the state of sorting.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L387-L437" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapEntityHeaders(self):
+    &#34;&#34;&#34;HTML for the header of the entity table, dependent on the state of sorting.&#34;&#34;&#34;
+    v = self.v
+    sortKey = v.sortkey
+    sortDir = v.sortdir
+
+    if not sortKey and not sortDir:
+        (sortKey, sortDir) = SORT_DEFAULT
+    else:
+        if not sortKey:
+            sortKey = SORTKEY_DEFAULT
+        if not sortDir:
+            sortDir = SORTDIR_DEFAULT
+
+    ner = self.ner
+    settings = ner.settings
+    features = settings.features
+    setIsX = ner.setIsX
+
+    sortKeys = (
+        ((&#34;name&#34;, &#34;sort_0&#34;),)
+        if setIsX
+        else ((feat, f&#34;sort_{i}&#34;) for (i, feat) in enumerate(features))
+    )
+
+    content = [
+        H.input(type=&#34;hidden&#34;, name=&#34;sortkey&#34;, id=&#34;sortkey&#34;, value=sortKey),
+        H.input(type=&#34;hidden&#34;, name=&#34;sortdir&#34;, id=&#34;sortdir&#34;, value=sortDir),
+    ]
+
+    for label, key in ((&#34;frequency&#34;, &#34;freqsort&#34;), *sortKeys):
+        hl = &#34; active &#34; if key == sortKey else &#34;&#34;
+        theDir = sortDir if key == sortKey else SORTDIR_ASC
+        theArrow = &#34;↑&#34; if theDir == SORTDIR_ASC else &#34;↓&#34;
+        content.extend(
+            [
+                H.button(
+                    f&#34;{label} {theArrow}&#34;,
+                    type=&#34;button&#34;,
+                    tp=&#34;sort&#34;,
+                    sk=key,
+                    sd=theDir,
+                    cls=f&#34;alt{hl}&#34;,
+                ),
+                &#34; &#34;,
+            ]
+        )
+
+    content.append(self.wrapSubtle())
+
+    return H.p(content)</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapEntityModReport"><code class="name flex">
 <span>def <span class="ident">wrapEntityModReport</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for the combined report of add / del actions.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L1002-L1010" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapEntityModReport(self):
+    &#34;&#34;&#34;HTML for the combined report of add / del actions.&#34;&#34;&#34;
+    v = self.v
+    reportDel = v.reportdel
+    reportAdd = v.reportadd
+    v.modifyreport = H.join(
+        H.div(reportDel, id=&#34;delreport&#34;, cls=&#34;report&#34;),
+        H.div(reportAdd, id=&#34;addreport&#34;, cls=&#34;report&#34;),
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapEntityModify"><code class="name flex">
 <span>def <span class="ident">wrapEntityModify</span></span>(<span>self)</span>
@@ -2171,6 +2518,258 @@ thereby selecting a subset of the original set of occurrences.</p></div>
 should be added or deleted.</p>
 <p>Considerable effort is made to prefill these components with ergonomic
 values.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L703-L948" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapEntityModify(self):
+    &#34;&#34;&#34;HTML for the add / del widget.
+
+    This widget contains controls to specify which entity feature values
+    should be added or deleted.
+
+    Considerable effort is made to prefill these components with ergonomic
+    values.
+    &#34;&#34;&#34;
+    v = self.v
+    ner = self.ner
+    settings = ner.settings
+    features = settings.features
+    keywordFeatures = settings.keywordFeatures
+
+    featureDefault = ner.featureDefault
+
+    setData = ner.getSetData()
+    setIsRo = ner.setIsRo
+
+    txt = v.txt
+    eTxt = v.etxt
+    submitter = v.submitter
+    activeEntity = v.activeentity
+    tokenStart = v.tokenstart
+    tokenEnd = v.tokenend
+    delData = v.adddata
+    addData = v.adddata
+    modWidgetState = v.modwidgetstate
+    excludedTokens = v.excludedtokens
+
+    deletions = delData.deletions
+    additions = addData.additions
+    freeVals = addData.freeVals
+
+    hasOcc = txt != &#34;&#34;
+    hasEnt = eTxt != &#34;&#34;
+
+    delButtonHtml = &#34;&#34;
+    addButtonHtml = &#34;&#34;
+    delContentHtml = []
+    addContentHtml = []
+
+    # Assigment of feature values
+
+    somethingToDelete = True
+
+    if (not setIsRo) and (hasOcc or hasEnt):
+        instances = self.wrapExceptions()
+
+        for i, feat in enumerate(features):
+            isKeyword = feat in keywordFeatures
+            theseVals = (
+                {activeEntity[i]}
+                if hasEnt
+                else sorted(setData.entityTextVal[feat].get(txt, set()))
+            )
+            allVals = (
+                sorted(x[0] for x in setData.entityFreq[feat])
+                if isKeyword
+                else theseVals
+            )
+            addVals = (
+                additions[i]
+                if additions is not None and len(additions) &gt; i
+                else set()
+            )
+            delVals = (
+                deletions[i]
+                if deletions is not None and len(deletions) &gt; i
+                else set()
+            )
+            freeVal = (
+                freeVals[i] if freeVals is not None and len(freeVals) &gt; i else None
+            )
+            default = (
+                activeEntity[i]
+                if hasEnt
+                else (
+                    featureDefault[feat](range(tokenStart, tokenEnd + 1))
+                    if hasOcc
+                    else {}
+                )
+            )
+
+            titleContent = H.div(
+                H.i(f&#34;{feat}:&#34;),
+                cls=&#34;feattitle&#34;,
+            )
+
+            delValuesContent = []
+            addValuesContent = []
+
+            hasSomeVals = False
+
+            for val in allVals:
+                occurs = val in theseVals
+                delSt = &#34;minus&#34; if hasEnt or val in delVals else &#34;x&#34;
+                addSt = (
+                    &#34;plus&#34;
+                    if val in addVals
+                    else &#34;plus&#34; if val == default and freeVal != default else &#34;x&#34;
+                )
+
+                if occurs:
+                    delValuesContent.append(
+                        H.div(
+                            [
+                                H.span(
+                                    val or H.nb,
+                                    cls=f&#34;{feat}_sel&#34;,
+                                    st=delSt,
+                                    val=val,
+                                ),
+                            ],
+                            cls=f&#34;{feat}_w modval&#34;,
+                        )
+                    )
+                    hasSomeVals = True
+
+                addValuesContent.append(
+                    H.div(
+                        [
+                            H.span(
+                                val or H.nb, cls=f&#34;{feat}_sel&#34;, st=addSt, val=val
+                            ),
+                        ],
+                        cls=f&#34;{feat}_w modval&#34;,
+                    )
+                )
+
+            if not hasSomeVals:
+                somethingToDelete = False
+
+            init = &#34;&#34; if default in theseVals else default
+            val = (
+                addVals[0]
+                if len(addVals) and submitter in {&#34;lookupn&#34;, &#34;freebutton&#34;}
+                else (
+                    init
+                    if submitter == &#34;lookupq&#34;
+                    else freeVal if freeVal is not None else init
+                )
+            )
+            addSt = (
+                &#34;plus&#34;
+                if val and len(addVals) and submitter in {&#34;lookupn&#34;, &#34;freebutton&#34;}
+                else (
+                    &#34;plus&#34;
+                    if submitter == &#34;lookupq&#34; and val
+                    else (
+                        &#34;plus&#34;
+                        if val == freeVal
+                        else &#34;plus&#34; if init and len(theseVals) == 0 else &#34;x&#34;
+                    )
+                )
+            )
+            if (isKeyword and val in allVals) or val is None:
+                val = &#34;&#34;
+                addSt = &#34;x&#34;
+
+            addValuesContent.append(
+                H.div(
+                    [H.input(type=&#34;text&#34;, st=addSt, value=val, origval=val)],
+                    cls=&#34;modval&#34;,
+                )
+            )
+
+            delContentHtml.append(
+                H.div(
+                    titleContent,
+                    H.div(delValuesContent, cls=&#34;modifyvalues&#34;),
+                    cls=&#34;delfeat&#34;,
+                    feat=feat,
+                )
+            )
+            addContentHtml.append(
+                H.div(
+                    titleContent,
+                    H.div(addValuesContent, cls=&#34;modifyvalues&#34;),
+                    cls=&#34;addfeat&#34;,
+                    feat=feat,
+                )
+            )
+
+        delButtonHtml = H.span(
+            H.button(&#34;Delete&#34;, type=&#34;button&#34;, id=&#34;delgo&#34;, value=&#34;v&#34;, cls=&#34;special&#34;),
+            H.input(type=&#34;hidden&#34;, id=&#34;deldata&#34;, name=&#34;deldata&#34;, value=&#34;&#34;),
+        )
+        addButtonHtml = H.span(
+            H.button(&#34;Add&#34;, type=&#34;button&#34;, id=&#34;addgo&#34;, value=&#34;v&#34;, cls=&#34;special&#34;),
+            H.input(type=&#34;hidden&#34;, id=&#34;adddata&#34;, name=&#34;adddata&#34;, value=&#34;&#34;),
+        )
+        delResetHtml = H.button(
+            &#34;⌫&#34;,
+            type=&#34;button&#34;,
+            id=&#34;delresetbutton&#34;,
+            title=&#34;clear values in form&#34;,
+            cls=&#34;icon&#34;,
+        )
+        addResetHtml = H.button(
+            &#34;⌫&#34;,
+            type=&#34;button&#34;,
+            id=&#34;addresetbutton&#34;,
+            title=&#34;clear values in form&#34;,
+            cls=&#34;icon&#34;,
+        )
+
+        delWidgetContent = (
+            H.div(
+                H.span(
+                    H.span(delButtonHtml, delResetHtml, id=&#34;modifyhead&#34;),
+                    H.span(delContentHtml, cls=&#34;assignwidget&#34;),
+                ),
+                H.span(&#34;&#34;, id=&#34;delfeedback&#34;, cls=&#34;feedback&#34;),
+                id=&#34;delwidget&#34;,
+            )
+            if somethingToDelete
+            else &#34;&#34;
+        )
+        v.modifyentity = H.div(
+            H.input(
+                type=&#34;hidden&#34;,
+                id=&#34;modwidgetstate&#34;,
+                name=&#34;modwidgetstate&#34;,
+                value=modWidgetState,
+            ),
+            H.input(
+                type=&#34;hidden&#34;,
+                id=&#34;excludedtokens&#34;,
+                name=&#34;excludedtokens&#34;,
+                value=&#34;,&#34;.join(str(t) for t in excludedTokens),
+            ),
+            H.b(&#34;Modify&#34;),
+            instances,
+            delWidgetContent,
+            H.div(
+                H.span(
+                    H.span(addButtonHtml, addResetHtml, id=&#34;modifyhead&#34;),
+                    H.span(addContentHtml, cls=&#34;assignwidget&#34;),
+                ),
+                H.span(&#34;&#34;, id=&#34;addfeedback&#34;, cls=&#34;feedback&#34;),
+                id=&#34;addwidget&#34;,
+            ),
+            id=&#34;modwidget&#34;,
+        )</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapEntityStat"><code class="name flex">
 <span>def <span class="ident">wrapEntityStat</span></span>(<span>self, val, feat)</span>
@@ -2179,12 +2778,106 @@ values.</p></div>
 <div class="desc"><p>HTML for statistics of feature values.</p>
 <p>This is about totals of occurrences of feature values in all buckets
 versus in filtered buckets.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L964-L984" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapEntityStat(self, val, feat):
+    &#34;&#34;&#34;HTML for statistics of feature values.
+
+    This is about totals of occurrences of feature values in all buckets
+    versus in filtered buckets.
+    &#34;&#34;&#34;
+    v = self.v
+    nVisible = v.nvisible
+    nEnt = v.nent
+    hasFilter = v.hasfilter
+
+    thisNVisible = nVisible[feat]
+    thisNEnt = nEnt[feat]
+
+    na = thisNEnt[val]
+    n = (
+        (H.span(f&#34;{thisNVisible[val]} of &#34;, cls=&#34;filted&#34;) + f&#34;{na}&#34;)
+        if hasFilter
+        else f&#34;{na}&#34;
+    )
+    return H.span(n, cls=&#34;stat&#34;)</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapEntityText"><code class="name flex">
 <span>def <span class="ident">wrapEntityText</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for the selected entity widget.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L470-L530" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapEntityText(self):
+    &#34;&#34;&#34;HTML for the selected entity widget.&#34;&#34;&#34;
+    v = self.v
+    ner = self.ner
+    setIsX = ner.setIsX
+
+    freeState = v.freestate
+    txt = v.txt
+    eTxt = v.etxt
+
+    title = &#34;choose: free, intersecting with other entities, or all&#34;
+    v.entitytext = (
+        &#34;&#34;
+        if setIsX
+        else H.div(
+            (
+                H.b(&#34;Mark&#34;),
+                H.span(
+                    H.join(
+                        H.span(txt if txt else eTxt or &#34;&#34;, id=&#34;qtextentshow&#34;),
+                        &#34; &#34;,
+                        H.button(&#34;❌&#34;, type=&#34;submit&#34;, id=&#34;queryclear&#34;, cls=&#34;icon&#34;),
+                        &#34; &#34;,
+                        H.button(
+                            &#34;✅&#34;,
+                            type=&#34;submit&#34;,
+                            id=&#34;lookupq&#34;,
+                            cls=&#34;icon&#34;,
+                            title=&#34;look up and fill in green fields&#34;,
+                        ),
+                        H.button(
+                            &#34;❎&#34;,
+                            type=&#34;submit&#34;,
+                            id=&#34;lookupn&#34;,
+                            cls=&#34;icon&#34;,
+                            title=&#34;look up and keep green fields as is&#34;,
+                        ),
+                        H.input(
+                            type=&#34;hidden&#34;,
+                            name=&#34;freestate&#34;,
+                            id=&#34;freestate&#34;,
+                            value=freeState,
+                        ),
+                        H.button(
+                            (
+                                &#34;⚭ intersecting&#34;
+                                if freeState == &#34;bound&#34;
+                                else &#34;⚯ free&#34; if freeState == &#34;free&#34; else &#34;⚬ all&#34;
+                            ),
+                            type=&#34;submit&#34;,
+                            id=&#34;freebutton&#34;,
+                            cls=&#34;mono&#34;,
+                            title=title,
+                        ),
+                    ),
+                    id=&#34;etextwidget&#34;,
+                ),
+            ),
+            id=&#34;markwidget&#34;,
+        )
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapExceptions"><code class="name flex">
 <span>def <span class="ident">wrapExceptions</span></span>(<span>self)</span>
@@ -2195,6 +2888,52 @@ versus in filtered buckets.</p></div>
 in the buckets.
 The user can select or deselect individual entities for the application of
 the add / del operations.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L662-L701" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapExceptions(self):
+    &#34;&#34;&#34;HTML for the select / deselect buttons.
+
+    These buttons appear at the end of selected occurrences in the text displayed
+    in the buckets.
+    The user can select or deselect individual entities for the application of
+    the add / del operations.
+    &#34;&#34;&#34;
+    v = self.v
+    txt = v.txt
+    eTxt = v.etxt
+    ner = self.ner
+    bucketType = ner.bucketType
+    setIsRo = ner.setIsRo
+    hasOcc = txt != &#34;&#34;
+    hasEnt = eTxt != &#34;&#34;
+
+    scopeExceptions = &#34;&#34;
+
+    if (not setIsRo) and (hasOcc or hasEnt):
+        scopeExceptions = H.span(
+            H.nb,
+            H.button(
+                &#34;✅&#34;,
+                type=&#34;button&#34;,
+                id=&#34;selectall&#34;,
+                title=f&#34;select all occurrences in filtered {bucketType}s&#34;,
+                cls=&#34;icon&#34;,
+            ),
+            &#34; &#34;,
+            H.button(
+                &#34;❌&#34;,
+                type=&#34;button&#34;,
+                id=&#34;selectnone&#34;,
+                title=f&#34;deselect all occurrences in filtered {bucketType}s&#34;,
+                cls=&#34;icon&#34;,
+            ),
+        )
+
+    return scopeExceptions</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapFilter"><code class="name flex">
 <span>def <span class="ident">wrapFilter</span></span>(<span>self)</span>
@@ -2204,6 +2943,93 @@ the add / del operations.</p></div>
 <p>The filter widget lets the user filter the buckets by a search pattern
 or the condition that the buckets contains entities (and the even more useful
 condition that the buckets do <em>not</em> contain entities).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L247-L327" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapFilter(self):
+    &#34;&#34;&#34;HTML for the filter widget.
+
+    The filter widget lets the user filter the buckets by a search pattern
+    or the condition that the buckets contains entities (and the even more useful
+    condition that the buckets do *not* contain entities).
+    &#34;&#34;&#34;
+    v = self.v
+    ner = self.ner
+    setData = ner.getSetData()
+
+    bFind = v.bfind
+    bFindC = v.bfindc
+    bFindRe = v.bfindre
+    bFindError = v.bfinderror
+    anyEnt = v.anyent
+
+    v.hasfilter = bFindRe is not None or anyEnt is not None
+    v.nbuckets = len(setData.buckets or [])
+
+    v.filterwidget = H.div(
+        (
+            H.b(&#34;Filter&#34;),
+            H.join(
+                H.span(
+                    H.input(type=&#34;text&#34;, name=&#34;bfind&#34;, id=&#34;bfind&#34;, value=bFind),
+                    H.input(
+                        type=&#34;hidden&#34;,
+                        name=&#34;bfindc&#34;,
+                        id=&#34;bfindc&#34;,
+                        value=&#34;v&#34; if bFindC else &#34;x&#34;,
+                    ),
+                    H.button(
+                        &#34;C&#34; if bFindC else &#34;¢&#34;,
+                        type=&#34;submit&#34;,
+                        id=&#34;bfindb&#34;,
+                        title=(
+                            &#34;using case SENSITIVE search&#34;
+                            if bFindC
+                            else &#34;using case INSENSITIVE search&#34;
+                        ),
+                        cls=&#34;mono&#34;,
+                    ),
+                    &#34; &#34;,
+                    H.button(&#34;❌&#34;, type=&#34;submit&#34;, id=&#34;findclear&#34;, cls=&#34;icon&#34;),
+                    &#34; &#34;,
+                    H.span(bFindError, id=&#34;bfinderror&#34;, cls=&#34;error&#34;),
+                    cls=&#34;filtercomponent&#34;,
+                ),
+                H.span(
+                    H.input(
+                        type=&#34;hidden&#34;,
+                        name=&#34;anyent&#34;,
+                        id=&#34;anyent&#34;,
+                        value=&#34;&#34; if anyEnt is None else &#34;v&#34; if anyEnt else &#34;x&#34;,
+                    ),
+                    H.button(
+                        (
+                            &#34;with or without&#34;
+                            if anyEnt is None
+                            else &#34;with&#34; if anyEnt else &#34;without&#34;
+                        ),
+                        type=&#34;submit&#34;,
+                        id=&#34;anyentbutton&#34;,
+                        cls=&#34;mono&#34;,
+                    ),
+                    H.span(&#34; marked entities&#34;),
+                    cls=&#34;filtercomponent&#34;,
+                ),
+                H.span(
+                    H.button(&#34;🔎&#34;, type=&#34;submit&#34;, id=&#34;lookupf&#34;, cls=&#34;alt&#34;),
+                    cls=&#34;filtercomponent&#34;,
+                ),
+                H.span(
+                    self.wrapFindStat(),
+                    cls=&#34;filtercomponent&#34;,
+                ),
+            ),
+        ),
+        id=&#34;filterwidget&#34;,
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapFindStat"><code class="name flex">
 <span>def <span class="ident">wrapFindStat</span></span>(<span>self)</span>
@@ -2212,30 +3038,127 @@ condition that the buckets do <em>not</em> contain entities).</p></div>
 <div class="desc"><p>HTML for statistics.</p>
 <p>This is about totals of occurrences in all buckets versus in filtered
 buckets.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L950-L962" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapFindStat(self):
+    &#34;&#34;&#34;HTML for statistics.
+
+    This is about totals of occurrences in all buckets versus in filtered
+    buckets.
+    &#34;&#34;&#34;
+    v = self.v
+    nBuckets = v.nbuckets
+    nFind = v.nfind
+    hasFilter = v.hasfilter
+
+    n = f&#34;{nFind} of {nBuckets}&#34; if hasFilter else nBuckets
+    return H.span(n, cls=&#34;stat&#34;)</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapLogs"><code class="name flex">
 <span>def <span class="ident">wrapLogs</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for the log messages produced when processing a sheet.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L157-L171" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapLogs(self):
+    &#34;&#34;&#34;HTML for the log messages produced when processing a sheet.&#34;&#34;&#34;
+    v = self.v
+    ner = self.ner
+    sheetData = ner.getSheetData()
+    logData = sheetData.logData or []
+
+    v.logs = &#34;\n&#34;.join(
+        H.p(
+            H.nb * indent + msg,
+            cls=&#34;msg &#34;
+            + (&#34;special&#34; if isError is None else &#34;error&#34; if isError else &#34;info&#34;),
+        )
+        for (isError, indent, msg) in logData
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapMessages"><code class="name flex">
 <span>def <span class="ident">wrapMessages</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for messages.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L21-L26" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapMessages(self):
+    &#34;&#34;&#34;HTML for messages.&#34;&#34;&#34;
+    v = self.v
+    messageSrc = v.messagesrc
+
+    v.messages = H.p((H.span(text, cls=lev) + H.br() for (lev, text) in messageSrc))</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapQuery"><code class="name flex">
 <span>def <span class="ident">wrapQuery</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for all control widgets on the page.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L173-L182" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapQuery(self):
+    &#34;&#34;&#34;HTML for all control widgets on the page.&#34;&#34;&#34;
+    self.wrapAppearance()
+    self.wrapFilter()
+    self.wrapEntity()
+    self.wrapEntityText()
+    self.wrapScope()
+    self.wrapEntityFeats()
+    self.wrapEntityModReport()
+    self.wrapEntityModify()</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapReport"><code class="name flex">
 <span>def <span class="ident">wrapReport</span></span>(<span>self, report, kind)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for the report of add / del actions.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L1012-L1034" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapReport(self, report, kind):
+    &#34;&#34;&#34;HTML for the report of add / del actions.&#34;&#34;&#34;
+    v = self.v
+    ner = self.ner
+    settings = ner.settings
+    features = settings.features
+
+    label = &#34;Deletion&#34; if kind == &#34;del&#34; else &#34;Addition&#34; if kind == &#34;add&#34; else &#34;&#34;
+    v[f&#34;report{kind}&#34;] = H.join(
+        H.div(
+            (
+                H.join(
+                    H.div(f&#34;{label}: {n} x {valRep(features, fVals)}&#34;)
+                    for (fVals, n) in line
+                )
+                if type(line) is tuple
+                else line
+            ),
+            cls=&#34;report&#34;,
+        )
+        for line in report
+    )
+    report.clear()</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapScope"><code class="name flex">
 <span>def <span class="ident">wrapScope</span></span>(<span>self)</span>
@@ -2244,6 +3167,44 @@ buckets.</p></div>
 <div class="desc"><p>HTML for the scope widget.</p>
 <p>The scope widget lets the user choose whether the add / del actions should
 be applied to all relevant buckets, or only to the filtered buckets.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L629-L660" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapScope(self):
+    &#34;&#34;&#34;HTML for the scope widget.
+
+    The scope widget lets the user choose whether the add / del actions should
+    be applied to all relevant buckets, or only to the filtered buckets.
+    &#34;&#34;&#34;
+    v = self.v
+    ner = self.ner
+    setIsRo = ner.setIsRo
+    scope = v.scope
+    hasFilter = v.hasfilter
+    txt = v.txt
+    eTxt = v.etxt
+    hasOcc = txt != &#34;&#34;
+    hasEnt = eTxt != &#34;&#34;
+
+    scopeInit = H.input(type=&#34;hidden&#34;, id=&#34;scope&#34;, name=&#34;scope&#34;, value=scope)
+    scopeFilter = &#34;&#34;
+
+    if (not setIsRo) and (hasOcc or hasEnt):
+        # Scope of modification
+
+        scopeFilter = (
+            H.span(
+                H.button(&#34;&#34;, type=&#34;button&#34;, id=&#34;scopebutton&#34;, title=&#34;&#34;, cls=&#34;alt&#34;)
+            )
+            if hasFilter
+            else &#34;&#34;
+        )
+
+    v.scopeinit = scopeInit
+    v.scopefilter = scopeFilter</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapSets"><code class="name flex">
 <span>def <span class="ident">wrapSets</span></span>(<span>self)</span>
@@ -2257,12 +3218,166 @@ present in the TF dataset as nodes of the entity type specified
 in the YAML file with corresponding
 features.</p>
 <p>Finally, it is possible to create a new, empty annotation task.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L28-L139" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapSets(self):
+    &#34;&#34;&#34;HTML for the annotation task chooser.
+
+    It is a dropdown with options, each corresponding to an existing annotation task.
+    There is also a control to delete the task.
+
+    Apart from these buttons there is a button to switch to the entities that are
+    present in the TF dataset as nodes of the entity type specified
+    in the YAML file with corresponding
+    features.
+
+    Finally, it is possible to create a new, empty annotation task.
+    &#34;&#34;&#34;
+    ner = self.ner
+    taskNames = ner.getTasks()
+
+    v = self.v
+    chosenTask = v.task
+    sheetCase = v.sheetcase
+
+    content1 = [
+        H.input(
+            type=&#34;hidden&#34;,
+            name=&#34;task&#34;,
+            value=chosenTask,
+            id=&#34;seth&#34;,
+        ),
+        H.input(
+            type=&#34;hidden&#34;,
+            name=&#34;duset&#34;,
+            value=&#34;&#34;,
+            id=&#34;duseth&#34;,
+        ),
+        H.input(
+            type=&#34;hidden&#34;,
+            name=&#34;rset&#34;,
+            value=&#34;&#34;,
+            id=&#34;rseth&#34;,
+        ),
+        H.button(
+            &#34;+&#34;,
+            type=&#34;submit&#34;,
+            id=&#34;anew&#34;,
+            title=&#34;create a new annotation task&#34;,
+            cls=&#34;mono&#34;,
+        ),
+        &#34; &#34;,
+        H.button(
+            &#34;++&#34;,
+            type=&#34;submit&#34;,
+            id=&#34;adup&#34;,
+            title=&#34;duplicate this annotation task&#34;,
+            cls=&#34;mono&#34;,
+        ),
+        &#34; &#34;,
+        H.select(
+            (
+                H.option(
+                    ner.setInfo(taskName)[0],
+                    value=taskName,
+                    selected=taskName == chosenTask,
+                )
+                for taskName in [&#34;&#34;] + sorted(taskNames)
+            ),
+            cls=&#34;selinp&#34;,
+            id=&#34;achange&#34;,
+        ),
+        &#34; &#34;,
+        H.input(
+            type=&#34;hidden&#34;,
+            id=&#34;sheetcase&#34;,
+            name=&#34;sheetcase&#34;,
+            value=&#34;v&#34; if sheetCase else &#34;x&#34;,
+        ),
+        H.button(
+            &#34;C&#34; if sheetCase else &#34;¢&#34;,
+            type=&#34;submit&#34;,
+            id=&#34;sheetcasebutton&#34;,
+            title=&#34;toggle case-sensitivity&#34;,
+            cls=&#34;mono&#34;,
+        ),
+    ]
+
+    content2 = (
+        [
+            H.input(
+                type=&#34;hidden&#34;,
+                name=&#34;dset&#34;,
+                value=&#34;&#34;,
+                id=&#34;dseth&#34;,
+            ),
+            H.button(
+                &#34;→&#34;,
+                type=&#34;submit&#34;,
+                id=&#34;arename&#34;,
+                title=&#34;rename current annotation task&#34;,
+                cls=&#34;mono&#34;,
+            ),
+            &#34; &#34;,
+            H.button(
+                &#34;-&#34;,
+                type=&#34;submit&#34;,
+                id=&#34;adelete&#34;,
+                title=&#34;delete current annotation task&#34;,
+                cls=&#34;mono&#34;,
+            ),
+        ]
+        if not (chosenTask == &#34;&#34; or chosenTask.startswith(&#34;.&#34;))
+        else []
+    )
+
+    v.tasks = H.p(content1, content2)</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.ner.fragments.Fragments.wrapSubtle"><code class="name flex">
 <span>def <span class="ident">wrapSubtle</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for the button to filter the entity list by scoped/nonscoped triggers.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/ner/fragments.py#L439-L468" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapSubtle(self):
+    &#34;&#34;&#34;HTML for the button to filter the entity list by scoped/nonscoped triggers.&#34;&#34;&#34;
+    v = self.v
+    subtleFilter = v.subtlefilter
+    ner = self.ner
+    setIsX = ner.setIsX
+
+    return H.span(
+        H.input(
+            type=&#34;hidden&#34;,
+            name=&#34;subtlefilter&#34;,
+            id=&#34;subtlefilter&#34;,
+            value=&#34;&#34; if subtleFilter is None else &#34;v&#34; if subtleFilter else &#34;x&#34;,
+        ),
+        (
+            &#34;&#34;
+            if not setIsX
+            else H.button(
+                (
+                    &#34;all scopes&#34;
+                    if subtleFilter is None
+                    else &#34;scoped&#34; if subtleFilter else &#34;unscoped&#34;
+                ),
+                type=&#34;submit&#34;,
+                id=&#34;subtlefilterbutton&#34;,
+                cls=&#34;mono&#34;,
+            )
+        ),
+        cls=&#34;subtlefilter&#34;,
+    )</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -2366,7 +3481,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

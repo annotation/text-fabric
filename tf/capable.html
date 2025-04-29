@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.capable API documentation</title>
 <meta name="description" content="Dependency management …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -86,7 +86,7 @@ under section <code>[options.extras_require]</code> .</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/capable.py#L1-L360" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/capable.py#L1-L360" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Dependency management.
 
@@ -501,7 +501,7 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/capable.py#L259-L360" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/capable.py#L259-L360" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Capable:
     &#34;&#34;&#34;Import modules for back-end communication if possible.
@@ -613,24 +613,111 @@ import them if possible, and otherwise ask the user to install them.</p></div>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/capable.py#L342-L360" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def can(self, extra):
+    if extra in {&#34;github&#34;, &#34;gitlab&#34;}:
+        backendProviders = self.backendProviders
+
+        if extra in backendProviders:
+            return True
+
+        console(
+            dedent(
+                f&#34;&#34;&#34;
+                Backend provider {extra} not supported.
+                Cannot reach online data on {extra}
+                Try installing text-fabric one of the following:
+                pip install text-fabric[{extra}]
+                pip install text-fabric[all]
+        &#34;&#34;&#34;
+            )
+        )
+        return False</code></pre>
+</details>
 </dd>
 <dt id="tf.capable.Capable.load"><code class="name flex">
 <span>def <span class="ident">load</span></span>(<span>self, module)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/capable.py#L318-L330" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def load(self, module):
+    modules = self.modules
+    loaded = modules.get(module, None)
+
+    if loaded:
+        return loaded
+
+    try:
+        loaded = import_module(module)
+    except Exception:
+        pass
+
+    return loaded</code></pre>
+</details>
 </dd>
 <dt id="tf.capable.Capable.loadFrom"><code class="name flex">
 <span>def <span class="ident">loadFrom</span></span>(<span>self, module, *members)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/capable.py#L332-L340" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def loadFrom(self, module, *members):
+    loaded = self.load(module)
+
+    result = (
+        tuple(getattr(loaded, member, None) for member in members)
+        if loaded
+        else tuple(None for x in members)
+    )
+    return result[0] if len(result) == 1 else result</code></pre>
+</details>
 </dd>
 <dt id="tf.capable.Capable.tryImport"><code class="name flex">
 <span>def <span class="ident">tryImport</span></span>(<span>self, *extras)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/capable.py#L295-L316" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def tryImport(self, *extras):
+    backendProviders = self.backendProviders
+    modules = self.modules
+
+    for kind in extras:
+        if kind == &#34;github&#34;:
+            try:
+                import github
+
+                modules[&#34;github&#34;] = github
+                backendProviders.add(kind)
+            except Exception:
+                pass
+
+        elif kind == &#34;gitlab&#34;:
+            try:
+                import gitlab
+
+                modules[&#34;gitlab&#34;] = gitlab
+                backendProviders.add(kind)
+            except Exception:
+                pass</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -685,7 +772,7 @@ warnings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/capable.py#L93-L256" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/capable.py#L93-L256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CheckImport:
     def __init__(self, *modules, optional=False):
@@ -870,6 +957,27 @@ or None.</p>
 not packed in a 1-element list.</p>
 </dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/capable.py#L242-L256" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def importGet(self):
+    &#34;&#34;&#34;Delivers the imported modules.
+
+    Returns
+    -------
+    list | any
+        For each item in the list of modules with which this instance was
+        initialized, it returns the imported module object if successful,
+        or None.
+
+        If there is only one module in the list, it returns the single object,
+        not packed in a 1-element list.
+    &#34;&#34;&#34;
+    semantics = self.semantics
+    return semantics[0] if len(semantics) == 1 else semantics</code></pre>
+</details>
 </dd>
 <dt id="tf.capable.CheckImport.importOK"><code class="name flex">
 <span>def <span class="ident">importOK</span></span>(<span>self, hint=False)</span>
@@ -888,6 +996,37 @@ module.</dd>
 <dt><code>boolean</code></dt>
 <dd>Whether all imports were successful.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/capable.py#L216-L240" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def importOK(self, hint=False):
+    &#34;&#34;&#34;Reports the result of the import attempts.
+
+    It will print a message with the missing modules, if any.
+
+    Parameters
+    ----------
+    hint: boolean, optional False
+        If True, it will also print a `pip install` statement for each missing
+        module.
+
+    Returns
+    -------
+    boolean
+        Whether all imports were successful.
+    &#34;&#34;&#34;
+    optional = self.optional
+    properlySetup = self.properlySetup
+
+    if not optional and not properlySetup:
+        console(self.message)
+        if hint:
+            console(self.imessage)
+
+    return properlySetup</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -991,7 +1130,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

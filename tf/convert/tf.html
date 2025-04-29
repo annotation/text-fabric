@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.convert.tf API documentation</title>
 <meta name="description" content="Raw, unoptimised data from TF files" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/convert/tf.py#L1-L325" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/tf.py#L1-L325" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Raw, unoptimised data from TF files
@@ -416,6 +416,126 @@ If pointing to an existing directory, exploded file(s) will be put there.</dd>
 <dt><code>boolean</code></dt>
 <dd>whether the operation was successful.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/tf.py#L26-L139" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def explode(inPath, outPath):
+    &#34;&#34;&#34;Explodes `.tf` files into non-optimised `.tf` files without metadata.
+
+    An exploded `.tf` feature file is a TF file with explicit node specifiers,
+    no optimizations.
+
+    The format of each line is:
+
+    **Node features**:
+
+        node&lt;tab&gt;value
+
+    If the value is None for a certain `node`, there will be no such line.
+
+    **Edge features without values**:
+
+        node&lt;tab&gt;node
+
+    **Edge features with values**:
+
+        node&lt;tab&gt;node&lt;tab&gt;value
+
+    If the value is `None`, it will be left out, together with the preceding &lt;tab&gt;.
+    This way, the empty string is distinguished from a `None` value.
+
+    !!! caution &#34;Ambiguity&#34;
+        In the resulting data file, all metadata is gone.
+        It is not always possible to infer from the data alone what data type a feature
+        has:
+
+        `1&lt;tab&gt;2` could be a node feature assigning integer 2 to node 1, or string `2`
+        to node 1.
+
+        It could also be an edge feature assigning `None` to the node pair (1, 2).
+
+    Parameters
+    ----------
+    inPath: string
+        Source file(s).
+        If pointing to a file, it should be file containing TF feature data.
+        If pointing to a directory, all `.tf` files in that directory will be exploded
+        (non-recursively).
+        The path may contain `~` which will be expanded to the user&#39;s home directory.
+    outPath: string
+        Destination of the exploded file(s).
+        If pointing to a non-existing location, a file or directory will be created
+        there, depending on whether `inPath` is a file or directory.
+        If pointing to an existing directory, exploded file(s) will be put there.
+
+    Returns
+    -------
+    boolean
+        whether the operation was successful.
+    &#34;&#34;&#34;
+
+    inPath = normpath(inPath)
+    outPath = normpath(outPath)
+    inLoc = ex(inPath)
+    outLoc = ex(outPath)
+    if not dirExists(inLoc):
+        return f&#34;No such directory: `{inPath}`&#34;
+
+    isInDir = isDir(inLoc)
+    outExists = dirExists(outLoc)
+    isOutDir = isDir(outLoc) if outExists else None
+
+    tasks = []
+
+    if isInDir:
+        with scanDir(inLoc) as sd:
+            tasks = [
+                (f&#34;{inLoc}/{e.name}&#34;, f&#34;{outLoc}/{e.name}&#34;)
+                for e in sd
+                if e.name.endswith(&#34;.tf&#34;) and e.is_file()
+            ]
+            if not tasks:
+                return &#34;No .tf files in `{inPath}`&#34;
+        if outExists and not isOutDir:
+            return &#34;Not a directory: `{outPath}`&#34;
+        if not outExists:
+            dirMake(outLoc)
+    else:
+        if not isFile(inLoc):
+            return &#34;Not a file: `{inPath}&#34;
+        if outExists:
+            if isOutDir:
+                outFile = f&#34;{outLoc}/{fileNm(inLoc)}&#34;
+            else:
+                outFile = outLoc
+        else:
+            outDir = dirNm(outLoc)
+            dirMake(outDir)
+            outFile = outLoc
+
+        tasks = [(inLoc, outFile)]
+
+    msgs = []
+
+    for (inFile, outFile) in sorted(tasks):
+        result = _readTf(inFile)
+        if type(result) is str:
+            msgs.append(f&#34;{ux(inFile)} =&gt; {ux(outFile)}:\n\t{result}&#34;)
+            continue
+        (data, valueType, isEdge) = result
+        _writeTf(outFile, *result)
+
+    good = True
+    if msgs:
+        for msg in msgs:
+            thisGood = msg[0] != &#34;X&#34;
+            (sys.stdout if thisGood else sys.stderr).write(f&#34;{msg}\n&#34;)
+            if not thisGood:
+                good = False
+    return good</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -497,7 +617,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

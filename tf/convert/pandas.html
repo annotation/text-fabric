@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.convert.pandas API documentation</title>
 <meta name="description" content="Export a TF dataset to a `pandas` data frame …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -61,7 +61,7 @@ programs, such as TF, to process the same data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/convert/pandas.py#L1-L296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/pandas.py#L1-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Export a TF dataset to a `pandas` data frame.
@@ -437,6 +437,258 @@ In all cases, there will be columns for sectional node types.</dd>
 <dd>The directory to which the <code>pandas</code> file will be exported.
 If <code>None</code>, it is the <code>/pandas</code> directory in the repo of the app.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/pandas.py#L51-L296" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def exportPandas(app, inTypes=None, exportDir=None):
+    &#34;&#34;&#34;Export a currently loaded TF dataset to `pandas`.
+
+    The function proceeds by first producing a TSV file as an intermediate result.
+    This is usually too big for GitHub, to it is produced in a `/_temp` directory
+    that is usually in the `.gitignore` of the repo.
+
+    This file serves as the basis for the export to a `pandas` data frame.
+
+    !!! hint &#34;R&#34;
+        You can import this file in other programs as well, e.g.
+        [R](https://www.r-project.org)
+
+    !!! note &#34;Quotation, newlines, tabs, backslashes and escaping&#34;
+        If the data as it comes from TF contains newlines or tabs or
+        double quotes, we put them escaped into the TSV, as follows:
+
+        *   *newline* becomes *backslash* plus `n`;
+        *   *tab* becomes a single space;
+        *   *double quote* becomes *Control-A* plus *double quote*;
+        *   *backslash* remains *backslash*.
+
+        In this way, the TSV file is not disturbed by non-delimiting tabs, i.e.
+        tabs that are part of the content of a field. No field will contain a tab!
+
+        Also, no field will contain a newline, so the lines are not disturbed by
+        newlines that are part of the content of a field. No field will contain a
+        newline!
+
+        Double quotes in a TSV file might pose a problem. Several programs interpret
+        double quotes as a way to include tabs and newlines in the content of a field,
+        especially if the quote occurs at the beginning of a field.
+        That&#39;s why we escape it by putting a character in front of it that is very
+        unlikely to occur in the text of a corpus: Ctrl A, which is ASCII character 1.
+
+        Backslashes are no problem, but programs might interpret them in a special
+        way in combination with specific following characters.
+
+        Now what happens to these characters when `pandas` reads the file?
+
+        We instruct the `pandas` table reading function to use the Control-A as
+        escape char and the double quote as quote char.
+
+        **Backslash**
+
+        `pandas` has two special behaviours:
+
+        *   *backslash* `n` becomes a *newline*;
+        *   *backslash* *backslash* becomes a single *backslash*.
+
+        This is almost what we want: the newline behaviour is desired; the
+        reducing of backslashes not, but we leave it as it is.
+
+        **Double quote**
+
+        *Ctrl-A* plus *double quote* becomes *double quote*.
+
+        That is exactly what we want.
+
+    Parameters
+    ----------
+    app: object
+        A `tf.advanced.app.App` object that represent a loaded corpus, together with
+        all its loaded data modules.
+    inTypes: string | iterable, optional None
+        A bunch of node types for which columns should be made that contain nodes
+        in which the row node is contained.
+        If `None`, all node types will have such columns. But for certain TEI corpora
+        this might lead to overly many columns.
+        So, if you specify `&#34;&#34;` or `{}`, there will only be columns for sectional
+        node types.
+        But you can also specify the list of such node types explicitly.
+        In all cases, there will be columns for sectional node types.
+    exportDir: string, optional None
+        The directory to which the `pandas` file will be exported.
+        If `None`, it is the `/pandas` directory in the repo of the app.
+    &#34;&#34;&#34;
+    CI = CheckImport(&#34;pandas&#34;, &#34;pyarrow&#34;)
+    if CI.importOK(hint=True):
+        (pandas, pyarrow) = CI.importGet()
+    else:
+        return
+
+    api = app.api
+    Eall = api.Eall
+    Fall = api.Fall
+    Es = api.Es
+    Fs = api.Fs
+    F = api.F
+    N = api.N
+    L = api.L
+    T = api.T
+    TF = api.TF
+
+    app.indent(reset=True)
+
+    sectionTypes = T.sectionTypes
+    sectionFeats = T.sectionFeats
+
+    sectionTypeSet = set(sectionTypes)
+    sectionFeatIndex = {}
+
+    for i, f in enumerate(sectionFeats):
+        sectionFeatIndex[f] = i
+
+    skipFeatures = {f for f in Fall() + Eall() if &#34;@&#34; in f}
+
+    textFeatures = set()
+    for textFormatSpec in TF.cformats.values():
+        for featGroup in textFormatSpec[2]:
+            for feat in featGroup[0]:
+                textFeatures.add(feat)
+    textFeatures = sorted(textFeatures)
+
+    inTypes = [
+        t
+        for t in (F.otype.all if inTypes is None else fitemize(inTypes))
+        if t not in sectionTypes
+    ]
+    edgeFeatures = sorted(set(Eall()) - {OSLOTS} - skipFeatures)
+    nodeFeatures = sorted(set(Fall()) - {OTYPE} - set(textFeatures) - skipFeatures)
+
+    dtype = dict(nd=INT, otype=STR)
+
+    for f in sectionTypes:
+        dtype[f&#34;in_{f}&#34;] = INT
+
+    for f in nodeFeatures:
+        dtype[f] = INT if Fs(f).meta[&#34;valueType&#34;] == &#34;int&#34; else STR
+
+    naValues = dict((x, set() if dtype[x] == STR else {&#34;&#34;}) for x in dtype)
+
+    baseDir = f&#34;{app.repoLocation}&#34;
+    tempDir = f&#34;{baseDir}/{TEMP_DIR}&#34;
+    if exportDir is None:
+        exportDir = f&#34;{baseDir}/pandas&#34;
+    else:
+        exportDir = exportDir
+        exportDir = expandDir(app, exportDir)
+
+    dirMake(tempDir)
+    dirMake(exportDir)
+
+    tableFile = f&#34;{tempDir}/data-{app.version}.tsv&#34;
+    tableFilePd = f&#34;{exportDir}/data-{app.version}.pd&#34;
+
+    chunkSize = max((100, int(round(F.otype.maxNode / 20))))
+
+    app.info(&#34;Create tsv file ...&#34;)
+    app.indent(level=True, reset=True)
+
+    with fileOpen(tableFile, mode=&#34;w&#34;) as hr:
+        cells = (
+            &#34;nd&#34;,
+            &#34;otype&#34;,
+            *textFeatures,
+            *[f&#34;in_{x}&#34; for x in sectionTypes],
+            *[f&#34;in_{x}&#34; for x in inTypes],
+            *edgeFeatures,
+            *nodeFeatures,
+        )
+        hr.write(&#34;\t&#34;.join(cells) + &#34;\n&#34;)
+        i = 0
+        s = 0
+        perc = 0
+
+        for n in N.walk():
+            nType = F.otype.v(n)
+            textValues = [pandasEsc(str(Fs(f).v(n) or &#34;&#34;)) for f in textFeatures]
+            sectionNodes = [
+                n if nType == section else (L.u(n, otype=section) or NA)[0]
+                for section in sectionTypes
+            ]
+            inValues = [(L.u(n, otype=inType) or NA)[0] for inType in inTypes]
+            edgeValues = [pandasEsc(str((Es(f).f(n) or NA)[0])) for f in edgeFeatures]
+            nodeValues = [
+                pandasEsc(
+                    str(
+                        (Fs(f).v(sectionNodes[sectionFeatIndex[f]]) or NA[0])
+                        if f in sectionFeatIndex and nType in sectionTypeSet
+                        else Fs(f).v(n) or &#34;&#34;
+                    )
+                )
+                for f in nodeFeatures
+            ]
+            cells = (
+                str(n),
+                F.otype.v(n),
+                *textValues,
+                *[str(x) for x in sectionNodes],
+                *[str(x) for x in inValues],
+                *edgeValues,
+                *nodeValues,
+            )
+            hr.write(&#34;\t&#34;.join(cells).replace(&#34;\n&#34;, &#34;\\n&#34;) + &#34;\n&#34;)
+            i += 1
+            s += 1
+            if s == chunkSize:
+                s = 0
+                perc = int(round(i * 100 / F.otype.maxNode))
+                app.info(f&#34;{perc:&gt;3}% {i:&gt;7} nodes written&#34;)
+
+    app.info(f&#34;{perc:&gt;3}% {i:&gt;7} nodes written and done&#34;)
+    app.indent(level=False)
+
+    app.info(f&#34;TSV file is {ux(tableFile)}&#34;)
+
+    with fileOpen(tableFile, mode=&#34;r&#34;) as hr:
+        rows = 0
+        chars = 0
+        columns = 0
+        for i, line in enumerate(hr):
+            if i == 0:
+                columns = line.split(&#34;\t&#34;)
+                app.info(f&#34;Columns {len(columns)}:&#34;)
+                for col in columns:
+                    app.info(f&#34;\t{col}&#34;)
+            rows += 1
+            chars += len(line)
+    app.info(f&#34;\t{rows} rows&#34;)
+    app.info(f&#34;\t{chars} characters&#34;)
+
+    app.info(&#34;Importing into Pandas ...&#34;)
+    app.indent(level=True, reset=True)
+    app.info(&#34;Reading tsv file ...&#34;)
+
+    dataFrame = pandas.read_table(
+        tableFile,
+        delimiter=&#34;\t&#34;,
+        quotechar=PANDAS_QUOTE.encode(&#34;utf-8&#34;),
+        escapechar=PANDAS_ESCAPE.encode(&#34;utf-8&#34;),
+        doublequote=False,
+        low_memory=False,
+        encoding=&#34;utf8&#34;,
+        keep_default_na=False,
+        na_values=naValues,
+        dtype=dtype,
+    )
+    app.info(&#34;Done. Size = {}&#34;.format(dataFrame.size))
+
+    app.info(&#34;Saving as Parquet file ...&#34;)
+
+    dataFrame.to_parquet(tableFilePd, engine=&#34;pyarrow&#34;)
+    app.info(&#34;Saved&#34;)
+    app.indent(level=False)
+    app.info(f&#34;PD  in {ux(tableFilePd)}&#34;)</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -519,7 +771,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

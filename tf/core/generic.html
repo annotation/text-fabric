@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.core.generic API documentation</title>
 <meta name="description" content="" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/generic.py#L1-L123" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/generic.py#L1-L123" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AttrDict(dict):
     &#34;&#34;&#34;Turn a dict into an object with attributes.
@@ -187,6 +187,49 @@ and functions.</dd>
 <dd>An <code><a title="tf.core.generic.AttrDict" href="#tf.core.generic.AttrDict">AttrDict</a></code> containing the same info as the input dictionary, but where
 each value of type <code>dict</code> is turned into an <code><a title="tf.core.generic.AttrDict" href="#tf.core.generic.AttrDict">AttrDict</a></code>.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/generic.py#L76-L112" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def deepAttrDict(info, preferTuples=False):
+    &#34;&#34;&#34;Turn a `dict` into an `AttrDict`, recursively.
+
+    Parameters
+    ----------
+    info: any
+        The input dictionary. We assume that it is a data structure built by
+        `tuple`, `list`, `set`, `frozenset`, `dict` and atomic types such as
+        `int`, `str`, `bool`.
+        We assume there are no user defined objects in it, and no generators
+        and functions.
+    preferTuples: boolean, optional False
+        Lists are converted to tuples.
+
+    Returns
+    -------
+    AttrDict
+        An `AttrDict` containing the same info as the input dictionary, but where
+        each value of type `dict` is turned into an `AttrDict`.
+    &#34;&#34;&#34;
+    tp = type(info)
+
+    return (
+        AttrDict(
+            {k: deepAttrDict(v, preferTuples=preferTuples) for (k, v) in info.items()}
+        )
+        if tp in {dict, AttrDict}
+        else tuple(deepAttrDict(item, preferTuples=preferTuples) for item in info)
+        if tp is tuple or (tp is list and preferTuples)
+        else frozenset(deepAttrDict(item, preferTuples=preferTuples) for item in info)
+        if tp is frozenset
+        else [deepAttrDict(item, preferTuples=preferTuples) for item in info]
+        if tp is list
+        else {deepAttrDict(item, preferTuples=preferTuples) for item in info}
+        if tp is set
+        else info
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.core.generic.deepdict"><code class="name flex">
 <span>def <span class="ident">deepdict</span></span>(<span>info)</span>
@@ -208,6 +251,45 @@ and functions.</dd>
 <dd>A dictionary containing the same info as the input dictionary, but where
 each value of type <code><a title="tf.core.generic.AttrDict" href="#tf.core.generic.AttrDict">AttrDict</a></code> is turned into a <code>dict</code>.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/generic.py#L41-L73" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def deepdict(info):
+    &#34;&#34;&#34;Turns an `AttrDict` into a `dict`, recursively.
+
+    Parameters
+    ----------
+    info: any
+        The input dictionary. We assume that it is a data structure built by
+        `tuple`, `list`, `set`, `frozenset`, `dict` and atomic types such as
+        `int`, `str`, `bool`.
+        We assume there are no user defined objects in it, and no generators
+        and functions.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the same info as the input dictionary, but where
+        each value of type `AttrDict` is turned into a `dict`.
+    &#34;&#34;&#34;
+    tp = type(info)
+
+    return (
+        dict({k: deepdict(v) for (k, v) in info.items()})
+        if tp in {dict, AttrDict}
+        else tuple(deepdict(item) for item in info)
+        if tp is tuple
+        else frozenset(deepdict(item) for item in info)
+        if tp is frozenset
+        else [deepdict(item) for item in info]
+        if tp is list
+        else {deepdict(item) for item in info}
+        if tp is set
+        else info
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.core.generic.isIterable"><code class="name flex">
 <span>def <span class="ident">isIterable</span></span>(<span>value)</span>
@@ -219,6 +301,21 @@ each value of type <code><a title="tf.core.generic.AttrDict" href="#tf.core.gene
 <p>Strings are iterables.
 But for this purpose we regard strings as non-iterable scalars.</p>
 </div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/generic.py#L115-L123" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def isIterable(value):
+    &#34;&#34;&#34;Whether a value is a non-string iterable.
+
+    !!! note
+        Strings are iterables.
+        But for this purpose we regard strings as non-iterable scalars.
+    &#34;&#34;&#34;
+
+    return type(value) is not str and hasattr(value, &#34;__iter__&#34;)</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -249,7 +346,7 @@ dict by means of keys, like <code>xxx["yyy"]</code> rather then by attribute lik
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/generic.py#L1-L38" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/generic.py#L1-L38" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AttrDict(dict):
     &#34;&#34;&#34;Turn a dict into an object with attributes.
@@ -301,6 +398,14 @@ dict by means of keys, like <code>xxx["yyy"]</code> rather then by attribute lik
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/generic.py#L37-L38" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def deepdict(self):
+    return deepdict(self)</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -392,7 +497,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.core.helpers API documentation</title>
 <meta name="description" content="" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/helpers.py#L1-L717" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L1-L717" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -764,30 +764,113 @@ def readCfg(folder, file, label, verbose=0, **kwargs):
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L253-L257" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def camel(name):
+    if not name:
+        return name
+    temp = name.replace(&#34;_&#34;, &#34; &#34;).title().replace(&#34; &#34;, &#34;&#34;)
+    return temp[0].lower() + temp[1:]</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.check32"><code class="name flex">
 <span>def <span class="ident">check32</span></span>(<span>)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L260-L268" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def check32():
+    warn = &#34;&#34;
+    msg = &#34;&#34;
+    on32 = sys.maxsize &lt; 2**63 - 1
+    if on32 &lt; 2**63 - 1:
+        warn = WARN32
+    else:
+        msg = MSG64
+    return (on32, warn, msg)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.cleanName"><code class="name flex">
 <span>def <span class="ident">cleanName</span></span>(<span>name)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L282-L286" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def cleanName(name):
+    clean = &#34;&#34;.join(c if c in VALID else &#34;_&#34; for c in name)
+    if clean == &#34;&#34; or not clean[0] in LETTER:
+        clean = &#34;x&#34; + clean
+    return MQL_KEYWORDS.get(clean, clean)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.collectFormats"><code class="name flex">
 <span>def <span class="ident">collectFormats</span></span>(<span>config)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L425-L449" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def collectFormats(config):
+    featureSet = set()
+
+    def collectFormat(tpl):
+        features = []
+        default = &#34;&#34;
+
+        def varReplace(match):
+            nonlocal default
+            varText = match.group(1)
+            default = (match.group(2) or &#34;:&#34;)[1:]
+            fts = tuple(varText.split(&#34;/&#34;))
+            features.append((fts, default))
+            for ft in fts:
+                featureSet.add(ft)
+            return &#34;{}&#34;
+
+        rtpl = VAR_RE.sub(varReplace, tpl)
+        return (tpl, rtpl, tuple(features))
+
+    formats = {}
+    for fmt, tpl in sorted(config.items()):
+        if fmt.startswith(&#34;fmt:&#34;):
+            formats[fmt[4:]] = collectFormat(tpl)
+    return (formats, sorted(featureSet))</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.console"><code class="name flex">
 <span>def <span class="ident">console</span></span>(<span>*msg, error=False, newline=True)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L271-L279" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def console(*msg, error=False, newline=True):
+    msg = &#34; &#34;.join(m if type(m) is str else repr(m) for m in msg)
+    msg = &#34;&#34; if not msg else ux(msg)
+    msg = msg[1:] if msg.startswith(&#34;\n&#34;) else msg
+    msg = msg[0:-1] if msg.endswith(&#34;\n&#34;) else msg
+    target = sys.stderr if error else sys.stdout
+    nl = &#34;\n&#34; if newline else &#34;&#34;
+    target.write(f&#34;{msg}{nl}&#34;)
+    target.flush()</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.deepSize"><code class="name flex">
 <span>def <span class="ident">deepSize</span></span>(<span>o, handlers={}, verbose=False, seen=None)</span>
@@ -801,18 +884,103 @@ To search other containers, add handlers to iterate over their contents:</p>
 <pre><code>handlers = {SomeContainerClass: iter,
             OtherContainerClass: OtherContainerClass.get_elements}
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L619-L665" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def deepSize(o, handlers={}, verbose=False, seen=None):
+    &#34;&#34;&#34;Returns the approximate memory footprint an object and all of its contents.
+
+    Automatically finds the contents of the following builtin containers and
+    their subclasses:
+    `tuple`, `list`, `deque`, `dict`, `set` and `frozenset`.
+    To search other containers, add handlers to iterate over their contents:
+
+    ```
+    handlers = {SomeContainerClass: iter,
+                OtherContainerClass: OtherContainerClass.get_elements}
+    ```
+
+    &#34;&#34;&#34;
+
+    def dict_handler(d):
+        return chain.from_iterable(d.items())
+
+    all_handlers = {
+        tuple: iter,
+        list: iter,
+        deque: iter,
+        dict: dict_handler,
+        set: iter,
+        frozenset: iter,
+    }
+    all_handlers.update(handlers)  # user handlers take precedence
+    if seen is None:
+        seen = set()  # track which object id&#39;s have already been seen
+    default_size = getsizeof(0)  # estimate sizeof object without __sizeof__
+
+    def sizeof(o):
+        if id(o) in seen:  # do not double count the same object
+            return 0
+        seen.add(id(o))
+        s = getsizeof(o, default_size)
+
+        if verbose:
+            console(s, type(o), repr(o), file=stderr)
+
+        for typ, handler in all_handlers.items():
+            if isinstance(o, typ):
+                s += sum(map(sizeof, handler(o)))
+                break
+        return s
+
+    return sizeof(o)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.fitemize"><code class="name flex">
 <span>def <span class="ident">fitemize</span></span>(<span>value)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L460-L467" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def fitemize(value):
+    if not value:
+        return []
+    if type(value) is str:
+        return SEP_RE.split(STRIP_RE.sub(&#34;&#34;, value))
+    if type(value) in {bool, int, float}:
+        return [str(value)]
+    return list(str(v) for v in value)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.flattenToSet"><code class="name flex">
 <span>def <span class="ident">flattenToSet</span></span>(<span>features)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L295-L306" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def flattenToSet(features):
+    theseFeatures = set()
+    if type(features) is str:
+        theseFeatures |= setFromStr(features)
+    else:
+        for feature in features:
+            if type(feature) is str:
+                theseFeatures.add(feature)
+            else:
+                feature = feature[1]
+                theseFeatures |= setFromValue(feature)
+    return theseFeatures</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.formatMeta"><code class="name flex">
 <span>def <span class="ident">formatMeta</span></span>(<span>featureMeta)</span>
@@ -832,6 +1000,44 @@ of metadata in the form of key values</dd>
 <code>desc</code> and <code>eg</code> merged under a new key <code>description</code>,
 and the keys <code>desc</code> and <code>eg</code> deleted.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L585-L616" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def formatMeta(featureMeta):
+    &#34;&#34;&#34;Reorder meta data.
+
+    Parameters
+    ----------
+    meta: dict
+        Dictionary of meta data: keyed by feature, valued by a dict
+        of metadata in the form of key values
+
+    Returns
+    -------
+    dict
+        A copy of the dict but with the values for metadata keys
+        `desc` and `eg` merged under a new key `description`,
+        and the keys `desc` and `eg` deleted.
+    &#34;&#34;&#34;
+
+    result = {}
+    for f, meta in featureMeta.items():
+        fmeta = {}
+        for k, v in meta.items():
+            if k == &#34;eg&#34; and &#34;desc&#34; in meta:
+                continue
+            if k == &#34;desc&#34;:
+                eg = meta.get(&#34;eg&#34;, &#34;&#34;)
+                egRep = f&#34; ({eg})&#34; if eg else &#34;&#34;
+                fmeta[&#34;description&#34;] = f&#34;{v}{egRep}&#34;
+            else:
+                fmeta[k] = v
+        result[f] = fmeta
+
+    return result</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.getAllRealFeatures"><code class="name flex">
 <span>def <span class="ident">getAllRealFeatures</span></span>(<span>api)</span>
@@ -843,6 +1049,35 @@ When we take volumes or collections from works,
 we need to pass these features on.</p>
 <p>This will exclude the computed features and the node / edge features
 that are not loaded by default.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L560-L582" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getAllRealFeatures(api):
+    &#34;&#34;&#34;Get all configuration features and all loaded node and edge features.
+
+    Except `omap@v-w` features.
+    When we take volumes or collections from works,
+    we need to pass these features on.
+
+    This will exclude the computed features and the node / edge features
+    that are not loaded by default.
+    &#34;&#34;&#34;
+
+    TF = api.TF
+    allFeatures = set()
+
+    for feat, fObj in TF.features.items():
+        if fObj.method:
+            continue
+        if fObj.isConfig:
+            allFeatures.add(feat)
+
+    allFeatures |= set(api.Fall())
+    allFeatures |= {e for e in api.Eall() if not e.startswith(OMAP)}
+    return allFeatures</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.htmlEsc"><code class="name flex">
 <span>def <span class="ident">htmlEsc</span></span>(<span>val, math=False)</span>
@@ -859,48 +1094,170 @@ in cases where you need them literally.</p>
 <dd>Whether retain TeX notation.
 If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L132-L161" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def htmlEsc(val, math=False):
+    &#34;&#34;&#34;Escape certain HTML characters by HTML entities.
+
+    To prevent them to be interpreted as HTML
+    in cases where you need them literally.
+
+    Parameters
+    ----------
+    val: string
+        The input value
+    math: boolean, optional False
+        Whether retain TeX notation.
+        If True, `$` is not escaped, if False, it is not escaped.
+    &#34;&#34;&#34;
+
+    return (
+        &#34;&#34;
+        if val is None
+        else (
+            (str(val).replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;).replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;).replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;))
+            if math
+            else (
+                str(val)
+                .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
+                .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
+                .replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;)
+                .replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)
+            )
+        )
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.isClean"><code class="name flex">
 <span>def <span class="ident">isClean</span></span>(<span>name)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L289-L292" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def isClean(name):
+    if name is None or len(name) == 0 or name[0] not in LETTER:
+        return False
+    return all(c in VALID for c in name[1:])</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.isInt"><code class="name flex">
 <span>def <span class="ident">isInt</span></span>(<span>val)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L86-L91" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def isInt(val):
+    try:
+        val = int(val)
+    except Exception:
+        return False
+    return True</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.itemize"><code class="name flex">
 <span>def <span class="ident">itemize</span></span>(<span>string, sep=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L452-L457" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def itemize(string, sep=None):
+    if not string:
+        return []
+    if not sep:
+        return string.strip().split()
+    return string.strip().split(sep)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.makeExamples"><code class="name flex">
 <span>def <span class="ident">makeExamples</span></span>(<span>nodeList)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L499-L509" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def makeExamples(nodeList):
+    lN = len(nodeList)
+    if lN &lt;= 10:
+        return f&#34;{lN:&gt;7} x: &#34; + (&#34;, &#34;.join(str(n) for n in nodeList))
+    else:
+        return (
+            f&#34;{lN:&gt;7} x: &#34;
+            + (&#34;, &#34;.join(str(n) for n in nodeList[0:5]))
+            + &#34; ... &#34;
+            + (&#34;, &#34;.join(str(n) for n in nodeList[-5:]))
+        )</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.makeIndex"><code class="name flex">
 <span>def <span class="ident">makeIndex</span></span>(<span>data)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L393-L397" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def makeIndex(data):
+    inv = {}
+    for n, m in data.items():
+        inv.setdefault(m, set()).add(n)
+    return inv</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.makeInverse"><code class="name flex">
 <span>def <span class="ident">makeInverse</span></span>(<span>data)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L400-L405" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def makeInverse(data):
+    inverse = {}
+    for n in data:
+        for m in data[n]:
+            inverse.setdefault(m, set()).add(n)
+    return inverse</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.makeInverseVal"><code class="name flex">
 <span>def <span class="ident">makeInverseVal</span></span>(<span>data)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L408-L413" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def makeInverseVal(data):
+    inverse = {}
+    for n in data:
+        for m, val in data[n].items():
+            inverse.setdefault(m, {})[n] = val
+    return inverse</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.mathEsc"><code class="name flex">
 <span>def <span class="ident">mathEsc</span></span>(<span>val)</span>
@@ -909,6 +1266,20 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <div class="desc"><p>Escape dollar signs to <code>&lt;span&gt;$&lt;/span&gt;</code>.</p>
 <p>To prevent them from being interpreted as math in a Jupyter notebook
 in cases where you need them literally.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L94-L101" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def mathEsc(val):
+    &#34;&#34;&#34;Escape dollar signs to `&lt;span&gt;$&lt;/span&gt;`.
+
+    To prevent them from being interpreted as math in a Jupyter notebook
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
+    return &#34;&#34; if val is None else (str(val).replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;))</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.mdEsc"><code class="name flex">
 <span>def <span class="ident">mdEsc</span></span>(<span>val, math=False)</span>
@@ -923,6 +1294,38 @@ in cases where you need them literally.</p></div>
 <dd>Whether retain TeX notation.
 If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L104-L129" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def mdEsc(val, math=False):
+    &#34;&#34;&#34;Escape certain markdown characters.
+
+    Parameters
+    ----------
+    val: string
+        The input value
+    math: boolean, optional False
+        Whether retain TeX notation.
+        If True, `$` is not escaped, if False, it is not escaped.
+    &#34;&#34;&#34;
+    if val is None:
+        return &#34;&#34;
+
+    val = (
+        str(val)
+        .replace(&#34;!&#34;, &#34;&amp;#33;&#34;)
+        .replace(&#34;#&#34;, &#34;&amp;#35;&#34;)
+        .replace(&#34;*&#34;, &#34;&amp;#42;&#34;)
+        .replace(&#34;[&#34;, &#34;&amp;#91;&#34;)
+        .replace(&#34;_&#34;, &#34;&amp;#95;&#34;)
+        .replace(&#34;|&#34;, &#34;&amp;#124;&#34;)
+        .replace(&#34;~&#34;, &#34;&amp;#126;&#34;)
+    )
+
+    return val if math else val.replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.mdhtmlEsc"><code class="name flex">
 <span>def <span class="ident">mdhtmlEsc</span></span>(<span>val, math=False)</span>
@@ -939,6 +1342,49 @@ in cases where you need them literally.</p>
 <dd>Whether retain TeX notation.
 If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L185-L221" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def mdhtmlEsc(val, math=False):
+    &#34;&#34;&#34;Escape certain Markdown characters by HTML entities or span elements.
+
+    To prevent them to be interpreted as Markdown
+    in cases where you need them literally.
+
+    Parameters
+    ----------
+    val: string
+        The input value
+    math: boolean, optional False
+        Whether retain TeX notation.
+        If True, `$` is not escaped, if False, it is not escaped.
+    &#34;&#34;&#34;
+
+    return (
+        &#34;&#34;
+        if val is None
+        else (
+            (
+                str(val)
+                .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
+                .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
+                .replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;)
+                .replace(&#34;|&#34;, &#34;&amp;#124;&#34;)
+            )
+            if math
+            else (
+                str(val)
+                .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
+                .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
+                .replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;)
+                .replace(&#34;|&#34;, &#34;&amp;#124;&#34;)
+                .replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)
+            )
+        )
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.mergeDict"><code class="name flex">
 <span>def <span class="ident">mergeDict</span></span>(<span>source, overrides)</span>
@@ -952,18 +1398,65 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <dt><strong><code>overrides</code></strong> :&ensp;<code>dict</code></dt>
 <dd>The overrides, itself a dictionary.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L542-L557" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def mergeDict(source, overrides):
+    &#34;&#34;&#34;Merge overrides into a source dictionary recursively.
+
+    Parameters
+    ----------
+    source: dict
+        The source dictionary, which will be modified by the overrides.
+    overrides: dict
+        The overrides, itself a dictionary.
+    &#34;&#34;&#34;
+
+    for k, v in overrides.items():
+        if k in source and type(source[k]) is dict:
+            mergeDict(source[k], v)
+        else:
+            source[k] = v</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.mergeDictOfSets"><code class="name flex">
 <span>def <span class="ident">mergeDictOfSets</span></span>(<span>d1, d2)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L534-L539" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def mergeDictOfSets(d1, d2):
+    for n, ms in d2.items():
+        if n in d1:
+            d1[n] |= ms
+        else:
+            d1[n] = ms</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.nbytes"><code class="name flex">
 <span>def <span class="ident">nbytes</span></span>(<span>by)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L416-L422" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def nbytes(by):
+    units = [&#34;B&#34;, &#34;KB&#34;, &#34;MB&#34;, &#34;GB&#34;, &#34;TB&#34;]
+    for i in range(len(units)):
+        if by &lt; 1024 or i == len(units) - 1:
+            fmt = &#34;{:&gt;5}{}&#34; if i == 0 else &#34;{:&gt;5.1f}{}&#34;
+            return fmt.format(by, units[i])
+        by /= 1024</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.pandasEsc"><code class="name flex">
 <span>def <span class="ident">pandasEsc</span></span>(<span>x)</span>
@@ -972,30 +1465,124 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <div class="desc"><p>Escapes the character that will be used as the <code>pandas</code> quote char.</p>
 <p>The escaping is realized by prepending a special char the quote char.
 Also: all tab characters will be replaced by single spaces.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L238-L250" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def pandasEsc(x):
+    &#34;&#34;&#34;Escapes the character that will be used as the `pandas` quote char.
+
+    The escaping is realized by prepending a special char the quote char.
+    Also: all tab characters will be replaced by single spaces.
+    &#34;&#34;&#34;
+    return (
+        x
+        if x == &#34;&#34;
+        else str(x)
+        .replace(&#34;\t&#34;, &#34; &#34;)
+        .replace(PANDAS_QUOTE, PANDAS_ESCAPE + PANDAS_QUOTE)
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.project"><code class="name flex">
 <span>def <span class="ident">project</span></span>(<span>iterableOfTuples, maxDimension)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L470-L473" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def project(iterableOfTuples, maxDimension):
+    if maxDimension == 1:
+        return {r[0] for r in iterableOfTuples}
+    return {r[0:maxDimension] for r in iterableOfTuples}</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.rangesFromList"><code class="name flex">
 <span>def <span class="ident">rangesFromList</span></span>(<span>nodeList)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L346-L360" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def rangesFromList(nodeList):  # the list must be sorted
+    curstart = None
+    curend = None
+    for n in nodeList:
+        if curstart is None:
+            curstart = n
+            curend = n
+        elif n == curend + 1:
+            curend = n
+        else:
+            yield (curstart, curend)
+            curstart = n
+            curend = n
+    if curstart is not None:
+        yield (curstart, curend)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.rangesFromSet"><code class="name flex">
 <span>def <span class="ident">rangesFromSet</span></span>(<span>nodeSet)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L325-L343" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def rangesFromSet(nodeSet):
+    # ranges = []
+    curstart = None
+    curend = None
+    for n in sorted(nodeSet):
+        if curstart is None:
+            curstart = n
+            curend = n
+        elif n == curend + 1:
+            curend = n
+        else:
+            yield (curstart, curend)
+            # ranges.append((curstart, curend))
+            curstart = n
+            curend = n
+    if curstart is not None:
+        yield (curstart, curend)
+        # ranges.append((curstart, curend))
+    # return ranges</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.readCfg"><code class="name flex">
 <span>def <span class="ident">readCfg</span></span>(<span>folder, file, label, verbose=0, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L705-L717" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def readCfg(folder, file, label, verbose=0, **kwargs):
+    settingsFile = f&#34;{folder}/config/{file}.yml&#34;
+    settings = readYaml(asFile=settingsFile, **kwargs)
+
+    if settings:
+        if verbose == 1:
+            console(f&#34;{label} settings read from {settingsFile}&#34;)
+        good = True
+    else:
+        console(f&#34;No {label} settings found, looked for {settingsFile}&#34;, error=True)
+        good = False
+
+    return (good, settings)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.run"><code class="name flex">
 <span>def <span class="ident">run</span></span>(<span>cmdline, workDir=None)</span>
@@ -1013,42 +1600,169 @@ standard error and standard output.</p>
 <dd>The working directory where the command should be executed.
 If <code>None</code> the current directory is used.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L668-L702" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def run(cmdline, workDir=None):
+    &#34;&#34;&#34;Runs a shell command and returns all relevant info.
+
+    The function runs a command-line in a shell, and returns
+    whether the command was successful, and also what the output was, separately for
+    standard error and standard output.
+
+    Parameters
+    ----------
+    cmdline: string
+        The command-line to execute.
+    workDir: string, optional None
+        The working directory where the command should be executed.
+        If `None` the current directory is used.
+    &#34;&#34;&#34;
+    try:
+        result = run_cmd(
+            cmdline,
+            shell=True,
+            cwd=workDir,
+            check=True,
+            capture_output=True,
+        )
+        stdOut = result.stdout.decode(&#34;utf8&#34;).strip()
+        stdErr = result.stderr.decode(&#34;utf8&#34;).strip()
+        returnCode = 0
+        good = True
+
+    except CalledProcessError as e:
+        stdOut = e.stdout.decode(&#34;utf8&#34;).strip()
+        stdErr = e.stderr.decode(&#34;utf8&#34;).strip()
+        returnCode = e.returncode
+        good = False
+
+    return (good, returnCode, stdOut, stdErr)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.setFromSpec"><code class="name flex">
 <span>def <span class="ident">setFromSpec</span></span>(<span>spec)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L309-L322" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setFromSpec(spec):
+    covered = set()
+    for r_str in spec.split(&#34;,&#34;):
+        bounds = r_str.split(&#34;-&#34;)
+        if len(bounds) == 1:
+            covered.add(int(r_str))
+        else:
+            b = int(bounds[0])
+            e = int(bounds[1])
+            if e &lt; b:
+                (b, e) = (e, b)
+            for n in range(b, e + 1):
+                covered.add(n)
+    return covered</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.setFromStr"><code class="name flex">
 <span>def <span class="ident">setFromStr</span></span>(<span>x)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L527-L531" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setFromStr(x):
+    if x is None:
+        return set()
+
+    return {p for p in SEP_RE.split(x) if p}</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.setFromValue"><code class="name flex">
 <span>def <span class="ident">setFromValue</span></span>(<span>x, asInt=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L512-L524" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setFromValue(x, asInt=False):
+    if x is None:
+        return set()
+
+    typeX = type(x)
+    if typeX in {set, frozenset}:
+        return x
+    elif typeX in {str, dict, list, tuple}:
+        if typeX is str:
+            x = SEP_RE.split(x)
+        return {int(p) for p in x if p.isdecimal()} if asInt else {p for p in x if p}
+
+    return {x}</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.specFromRanges"><code class="name flex">
 <span>def <span class="ident">specFromRanges</span></span>(<span>ranges)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L363-L366" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def specFromRanges(ranges):  # ranges must be normalized
+    return &#34;,&#34;.join(
+        &#34;{}&#34;.format(r[0]) if r[0] == r[1] else &#34;{}-{}&#34;.format(*r) for r in ranges
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.specFromRangesLogical"><code class="name flex">
 <span>def <span class="ident">specFromRangesLogical</span></span>(<span>ranges)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L369-L370" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def specFromRangesLogical(ranges):  # ranges must be normalized
+    return [r[0] if r[0] == r[1] else [r[0], r[1]] for r in ranges]</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.tfFromValue"><code class="name flex">
 <span>def <span class="ident">tfFromValue</span></span>(<span>val)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L379-L390" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def tfFromValue(val):
+    valTp = type(val)
+    isInt = valTp is int
+    isStr = valTp is str
+    if not isInt and not isStr:
+        console(f&#34;Wrong type for a TF value: {valTp}: {val}&#34;, error=True)
+        return None
+    return (
+        str(val)
+        if type(val) is int
+        else val.replace(&#34;\\&#34;, &#34;\\\\&#34;).replace(&#34;\t&#34;, &#34;\\t&#34;).replace(&#34;\n&#34;, &#34;\\n&#34;)
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.tsvEsc"><code class="name flex">
 <span>def <span class="ident">tsvEsc</span></span>(<span>x)</span>
@@ -1057,18 +1771,50 @@ If <code>None</code> the current directory is used.</dd>
 <div class="desc"><p>Escapes a double quote for strings to be included in TSV data.</p>
 <p>Only <code>"</code> and <code>'</code> at the beginning of the string are escaped.
 The escaping is realized by putting a backslash at the beginning.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L224-L231" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def tsvEsc(x):
+    &#34;&#34;&#34;Escapes a double quote for strings to be included in TSV data.
+
+    Only `&#34;` and `&#39;` at the beginning of the string are escaped.
+    The escaping is realized by putting a backslash at the beginning.
+    &#34;&#34;&#34;
+    s = str(x)
+    return s if s == &#34;&#34; else f&#34;\\{s}&#34; if s[0] in {&#34;&#39;&#34;, &#39;&#34;&#39;} else s</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.utcnow"><code class="name flex">
 <span>def <span class="ident">utcnow</span></span>(<span>)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L55-L56" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def utcnow():
+    return dt.now(UTC)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.valueFromTf"><code class="name flex">
 <span>def <span class="ident">valueFromTf</span></span>(<span>tf)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L373-L376" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def valueFromTf(tf):
+    return &#34;\\&#34;.join(
+        x.replace(&#34;\\t&#34;, &#34;\t&#34;).replace(&#34;\\n&#34;, &#34;\n&#34;) for x in tf.split(&#34;\\\\&#34;)
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.var"><code class="name flex">
 <span>def <span class="ident">var</span></span>(<span>envVar)</span>
@@ -1085,18 +1831,80 @@ The escaping is realized by putting a backslash at the beginning.</p></div>
 <dt><code>string</code> or <code>void</code></dt>
 <dd>The value of the environment variable if it exists, otherwise <code>None</code>.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L70-L83" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def var(envVar):
+    &#34;&#34;&#34;Retrieves the value of an environment variable.
+
+    Parameters
+    ----------
+    envVar: string
+        The name of the environment variable.
+
+    Returns
+    -------
+    string or void
+        The value of the environment variable if it exists, otherwise `None`.
+    &#34;&#34;&#34;
+    return os.environ.get(envVar, None)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.versionSort"><code class="name flex">
 <span>def <span class="ident">versionSort</span></span>(<span>x)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L59-L67" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def versionSort(x):
+    parts = []
+
+    for p in x.split(&#34;.&#34;):
+        match = NUM_ALFA_RE.match(p)
+        (num, alfa, rest) = match.group(1, 2, 3)
+        parts.append((int(num) if num else 0, alfa, rest))
+
+    return tuple(parts)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.wrapMessages"><code class="name flex">
 <span>def <span class="ident">wrapMessages</span></span>(<span>messages)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L476-L496" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapMessages(messages):
+    if type(messages) is str:
+        messages = messages.split(&#34;\n&#34;)
+    html = []
+    status = True
+    for msg in messages:
+        if type(msg) is tuple:
+            (error, nl, msgRep) = msg
+            if error:
+                status = False
+            match = MSG_LINE_RE.match(msgRep)
+            msg = msgRep + (&#34;&lt;br&gt;&#34; if nl else &#34;&#34;)
+            clsName = &#34;eline&#34; if error and not match else &#34;tline&#34;
+        else:
+            match = MSG_LINE_RE.match(msg)
+            clsName = &#34;tline&#34; if match else &#34;eline&#34;
+            if clsName == &#34;eline&#34;:
+                status = False
+            msg = msg.replace(&#34;\n&#34;, &#34;&lt;br&gt;&#34;)
+        html.append(f&#39;&lt;span class=&#34;{clsName.lower()}&#34;&gt;{msg}&lt;/span&gt;&#39;)
+    return (status, &#34;&#34;.join(html))</code></pre>
+</details>
 </dd>
 <dt id="tf.core.helpers.xmlEsc"><code class="name flex">
 <span>def <span class="ident">xmlEsc</span></span>(<span>val)</span>
@@ -1105,6 +1913,31 @@ The escaping is realized by putting a backslash at the beginning.</p></div>
 <div class="desc"><p>Escape certain HTML characters by XML entities.</p>
 <p>To prevent them to be interpreted as XML
 in cases where you need them literally.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/helpers.py#L164-L182" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def xmlEsc(val):
+    &#34;&#34;&#34;Escape certain HTML characters by XML entities.
+
+    To prevent them to be interpreted as XML
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
+    return (
+        &#34;&#34;
+        if val is None
+        else (
+            str(val)
+            .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
+            .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
+            .replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;)
+            .replace(&#34;&#39;&#34;, &#34;&amp;apos;&#34;)
+            .replace(&#39;&#34;&#39;, &#34;&amp;quot;&#34;)
+        )
+    )</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -1226,7 +2059,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

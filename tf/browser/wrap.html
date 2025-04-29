@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.browser.wrap API documentation</title>
 <meta name="description" content="Wrap material into HTML …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -33,7 +33,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/browser/wrap.py#L1-L532" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/wrap.py#L1-L532" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Wrap material into HTML
@@ -589,6 +589,77 @@ to results <code>position - spread</code> to <code>position + spread</code>.</p>
 <p>Left of that there is a column for results <code>position - spread*spread</code>
 to <code>position + spread*spread</code>, stepping by <code>spread</code>.</p>
 <p>And so on, until the stepping factor becomes bigger than the result set.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/wrap.py#L26-L90" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def pageLinks(nResults, position, spread=10):
+    &#34;&#34;&#34;Provide navigation links for results sets, big or small.
+
+    It creates links around *position* in a set of `nResults`.
+    The spread indicates how many links before and after *position* are generated
+    in each column.
+
+    There will be multiple columns. The right most column contains links
+    to results `position - spread` to `position + spread`.
+
+    Left of that there is a column for results `position - spread*spread`
+    to `position + spread*spread`, stepping by `spread`.
+
+    And so on, until the stepping factor becomes bigger than the result set.
+    &#34;&#34;&#34;
+
+    if spread &lt;= 1:
+        spread = 1
+    elif nResults == 0:
+        lines = []
+    elif nResults == 1:
+        lines = [(1,)]
+    elif nResults == 2:
+        lines = [(1, 2)]
+    else:
+        if position == 1 or position == nResults:
+            commonLine = (1, nResults)
+        else:
+            commonLine = (1, position, nResults)
+        lines = []
+
+        factor = 1
+        while factor &lt;= nResults:
+            curSpread = factor * spread
+            first = _coarsify(position - curSpread, curSpread)
+            last = _coarsify(position + curSpread, curSpread)
+
+            left = tuple(
+                n for n in range(first, last, factor) if n &gt; 0 and n &lt; position
+            )
+            right = tuple(
+                n for n in range(first, last, factor) if n &gt; position and n &lt;= nResults
+            )
+
+            both = tuple(
+                n for n in left + (position,) + right if n &gt; 0 and n &lt;= nResults
+            )
+
+            if len(both) &gt; 1:
+                lines.append(both)
+
+            factor *= spread
+
+        lines.append(commonLine)
+
+    html = &#34;\n&#34;.join(
+        &#39;&lt;div class=&#34;pline&#34;&gt;&#39;
+        + &#34; &#34;.join(
+            f&#39;&lt;a href=&#34;#&#34; class=&#34;pnav {&#34; focus&#34; if position == p else &#34;&#34;}&#34;&gt;{p}&lt;/a&gt;&#39;
+            for p in line
+        )
+        + &#34;&lt;/div&gt;&#34;
+        for line in reversed(lines)
+    )
+    return html</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.wrap.passageLinks"><code class="name flex">
 <span>def <span class="ident">passageLinks</span></span>(<span>passages, sec0Type, sec0, sec1, tillLevel)</span>
@@ -601,6 +672,47 @@ to <code>position + spread*spread</code>, stepping by <code>spread</code>.</p>
 given <code>sec0</code>
 is produced.</p>
 <p>If both <code>sec0</code> and <code>sec1</code> are given, the <code>sec1</code> entry is focused.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/wrap.py#L93-L127" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
+    &#34;&#34;&#34;Provide navigation links for passages,
+
+    in the form of links to sections of level 0, 1 and 2 (books, chapters and verses).
+
+    If `sec0` is not given, only a list of `sec0` links is produced.
+
+    If `sec0` is given, but `sec1` not, a list of links for `sec1` within the
+    given `sec0`
+    is produced.
+
+    If both `sec0` and `sec1` are given, the `sec1` entry is focused.
+    &#34;&#34;&#34;
+
+    sec0s = []
+    sec1s = []
+    for s0 in passages[0]:
+        selected = str(s0) == str(sec0)
+        sec0s.append(
+            f&#39;&lt;a href=&#34;#&#34; class=&#34;s0nav {&#34; focus&#34; if selected else &#34;&#34;}&#34;&gt;{s0}&lt;/a&gt;&#39;
+        )
+    if sec0:
+        for s1 in passages[1]:
+            selected = str(s1) == str(sec1)
+            sec1s.append(
+                f&#39;&lt;a href=&#34;#&#34; class=&#34;s1nav {&#34; focus&#34; if selected else &#34;&#34;}&#34;&gt;{s1}&lt;/a&gt;&#39;
+            )
+    return (
+        f&#39;&lt;div class=&#34;sline&#34;&gt;&lt;span&gt;&lt;span id=&#34;s0total&#34;&gt;&lt;/span&gt;&#39;
+        f&#39; &lt;span class=&#34;s0total&#34;&gt;{sec0Type}s&lt;/span&gt;&lt;/span&gt;&#39;
+        + &#34;&#34;.join(sec0s)
+        + &#39;&lt;/div&gt;&lt;div class=&#34;sline&#34;&gt;&#39;
+        + &#34;&#34;.join(sec1s)
+        + &#34;&lt;/div&gt;&#34;
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.wrap.wrapColorMap"><code class="name flex">
 <span>def <span class="ident">wrapColorMap</span></span>(<span>form)</span>
@@ -613,6 +725,77 @@ empty string.</p>
 <p>This dict is stored in <code>form["colorMap"]</code>.
 An extra hidden input field <code>colormapn</code> helps to read this dict from the
 other form elements.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/wrap.py#L141-L205" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapColorMap(form):
+    &#34;&#34;&#34;Wraps the color map for query result highlighting into HTML.
+
+    The color map is a dict, keyed by integers (the positions of atoms
+    in a query template) and the values are RGB colours (as string) or the
+    empty string.
+
+    This dict is stored in `form[&#34;colorMap&#34;]`.
+    An extra hidden input field `colormapn` helps to read this dict from the
+    other form elements.
+    &#34;&#34;&#34;
+
+    resetForm = form[&#34;resetForm&#34;]
+    if resetForm:
+        colorMap = {}
+    else:
+        colorMap = form[&#34;colorMap&#34;]
+
+    colorMapN = len(colorMap)
+
+    html = []
+    html.append(
+        dedent(
+            &#34;&#34;&#34;
+            &lt;details id=&#34;colormap&#34; class=&#34;dstate&#34;&gt;
+                &lt;summary class=&#34;ilab&#34;&gt;query highlighting&lt;/summary&gt;
+                &lt;div&gt;
+            &#34;&#34;&#34;
+        )
+    )
+    html.append(f&#34;&#34;&#34;&lt;input type=&#34;hidden&#34; name=&#34;colormapn&#34; value=&#34;{colorMapN}&#34;&gt;&#34;&#34;&#34;)
+
+    minC = &#34;&#34;&#34;&lt;a href=&#34;#&#34; id=&#34;colormapmin&#34;&gt;-&lt;/a&gt;&#34;&#34;&#34;
+    plusC = &#34;&#34;&#34;&lt;a href=&#34;#&#34; id=&#34;colormapplus&#34;&gt;+&lt;/a&gt;&#34;&#34;&#34;
+
+    empty = colorMapN == 0
+
+    for pos in range(1, colorMapN + 2):
+        last = pos == colorMapN
+        past = pos == colorMapN + 1
+
+        if past:
+            thisHtml = f&#34;&#34;&#34;&lt;div&gt;{plusC}&lt;/div&gt;&#34;&#34;&#34; if empty else &#34;&#34;
+        else:
+            color = colorMap.get(pos, &#34;&#34;) or COLOR_DEFAULT
+
+            thisHtml = dedent(
+                f&#34;&#34;&#34;
+                &lt;div&gt;
+                    &lt;input
+                        type=&#34;color&#34;
+                        class=&#34;clmap&#34;
+                        pos=&#34;{pos}&#34; name=&#34;colormap_{pos}&#34;
+                        value=&#34;{color}&#34;
+                    &gt;
+                    {minC if last else &#34;&#34;}
+                    {plusC if last else &#34;&#34;}
+                &lt;/div&gt;
+                &#34;&#34;&#34;
+            )
+        html.append(thisHtml)
+
+    html.append(&#34;&lt;/div&gt;&lt;/details&gt;&#34;)
+
+    return &#34;\n&#34;.join(html)</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.wrap.wrapEColorMap"><code class="name flex">
 <span>def <span class="ident">wrapEColorMap</span></span>(<span>form)</span>
@@ -627,18 +810,298 @@ the color of (<code>(None, n)</code> is used to color the incoming edges from <c
 <p>This dict is stored in <code>form["edgeHighlights"]</code>.
 An extra hidden input field <code>ecolormapn</code> helps to read this dict from the
 other form elements.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/wrap.py#L208-L304" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapEColorMap(form):
+    &#34;&#34;&#34;Wraps the edge color map for edge highlighting into HTML.
+    The edge color map is a dict, keyed by pairs of integers
+    (the nodes between which there is an edge) and values are RGB colours (as string).
+    Each of the two integers in a pair may also be None (but not both).
+    The color of `(n, None)` is used to color the outgoing edges from `n`,
+    the color of (`(None, n)` is used to color the incoming edges from `n`.
+
+    This dict is stored in `form[&#34;edgeHighlights&#34;]`.
+    An extra hidden input field `ecolormapn` helps to read this dict from the
+    other form elements.
+    &#34;&#34;&#34;
+
+    resetForm = form[&#34;resetForm&#34;]
+    if resetForm:
+        edgeHighlights = {}
+    else:
+        edgeHighlights = form[&#34;edgeHighlights&#34;]
+
+    eColorMapN = sum(len(ehl) for ehl in edgeHighlights.values())
+
+    html = []
+    html.append(
+        dedent(
+            &#34;&#34;&#34;
+            &lt;details id=&#34;edgefeatures&#34; class=&#34;dstate&#34;&gt;
+                &lt;summary class=&#34;ilab&#34;&gt;edge highlighting&lt;/summary&gt;
+                &lt;table id=&#34;ecolordefs&#34;&gt;
+            &#34;&#34;&#34;
+        )
+    )
+    html.append(f&#34;&#34;&#34;&lt;input type=&#34;hidden&#34; name=&#34;ecolormapn&#34; value=&#34;{eColorMapN}&#34;&gt;&#34;&#34;&#34;)
+
+    def sortEdges(data):
+        ((f, t), c) = data
+        node = t if f is None else f if t is None else min((f, t))
+        kind = 2 if f is not None and t is not None else 1 if f is None else 0
+        return (kind, node, c)
+
+    pos = 0
+
+    for eName in sorted(edgeHighlights):
+        edgeInfo = edgeHighlights[eName]
+
+        for ((f, t), color) in sorted(edgeInfo.items(), key=sortEdges):
+            pos += 1
+            fRep = &#34;any&#34; if f is None else f
+            fVal = &#34;any&#34; if f is None else f
+            tRep = &#34;any&#34; if t is None else t
+            tVal = &#34;any&#34; if t is None else t
+            if not color:
+                color = E_COLOR_DEF[&#34;t&#34; if f is None else &#34;f&#34; if t is None else &#34;b&#34;]
+            thisHtml = dedent(
+                f&#34;&#34;&#34;
+                &lt;tr&gt;
+                    &lt;td&gt;&lt;span class=&#34;ctype&#34;&gt;{eName}&lt;/span&gt;&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;input
+                            type=&#34;color&#34; class=&#34;eclmap&#34;
+                            name=&#34;ecolormap_{pos}&#34; value=&#34;{color}&#34;
+                        &gt;
+                    &lt;/td&gt;
+                    &lt;td&gt;&lt;a href=&#34;#&#34; pos=&#34;{pos}&#34; class=&#34;ecolormapmin&#34;&gt;-&lt;/a&gt;&lt;/td&gt;
+                    &lt;td&gt;&lt;span class=&#34;nde&#34;&gt;{fRep}&lt;/span&gt;&lt;/td&gt;
+                    &lt;td&gt;&lt;span&gt;{TO_SYM}&lt;/td&gt;
+                    &lt;td&gt;&lt;span class=&#34;nde&#34;&gt;{tRep}&lt;/span&gt;&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;input type=&#34;hidden&#34; name=&#34;edge_name_{pos}&#34; value=&#34;{eName}&#34;&gt;
+                &lt;input type=&#34;hidden&#34; name=&#34;edge_from_{pos}&#34; value=&#34;{fVal}&#34;&gt;
+                &lt;input type=&#34;hidden&#34; name=&#34;edge_to_{pos}&#34; value=&#34;{tVal}&#34;&gt;
+                &#34;&#34;&#34;
+            )
+            html.append(thisHtml)
+
+    html.append(&#34;&lt;/table&gt;&#34;)
+
+    newEHL = dedent(
+        f&#34;&#34;&#34;
+        &lt;input type=&#34;hidden&#34; name=&#34;ecolormap_new_1&#34; value=&#34;{E_COLOR_DEF[&#39;b&#39;]}&#34; &gt;
+        &lt;input type=&#34;hidden&#34; name=&#34;edge_name_new_1&#34; value=&#34;&#34;&gt;
+        &lt;input type=&#34;hidden&#34; name=&#34;edge_from_new_1&#34; value=&#34;&#34;&gt;
+        &lt;input type=&#34;hidden&#34; name=&#34;edge_to_new_1&#34; value=&#34;&#34;&gt;
+        &lt;input type=&#34;hidden&#34; name=&#34;ecolormap_new_2&#34; value=&#34;{E_COLOR_DEF[&#39;f&#39;]}&#34; &gt;
+        &lt;input type=&#34;hidden&#34; name=&#34;edge_name_new_2&#34; value=&#34;&#34;&gt;
+        &lt;input type=&#34;hidden&#34; name=&#34;edge_from_new_2&#34; value=&#34;&#34;&gt;
+        &lt;input type=&#34;hidden&#34; name=&#34;edge_to_new_2&#34; value=&#34;&#34;&gt;
+        &lt;input type=&#34;hidden&#34; name=&#34;ecolormap_new_3&#34; value=&#34;{E_COLOR_DEF[&#39;t&#39;]}&#34; &gt;
+        &lt;input type=&#34;hidden&#34; name=&#34;edge_name_new_3&#34; value=&#34;&#34;&gt;
+        &lt;input type=&#34;hidden&#34; name=&#34;edge_from_new_3&#34; value=&#34;&#34;&gt;
+        &lt;input type=&#34;hidden&#34; name=&#34;edge_to_new_3&#34; value=&#34;&#34;&gt;
+        &#34;&#34;&#34;
+    )
+    html.append(newEHL)
+
+    html.append(&#34;&lt;/details&gt;&#34;)
+
+    return &#34;\n&#34;.join(html)</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.wrap.wrapOptions"><code class="name flex">
 <span>def <span class="ident">wrapOptions</span></span>(<span>context, form)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Wraps the boolean options, including the app-specific ones, into HTML.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/wrap.py#L307-L334" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapOptions(context, form):
+    &#34;&#34;&#34;Wraps the boolean options, including the app-specific ones, into HTML.&#34;&#34;&#34;
+
+    interfaceDefaults = context.interfaceDefaults
+    defaults = {k: v for (k, v) in interfaceDefaults.items() if v is not None}
+    resetForm = form[&#34;resetForm&#34;]
+
+    html = []
+    htmlMoved = {}
+    helpHtml = []
+    for (option, default, acro, desc, long, move) in INTERFACE_OPTIONS:
+        if option not in defaults:
+            continue
+        value = defaults[option] if resetForm else form[option]
+        value = &#34;checked&#34; if value else &#34;&#34;
+        outer = &#34;span&#34; if move else &#34;div&#34;
+        thisHtml = (
+            f&#34;&lt;{outer}&gt;&#34;
+            f&#39;&lt;input class=&#34;r&#34; type=&#34;checkbox&#34; id=&#34;{acro}&#34; name=&#34;{option}&#34; {value}/&gt;&#39;
+            f&#39; &lt;span class=&#34;ilab&#34; title=&#34;{option}&#34;&gt;{desc}&lt;/span&gt;&#39;
+            f&#34;&lt;/{outer}&gt;&#34;
+        )
+        helpHtml.append(f&#39;&lt;p&gt;&lt;b title=&#34;{option}&#34;&gt;{desc}&lt;/b&gt; {long}&lt;/p&gt;&#39;)
+        if move:
+            htmlMoved[option] = thisHtml
+        else:
+            html.append(thisHtml)
+    return (&#34;\n&#34;.join(html), htmlMoved, &#34;\n&#34;.join(helpHtml))</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.wrap.wrapProvenance"><code class="name flex">
 <span>def <span class="ident">wrapProvenance</span></span>(<span>form, provenance, setNames)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/wrap.py#L388-L524" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapProvenance(form, provenance, setNames):
+    utc_offset_sec = time.altzone if time.localtime().tm_isdst else time.timezone
+    utc_offset = datetime.timedelta(seconds=-utc_offset_sec)
+    now = (
+        datetime.datetime.now()
+        .replace(microsecond=0, tzinfo=datetime.timezone(offset=utc_offset))
+        .isoformat()
+    )
+    job = form[&#34;jobName&#34;]
+    author = form[&#34;author&#34;]
+
+    (appProvenance, dataProvenance) = provenance
+
+    appHtml = &#34;&#34;
+    appMd = &#34;&#34;
+    sep = &#34;&#34;
+
+    for d in appProvenance:
+        d = dict(d)
+        backend = d[&#34;backend&#34;]
+        bUrl = backendRep(backend, &#34;url&#34;)
+        bName = backendRep(backend, &#34;name&#34;)
+        org = d[&#34;org&#34;]
+        repo = d[&#34;repo&#34;]
+        commit = d[&#34;commit&#34;]
+        url = f&#34;{bUrl}/{org}/{repo}/tree/{commit}&#34;
+        liveHtml = f&#39;&lt;a href=&#34;{url}&#34;&gt;{commit}&lt;/a&gt;&#39;
+        liveMd = f&#34;[{commit}]({url})&#34;
+        appHtml += f&#34;&#34;&#34;\
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;TF App:&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{org}/{repo} on {bName}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;commit&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{liveHtml}&lt;/div&gt;
+    &lt;/div&gt;\
+&#34;&#34;&#34;
+        appMd += f&#34;&#34;&#34;{sep}TF app | {org}/{repo} on {bName}
+commit | {liveMd}&#34;&#34;&#34;
+        sep = &#34;\n&#34;
+
+    dataHtml = &#34;&#34;
+    dataMd = &#34;&#34;
+    sep = &#34;&#34;
+
+    for d in dataProvenance:
+        d = dict(d)
+        corpus = d[&#34;corpus&#34;]
+        version = d[&#34;version&#34;]
+        release = d[&#34;release&#34;]
+        (liveText, liveUrl) = d[&#34;live&#34;]
+        liveHtml = f&#39;&lt;a href=&#34;{liveUrl}&#34;&gt;{liveText}&lt;/a&gt;&#39;
+        liveMd = f&#34;[{liveText}]({liveUrl})&#34;
+        doi = d[&#34;doi&#34;]
+        doiUrl = f&#34;{DOI_URL_PREFIX}/{doi}&#34;
+        doiHtml = f&#39;&lt;a href=&#34;{doiUrl}&#34;&gt;{doi}&lt;/a&gt;&#39; if doi else DOI_DEFAULT
+        doiMd = f&#34;[{doi}]({doiUrl})&#34; if doi else DOI_DEFAULT
+        dataHtml += f&#34;&#34;&#34;\
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Data:&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{corpus}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;version&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{version}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;release&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{release}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;download&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{liveHtml}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;p2line&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;DOI&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{doiHtml}&lt;/div&gt;
+    &lt;/div&gt;\
+&#34;&#34;&#34;
+        dataMd += f&#34;&#34;&#34;{sep}Data source | {corpus}
+version | {version}
+release | {release}
+download   | {liveMd}
+DOI | {doiMd}&#34;&#34;&#34;
+        sep = &#34;\n&#34;
+
+    setHtml = &#34;&#34;
+    setMd = &#34;&#34;
+
+    if setNames:
+        setNamesRep = &#34;, &#34;.join(setNames)
+        setHtml += f&#34;&#34;&#34;\
+    &lt;div class=&#34;psline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Sets:&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{setNamesRep} (&lt;b&gt;not exported&lt;/b&gt;)&lt;/div&gt;
+    &lt;/div&gt;\
+&#34;&#34;&#34;
+        setMd += f&#34;&#34;&#34;Sets | {setNamesRep} (**not exported**)&#34;&#34;&#34;
+
+    tool = f&#34;{NAME} {VERSION}&#34;
+    toolDoiUrl = f&#34;{DOI_URL_PREFIX}/{DOI_TF}&#34;
+    toolDoiHtml = f&#39;&lt;a href=&#34;{toolDoiUrl}&#34;&gt;{DOI_TF}&lt;/a&gt;&#39;
+    toolDoiMd = f&#34;[{DOI_TF}]({toolDoiUrl})&#34;
+
+    html = f&#34;&#34;&#34;
+    &lt;div class=&#34;pline&#34;&gt;\
+      &lt;div class=&#34;pname&#34;&gt;Job:&lt;/div&gt;&lt;div class=&#34;pval&#34;&gt;{job}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Author:&lt;/div&gt;&lt;div class=&#34;pval&#34;&gt;{author}&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Created:&lt;/div&gt;&lt;div class=&#34;pval&#34;&gt;{now}&lt;/div&gt;
+    &lt;/div&gt;
+    {dataHtml}
+    {setHtml}
+    &lt;div class=&#34;pline&#34;&gt;
+      &lt;div class=&#34;pname&#34;&gt;Tool:&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{tool} {toolDoiHtml}&lt;/div&gt;
+    &lt;/div&gt;
+    {appHtml}\
+  &#34;&#34;&#34;
+
+    md = f&#34;&#34;&#34;
+meta | data
+--- | ---
+Job | {job}
+Author | {author}
+Created | {now}
+{dataMd}
+{setMd}
+Tool | {tool} {toolDoiMd}
+{appMd}
+&#34;&#34;&#34;
+
+    return (html, md)</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.wrap.wrapSelect"><code class="name flex">
 <span>def <span class="ident">wrapSelect</span></span>(<span>option, allowedValues, value, group, item, multiple)</span>
@@ -672,6 +1135,58 @@ at most one can be selected.</dd>
 <dt><code>string</code></dt>
 <dd>A HTML fragment containing the options with the current value(s) selected.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/wrap.py#L337-L382" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapSelect(option, allowedValues, value, group, item, multiple):
+    &#34;&#34;&#34;Provides a buttoned chooser for the node types.
+
+    Some options need node types as values: `baseTypes`, `condenseType`, `hiddenType`.
+    See `tf.advanced.options`.
+
+    The chooser supports single value and multiple value mode.
+
+    Parameters
+    ----------
+    option: string
+        The name of the option
+    allowedValues: dict
+        Keyed by option, the values are tuples of allowed values for that option
+        in the right order.
+    value: string | set of string
+        The current value of the option. In the case of multiple values, this
+        is a set of values.
+    group: string
+        An extra class name helping to group the relevant buttons together
+    item: string
+        An extra pair of class names for formatting each option line
+    multiple: boolean
+        If `True`, the options appear as check boxes, and multiple values
+        can be selected. Otherwise, the options appear as radio boxes, of which
+        at most one can be selected.
+
+    Returns
+    -------
+    string
+        A HTML fragment containing the options with the current value(s) selected.
+    &#34;&#34;&#34;
+
+    html = []
+    for val in allowedValues[option]:
+        logicValue = val in value if multiple else val == value
+        checked = &#34; checked &#34; if logicValue else &#34;&#34;
+        bType = &#34;checkbox&#34; if multiple else &#34;radio&#34;
+        button = (
+            f&#39;&lt;input class=&#34;r {group}&#34; type=&#34;{bType}&#34; name=&#34;{option}&#34; value=&#34;{val}&#34;&#39;
+            f&#34; {checked}/&gt;&#34;
+        )
+        html.append(
+            f&#39;&lt;div class=&#34;{item[0]}&#34;&gt;{button} &lt;span class=&#34;{item[1]}&#34;&gt;{val}&lt;/span&gt;&lt;/div&gt;&#39;
+        )
+    return &#34;\n&#34;.join(html)</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -759,7 +1274,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

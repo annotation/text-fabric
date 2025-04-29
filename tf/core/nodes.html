@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.core.nodes API documentation</title>
 <meta name="description" content="Node organization …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -81,7 +81,7 @@ post-order. It is very much like SAX parsing in the XML world.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/nodes.py#L1-L296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/nodes.py#L1-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Node organization
@@ -399,7 +399,7 @@ class Nodes:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/nodes.py#L62-L296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/nodes.py#L62-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Nodes:
     def __init__(self, api):
@@ -707,6 +707,77 @@ Handy to sort search results. We can sort them in canonical order like this:</p>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/nodes.py#L135-L199" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def makeSortKeyChunk(self):
+    api = self.api
+
+    fOtype = api.F.otype
+    otypeRank = self.otypeRank
+    fOtypev = fOtype.v
+
+    def beforePosition(chunk1, chunk2):
+        (n1, (b1, e1)) = chunk1
+        (n2, (b2, e2)) = chunk2
+        if b1 &lt; b2:
+            return -1
+        elif b1 &gt; b2:
+            return 1
+
+        r1 = otypeRank[fOtypev(n1)]
+        r2 = otypeRank[fOtypev(n2)]
+
+        if r1 &gt; r2:
+            return -1
+        elif r1 &lt; r2:
+            return 1
+
+        return (
+            -1
+            if e1 &gt; e2
+            else 1
+            if e1 &lt; e2
+            else -1
+            if n1 &lt; n2
+            else 1
+            if n1 &gt; n2
+            else 0
+        )
+
+    def beforeLength(chunk1, chunk2):
+        (n1, (b1, e1)) = chunk1
+        (n2, (b2, e2)) = chunk2
+
+        size1 = e1 - b1
+        size2 = e2 - b2
+
+        if size1 &gt; size2:
+            return -1
+        elif size2 &gt; size1:
+            return 1
+        elif b1 &lt; b2:
+            return -1
+        elif b1 &gt; b2:
+            return 1
+
+        r1 = otypeRank[fOtypev(n1)]
+        r2 = otypeRank[fOtypev(n2)]
+
+        if r2 &gt; r1:
+            return -1
+        elif r1 &gt; r2:
+            return 1
+
+        return -1 if n1 &lt; n2 else 1 if n1 &gt; n2 else 0
+
+    return (
+        functools.cmp_to_key(beforePosition),
+        functools.cmp_to_key(beforeLength),
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.core.nodes.Nodes.sortNodes"><code class="name flex">
 <span>def <span class="ident">sortNodes</span></span>(<span>self, nodeSet)</span>
@@ -728,6 +799,34 @@ Handy to sort search results. We can sort them in canonical order like this:</p>
 <dt><code><a title="tf.core.nodes" href="#tf.core.nodes">tf.core.nodes</a></code></dt>
 <dd>canonical ordering</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/nodes.py#L201-L222" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def sortNodes(self, nodeSet):
+    &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
+
+    Parameters
+    ----------
+    nodeSet: iterable
+        An iterable of nodes to be sorted.
+
+    Returns
+    -------
+    list
+        The sorted nodes as list
+
+    See Also
+    --------
+    tf.core.nodes: canonical ordering
+    &#34;&#34;&#34;
+
+    api = self.api
+
+    Crank = api.C.rank.data
+    return sorted(nodeSet, key=lambda n: Crank[n - 1])</code></pre>
+</details>
 </dd>
 <dt id="tf.core.nodes.Nodes.walk"><code class="name flex">
 <span>def <span class="ident">walk</span></span>(<span>self, nodes=None, events=False)</span>
@@ -769,6 +868,85 @@ Otherwise, walks through the given nodes in canonical order.</dd>
 <dt><strong><code>nodes</code></strong> :&ensp;<code>integer</code></dt>
 <dd>One at a time.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/nodes.py#L224-L296" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def walk(self, nodes=None, events=False):
+    &#34;&#34;&#34;Generates all nodes in the *canonical order*.
+    (`tf.core.nodes`)
+
+    By `walk()` you traverse all nodes of your corpus
+    in a very natural order. See `tf.core.nodes`.
+
+    The order is much like walking a tree in pre-order: first parents,
+    then children from left to right.
+
+    The thing is: in general the nodes do not form a tree, but a more
+    liberal structure: a graph.
+
+    But even then we can order the nodes in such a way that nodes that embed
+    slots from other nodes come before those other nodes, provided those other
+    nodes start later.
+
+    When we generate those nodes and consume them, we now when each node starts,
+    but we loose track of where exactly they end.
+
+    To remedy that, you can call this function with `events=True`.
+    In that case, a stream of events is generated, where each event has the
+    form `(node, False)` or `(node, True)`, where `False` means: beginning of
+    node and `True` means: end of node.
+
+    In case of slot nodes, only one event per slot is generated: `(node, None)`.
+
+    !!! hint &#34;More ways of walking&#34;
+        Under `tf.core.nodefeature.NodeFeatures` there is another convenient way
+        to walk through subsets of nodes.
+
+    Parameters
+    ----------
+    nodes: iterable of integer, optional None
+        If `None`, walks through all nodes of the corpus in canonical order.
+        Otherwise, walks through the given nodes in canonical order.
+    events: boolean, optional False
+        If True, wraps the generated nodes in event tuples as described above.
+
+    Returns
+    -------
+    nodes: integer
+        One at a time.
+    &#34;&#34;&#34;
+
+    api = self.api
+    C = api.C
+
+    if nodes is None:
+        walkNodes = C.order.data
+    else:
+        walkNodes = self.sortNodes(nodes)
+        walkNodeSet = set(nodes)
+
+    if events:
+        endSlots = C.boundary.data[1]
+
+        otype = api.F.otype
+        Fotypev = otype.v
+        slotType = otype.slotType
+
+        for n in walkNodes:
+            if Fotypev(n) == slotType:
+                yield (n, None)
+                for m in reversed(endSlots[n - 1]):
+                    if nodes is None or m in walkNodeSet:
+                        yield (m, True)
+            else:
+                yield (n, False)
+
+    else:
+        for n in walkNodes:
+            yield n</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -864,7 +1042,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

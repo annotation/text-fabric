@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.writing.transcription API documentation</title>
 <meta name="description" content="Transcription …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -56,7 +56,7 @@ text material to transliterated representations and back.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/writing/transcription.py#L1-L1174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L1-L1174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Transcription
@@ -1264,7 +1264,7 @@ tr.aaa
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/writing/transcription.py#L53-L1174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L53-L1174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Transcription:
     &#34;&#34;&#34;Conversion between UNICODE and various transcriptions.
@@ -2569,18 +2569,46 @@ This is the mapping used in the Quran representation on tanzil.net.</p>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L675-L676" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def asciiFromArabic(word):
+    return &#34;&#34;.join(Transcription.arabicTransAscii.get(x, x) for x in word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.can_from_syriac"><code class="name flex">
 <span>def <span class="ident">can_from_syriac</span></span>(<span>self, word)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L1089-L1090" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def can_from_syriac(self, word):
+    return all(c in self.syriac_mappingi for c in word if c != &#34; &#34;)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.can_to_syriac"><code class="name flex">
 <span>def <span class="ident">can_to_syriac</span></span>(<span>self, word)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L1082-L1087" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def can_to_syriac(self, word):
+    return all(
+        candidate in Transcription.syriac_mapping
+        for candidate in Transcription.trans_syriac_pat.findall(word)
+        if candidate != &#34; &#34;
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.from_arabic"><code class="name flex">
 <span>def <span class="ident">from_arabic</span></span>(<span>word)</span>
@@ -2594,6 +2622,31 @@ produce the word in transliteration.</p>
 <p>Output:</p>
 <pre><code>bisomi
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L1156-L1174" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def from_arabic(word):
+    &#34;&#34;&#34;
+    Given a word in UNICODE Arabic,
+    produce the word in transliteration.
+
+    Example:
+
+    ``` python
+    Transcription.from_arabic(&#39;بِسْمِ&#39;)
+    ```
+
+    Output:
+
+    ```
+    bisomi
+    ```
+    &#34;&#34;&#34;
+
+    return &#34;&#34;.join(Transcription.arabic_mappingi.get(x, x) for x in word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.from_hebrew"><code class="name flex">
 <span>def <span class="ident">from_hebrew</span></span>(<span>self, word)</span>
@@ -2607,6 +2660,33 @@ produce the word in ETCBC transliteration.</p>
 <p>Output:</p>
 <pre><code>H@&gt;@95REy00
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L1020-L1040" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def from_hebrew(self, word):
+    &#34;&#34;&#34;
+    Given a fully pointed word in UNICODE Hebrew,
+    produce the word in ETCBC transliteration.
+
+    Example:
+
+    ``` python
+    tr.from_hebrew(&#39;הָאָֽרֶץ׃&#39;)
+    ```
+
+    Output:
+
+    ```
+    H@&gt;@95REy00
+    ```
+    &#34;&#34;&#34;
+
+    return &#34;&#34;.join(
+        self.hebrew_mappingi.get(x, x) for x in Transcription._comp(word)
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.from_syriac"><code class="name flex">
 <span>def <span class="ident">from_syriac</span></span>(<span>self, word)</span>
@@ -2620,6 +2700,31 @@ produce the word in ETCBC transliteration.</p>
 <p>Output:</p>
 <pre><code>MKSJN
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L1062-L1080" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def from_syriac(self, word):
+    &#34;&#34;&#34;
+    Given a word in UNICODE Syriac,
+    produce the word in ETCBC transliteration.
+
+    Example:
+
+    ``` python
+    tr.from_syriac(&#39;ܡܟܣܝܢ&#39;)
+    ```
+
+    Output:
+
+    ```
+    MKSJN
+    ```
+    &#34;&#34;&#34;
+
+    return &#34;&#34;.join(self.syriac_mappingi.get(x, x) for x in word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.from_ugaritic"><code class="name flex">
 <span>def <span class="ident">from_ugaritic</span></span>(<span>word)</span>
@@ -2633,12 +2738,45 @@ produce the word in transliteration.</p>
 <p>Output:</p>
 <pre><code>kṯbx
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L1116-L1134" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def from_ugaritic(word):
+    &#34;&#34;&#34;
+    Given a word in UNICODE Ugaritic,
+    produce the word in transliteration.
+
+    Example:
+
+    ``` python
+    Transcription.from_ugaritic(&#39;𐎋𐎘𐎁x&#39;)
+    ```
+
+    Output:
+
+    ```
+    kṯbx
+    ```
+    &#34;&#34;&#34;
+
+    return &#34;&#34;.join(Transcription.ugaritic_mappingi.get(x, x) for x in word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.latinFromArabic"><code class="name flex">
 <span>def <span class="ident">latinFromArabic</span></span>(<span>word)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L678-L679" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def latinFromArabic(word):
+    return &#34;&#34;.join(Transcription.arabicTransLatin.get(x, x) for x in word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.ph_simplify"><code class="name flex">
 <span>def <span class="ident">ph_simplify</span></span>(<span>pword)</span>
@@ -2658,18 +2796,66 @@ kål
 </code></pre>
 <p>Note that the simplified version transliterates the <code>qamets gadol</code> and <code>qatan</code>
 to the same character.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L993-L1018" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def ph_simplify(pword):
+    &#34;&#34;&#34;
+    Given a phonological transliteration of a fully pointed word,
+    produce a more coarse phonological transliteration.
+
+    Example:
+
+    ``` python
+    Transcription.ph_simplify(&#39;ʔᵉlōhˈîm&#39;)
+    Transcription.ph_simplify(&#39;māqˈôm&#39;)
+    Transcription.ph_simplify(&#39;kol&#39;)
+    ```
+
+    Output:
+
+    ```
+    ʔlōhîm
+    måqôm
+    kål
+    ```
+
+    Note that the simplified version transliterates the `qamets gadol` and `qatan`
+    to the same character.
+    &#34;&#34;&#34;
+
+    return Transcription.ph_simple_pat.sub(Transcription._ph_simple, pword)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.quranFromArabic"><code class="name flex">
 <span>def <span class="ident">quranFromArabic</span></span>(<span>word)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L672-L673" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def quranFromArabic(word):
+    return &#34;&#34;.join(Transcription.arabicTransQuran.get(x, x) for x in word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.standardFromArabic"><code class="name flex">
 <span>def <span class="ident">standardFromArabic</span></span>(<span>word)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L681-L682" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def standardFromArabic(word):
+    return &#34;&#34;.join(Transcription.arabicTransStandard.get(x, x) for x in word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.suffix_and_finales"><code class="name flex">
 <span>def <span class="ident">suffix_and_finales</span></span>(<span>word)</span>
@@ -2695,6 +2881,74 @@ Replace the last consonant of the word material by its final form, if applicable
 ```</p>
 <pre><code>    Note that the &lt;code&gt;Y&lt;/code&gt; has been replaced by &lt;code&gt;y&lt;/code&gt;.
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L739-L800" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def suffix_and_finales(word):
+    &#34;&#34;&#34;
+    Given an ETCBC transliteration, split it into the word material
+    and the interword material that follows it (space, punctuation).
+    Replace the last consonant of the word material by its final form, if applicable.
+
+    Output a tuple with the modified word material and the interword material.
+
+    Example:
+
+    ``` python
+    Transcription.suffix_and_finales(&#39;71T_H@&gt;@95REY00&#39;)
+    ```
+
+    Output:
+
+    ```
+    (&#39;71T_H@&gt;@95REy&#39;, &#39;00\n&#39;)
+    ```
+
+    Note that the `Y` has been replaced by `y`.
+    &#34;&#34;&#34;
+
+    # first split the word proper from the suffix,
+    # and add a space if there is no other suffix
+    add_space = &#34;&#34;
+    suffix = &#34;&#34;
+    new_word = word
+    if not word:
+        return (new_word, suffix + add_space)
+    lastch = new_word[-1]
+    if lastch == &#34;-&#34; or lastch == &#34;&amp;&#34;:
+        new_word = new_word[0:-1]
+        suffix = lastch
+    else:
+        if len(new_word) &gt;= 2:
+            lastch = new_word[-1]
+            llastch = new_word[-2]
+            if llastch == &#34;_&#34; and (lastch == &#34;P&#34; or lastch == &#34;S&#34;):
+                new_word = new_word[0:-2]
+                suffix = &#34; &#34; + lastch + suffix + &#34; &#34;
+        if len(new_word) &gt;= 2:
+            lastch = new_word[-1]
+            llastch = new_word[-2]
+            if llastch == &#34;_&#34; and (lastch == &#34;N&#34;):
+                new_word = new_word[0:-2]
+                suffix = &#34; ñ&#34; + suffix + &#34; &#34;
+        if len(new_word) &gt;= 2:
+            lastch = new_word[-1]
+            llastch = new_word[-2]
+            if llastch == &#34;0&#34; and (lastch == &#34;0&#34; or lastch == &#34;5&#34;):
+                new_word = new_word[0:-2]
+                suffix = (&#34; &#34; if lastch == &#34;5&#34; else &#34;&#34;) + llastch + lastch + suffix
+                add_space = &#34;\n&#34; if lastch == &#34;0&#34; else &#34; &#34;
+    if suffix == &#34;&#34;:
+        add_space = &#34; &#34;
+    elif suffix == &#34;-&#34;:
+        add_space = &#34;&#34;
+        suffix = &#34;&#34;
+    # second: replace consonants by their final forms when needed
+    new_word = Transcription.trans_final_pat.sub(Transcription._map_final, new_word)
+    return (new_word, suffix + add_space)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.suppress_space"><code class="name flex">
 <span>def <span class="ident">suppress_space</span></span>(<span>word)</span>
@@ -2713,12 +2967,50 @@ Transcription.suppress_space('71T_H@&gt;@95REY00')
 None
 &lt;re.Match object; span=(13, 15), match='00'&gt;
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L826-L849" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def suppress_space(word):
+    &#34;&#34;&#34;
+    Given an ETCBC transliteration of a word,
+    match the end of the word for punctuation and spacing characters
+    (`sof pasuq`, `paseq`, `nun hafukha`, `setumah`, `petuhah`, space, no-space)
+
+    Example:
+
+    ``` python
+    Transcription.suppress_space(&#39;B.:&amp;&#39;)
+    Transcription.suppress_space(&#39;B.@R@74&gt;&#39;)
+    Transcription.suppress_space(&#39;71T_H@&gt;@95REY00&#39;)
+    ```
+
+    Output:
+
+    ```
+    &lt;re.Match object; span=(3, 4), match=&#39;&amp;&#39;&gt;
+    None
+    &lt;re.Match object; span=(13, 15), match=&#39;00&#39;&gt;
+    ```
+    &#34;&#34;&#34;
+
+    return Transcription.noorigspace.search(word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.sycSplitPunc"><code class="name flex">
 <span>def <span class="ident">sycSplitPunc</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L726-L727" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def sycSplitPunc(self):
+    pass</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.to_arabic"><code class="name flex">
 <span>def <span class="ident">to_arabic</span></span>(<span>word)</span>
@@ -2732,6 +3024,31 @@ produce the word in UNICODE Arabic.</p>
 <p>Output:</p>
 <pre><code>بِسْمِ
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L1136-L1154" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def to_arabic(word):
+    &#34;&#34;&#34;
+    Given a word in transliteration,
+    produce the word in UNICODE Arabic.
+
+    Example:
+
+    ``` python
+    Transcription.to_arabic(&#39;bisomi&#39;)
+    ```
+
+    Output:
+
+    ```
+    بِسْمِ
+    ```
+    &#34;&#34;&#34;
+
+    return &#34;&#34;.join(Transcription.arabic_mapping.get(x, x) for x in word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.to_etcbc_c"><code class="name flex">
 <span>def <span class="ident">to_etcbc_c</span></span>(<span>word)</span>
@@ -2747,6 +3064,42 @@ Punctuation will also be stripped.</p>
 <pre><code>H#MJM
 </code></pre>
 <p>Note that the pointed shin (<code>C</code>) is replaced by an unpointed one (<code>#</code>).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L871-L900" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def to_etcbc_c(word):
+    &#34;&#34;&#34;
+    Given an ETCBC transliteration of a fully pointed word,
+    strip everything except the consonants.
+    Punctuation will also be stripped.
+
+    Example:
+
+    ``` python
+    Transcription.to_etcbc_c(&#39;HAC.@MA73JIm&#39;)
+    ```
+
+    Output:
+
+    ```
+    H#MJM
+    ```
+
+    Note that the pointed shin (`C`) is replaced by an unpointed one (`#`).
+    &#34;&#34;&#34;
+
+    word = Transcription.remove_point_pat.sub(Transcription._remove_point, word)
+    word = Transcription.remove_psn_pat.sub(
+        &#34;00&#34;, word
+    )  # remove nun hafukha, setumah, petuhah at the end of a verse
+    word = Transcription.remove_psq_pat.sub(
+        &#34; &#34;, word
+    )  # replace paseq with attached spaces by single space
+    word = word.upper()  # no final forms of consonants
+    return Transcription.shin_pat.sub(&#34;#&#34;, word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.to_etcbc_v"><code class="name flex">
 <span>def <span class="ident">to_etcbc_v</span></span>(<span>word)</span>
@@ -2760,6 +3113,31 @@ strip all the non-vowel pointing (i.e. the accents).</p>
 <p>Output:</p>
 <pre><code>HAC.@MAJIm
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L851-L869" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def to_etcbc_v(word):
+    &#34;&#34;&#34;
+    Given an ETCBC transliteration of a fully pointed word,
+    strip all the non-vowel pointing (i.e. the accents).
+
+    Example:
+
+    ``` python
+    Transcription.to_etcbc_v(&#39;HAC.@MA73JIm&#39;)
+    ```
+
+    Output:
+
+    ```
+    HAC.@MAJIm
+    ```
+    &#34;&#34;&#34;
+
+    return Transcription.remove_accent_pat.sub(Transcription._remove_accent, word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.to_hebrew"><code class="name flex">
 <span>def <span class="ident">to_hebrew</span></span>(<span>word)</span>
@@ -2775,6 +3153,34 @@ before accent pointing.</p>
 <p>Output:</p>
 <pre><code>הַשָּׁמַ֖יִם
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L902-L923" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def to_hebrew(word):
+    &#34;&#34;&#34;
+    Given a transliteration of a fully pointed word,
+    produce the word in UNICODE Hebrew.
+    Care will be taken that vowel pointing will be added to consonants
+    before accent pointing.
+
+    Example:
+
+    ``` python
+    Transcription.to_hebrew(&#39;HAC.@MA73JIm&#39;)
+    ```
+
+    Output:
+
+    ```
+    הַשָּׁמַ֖יִם
+    ```
+    &#34;&#34;&#34;
+
+    word = Transcription.swap_accent_pat.sub(Transcription._swap_accent, word)
+    return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.to_hebrew_c"><code class="name flex">
 <span>def <span class="ident">to_hebrew_c</span></span>(<span>word)</span>
@@ -2789,6 +3195,35 @@ produce the word in UNICODE Hebrew, but without the pointing.</p>
 <pre><code>השמימ
 </code></pre>
 <p>Note that final consonant forms are not being used.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L947-L969" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def to_hebrew_c(word):
+    &#34;&#34;&#34;
+    Given a transliteration of a fully pointed word,
+    produce the word in UNICODE Hebrew, but without the pointing.
+
+    Example:
+
+    ``` python
+    Transcription.to_hebrew_c(&#39;HAC.@MA73JIm&#39;)
+    ```
+
+    Output:
+
+    ```
+    השמימ
+    ```
+
+    Note that final consonant forms are not being used.
+    &#34;&#34;&#34;
+
+    return Transcription.trans_hebrew_pat.sub(
+        Transcription._map_hebrew, Transcription.to_etcbc_c(word)
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.to_hebrew_v"><code class="name flex">
 <span>def <span class="ident">to_hebrew_v</span></span>(<span>word)</span>
@@ -2802,6 +3237,33 @@ produce the word in UNICODE Hebrew, but without the accents.</p>
 <p>Output:</p>
 <pre><code>הַשָּׁמַיִם
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L925-L945" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def to_hebrew_v(word):
+    &#34;&#34;&#34;
+    Given a transliteration of a fully pointed word,
+    produce the word in UNICODE Hebrew, but without the accents.
+
+    Example:
+
+    ``` python
+    Transcription.to_hebrew_v(&#39;HAC.@MA73JIm&#39;)
+    ```
+
+    Output:
+
+    ```
+    הַשָּׁמַיִם
+    ```
+    &#34;&#34;&#34;
+
+    return Transcription.trans_hebrew_pat.sub(
+        Transcription._map_hebrew, Transcription.to_etcbc_v(word)
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.to_hebrew_x"><code class="name flex">
 <span>def <span class="ident">to_hebrew_x</span></span>(<span>word)</span>
@@ -2817,6 +3279,33 @@ by the input word.</p>
 <p>Output:</p>
 <pre><code>הַשָּׁמַ֖יִם
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L971-L991" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def to_hebrew_x(word):
+    &#34;&#34;&#34;
+    Given a transliteration of a fully pointed word,
+    produce the word in UNICODE Hebrew, but without the pointing.
+    Vowel pointing and accent pointing will be applied in the order given
+    by the input word.
+
+    Example:
+
+    ``` python
+    Transcription.to_hebrew_x(&#39;HAC.@MA73JIm&#39;)
+    ```
+
+    Output:
+
+    ```
+    הַשָּׁמַ֖יִם
+    ```
+    &#34;&#34;&#34;
+
+    return Transcription.trans_hebrew_pat.sub(Transcription._map_hebrew, word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.to_syriac"><code class="name flex">
 <span>def <span class="ident">to_syriac</span></span>(<span>self, word)</span>
@@ -2830,6 +3319,31 @@ produce the word in UNICODE Syriac.</p>
 <p>Output:</p>
 <pre><code>ܡܟܣܝܢ
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L1042-L1060" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def to_syriac(self, word):
+    &#34;&#34;&#34;
+    Given a word in ETCBC transliteration,
+    produce the word in UNICODE Syriac.
+
+    Example:
+
+    ``` python
+    tr.to_syriac(&#39;MKSJN&#39;)
+    ```
+
+    Output:
+
+    ```
+    ܡܟܣܝܢ
+    ```
+    &#34;&#34;&#34;
+
+    return Transcription.trans_syriac_pat.sub(Transcription._map_syriac, word)</code></pre>
+</details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.to_ugaritic"><code class="name flex">
 <span>def <span class="ident">to_ugaritic</span></span>(<span>word)</span>
@@ -2845,6 +3359,35 @@ produce the word in UNICODE Ugaritic.</p>
 <p>Output:</p>
 <pre><code>𐎋𐎘𐎁x
 </code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/writing/transcription.py#L1092-L1114" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def to_ugaritic(word):
+    &#34;&#34;&#34;
+    Given a word in transliteration,
+    produce the word in UNICODE Ugaritic.
+
+    kṯbx
+    𐎋𐎘𐎁x
+
+
+    Example:
+
+    ``` python
+    Transcription.to_ugaritic(&#39;kṯbx&#39;)
+    ```
+
+    Output:
+
+    ```
+    𐎋𐎘𐎁x
+    ```
+    &#34;&#34;&#34;
+
+    return &#34;&#34;.join(Transcription.ugaritic_mapping.get(x, x) for x in word)</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -2996,7 +3539,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

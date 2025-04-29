@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.advanced.links API documentation</title>
 <meta name="description" content="Produce links to TF data and links from nodes to web resources." />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/advanced/links.py#L1-L1020" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/links.py#L1-L1020" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to TF data and links from nodes to web resources.
@@ -1097,6 +1097,64 @@ service of the back-end.</li>
 <dt><code>string</code></dt>
 <dd>The complete URL.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/links.py#L969-L1020" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def flexLink(app, kind):
+    &#34;&#34;&#34;Produce documentation links that are heavily dependent on the back-end.
+
+    These are links to tutorials and other documentation.
+
+    If the back-end is GitLab or GitHub, notebooks can be viewed on NBViewer.
+    But if the back-end is on-premise, we assume that notebooks are
+    converted to HTML and then published on the Pages of the on-premise GitLab.
+
+    What exactly the link to such an on-premise Pages service is, may depend on
+    a configuration setting.
+
+    This function resolves all that.
+
+    !!! note &#34;Converting notebooks to HTML&#34;
+        There is now a tool in TF to convert a directory of notebooks to
+        HTML. See `tf.tools.nbconvert`.
+
+    Parameters
+    ----------
+    kind: string
+        Indicates what kind of URL value should be returned:
+
+        *   `pages`: URL of the repo in the Pages service of the back-end;
+        *   `tut`: URL of the start tutorial, either on NB viewer or in the Pages
+            service of the back-end.
+
+    Returns
+    -------
+    string
+        The complete URL.
+    &#34;&#34;&#34;
+    backend = app.backend
+    aContext = app.context
+    org = aContext.org or &#34;&#34;
+    repo = aContext.repo or &#34;&#34;
+    branch = aContext.provenanceSpec[&#34;branch&#34;]
+    pages = aContext.provenanceSpec[&#34;pages&#34;]
+
+    if kind == &#34;pages&#34;:
+        pages = pages or backendRep(backend, kind)
+        return f&#34;https://{org}.{pages}/{repo}&#34;
+
+    if kind == &#34;tut&#34;:
+        be = backendRep(backend, &#34;norm&#34;)
+        onPremise = be not in {GL, GH}
+
+        if onPremise:
+            pages = pages or backendRep(backend, &#34;pages&#34;)
+            return f&#34;https://{org}.{pages}/{repo}/tutorial/start.html&#34;
+
+        return f&#34;{URL_NB}/{be}/{org}/{repo}/blob/{branch}/tutorial/start.ipynb&#34;</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.links.header"><code class="name flex">
 <span>def <span class="ident">header</span></span>(<span>app, allMeta=False)</span>
@@ -1114,6 +1172,94 @@ It is not visually cumbersome, but notebooks may grow excessively
 if you load many datasets many times. So, if False, it will suppress
 all that metadata except the description keys.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/links.py#L189-L270" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def header(app, allMeta=False):
+    &#34;&#34;&#34;Generate a colophon of the app.
+
+    This colophon will be displayed after initializing the advanced API,
+    and it is packed with provenance and documentation links.
+
+    Parameters
+    ----------
+    allMeta: boolean, optional False
+        If True, includes all metadata of all features. This leads to big
+        stretches of largely redundant information in HTML details elements.
+        It is not visually cumbersome, but notebooks may grow excessively
+        if you load many datasets many times. So, if False, it will suppress
+        all that metadata except the description keys.
+    &#34;&#34;&#34;
+
+    inNb = app.inNb
+    appLink = app.appLink
+    dataLink = app.dataLink
+    charLink = app.charLink
+    featureLink = app.featureLink
+    tfsLink = app.tfsLink
+    tfLink = app.tfLink
+    tutLink = app.tutLink
+    _browse = app._browse
+
+    if _browse:
+        colophon = dedent(
+            f&#34;&#34;&#34;
+            &lt;div class=&#34;hdlinks&#34;&gt;
+              {dataLink}
+              {charLink}
+              {featureLink}
+              {tfsLink}
+              {tutLink}
+            &lt;/div&gt;
+            &#34;&#34;&#34;
+        )
+    else:
+        colophon = &#34;&#34;
+
+    nodeInfo = _nodeTypeInfo(app)
+    featureInfo = _featuresPerModule(app, allMeta=allMeta or _browse)
+    settingInfo = showContext(app, withComputed=_browse, asHtml=True)
+
+    if inNb is not None or _browse:
+        tfLine = &#34;, &#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
+        dataLine = &#34;, &#34;.join(x for x in (dataLink, charLink, featureLink) if x)
+        setLine = (
+            &#34;, &#34;.join(f&#34;&lt;code&gt;{x}&lt;/code&gt;&#34; for x in (app.sets or {}))
+            if app.sets
+            else &#34;no custom sets&#34;
+        )
+        commonHeader = dedent(
+            f&#34;&#34;&#34;
+            &lt;b&gt;TF:&lt;/b&gt; {tfLine}&lt;br&gt;
+            &lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;
+            {nodeInfo}
+            &lt;b&gt;Sets:&lt;/b&gt; {setLine}&lt;br&gt;
+            &lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;{featureInfo}
+            &lt;b&gt;Settings:&lt;/b&gt;&lt;br&gt;{settingInfo}
+            &#34;&#34;&#34;
+        )
+        if inNb is not None:
+            dh(commonHeader, inNb=inNb)
+        else:
+            return (
+                colophon,
+                commonHeader,
+                &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
+                &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/browser/static/icon.png&#34;/&gt;&#39;,
+            )
+    else:
+        tfLine = &#34;\n\t&#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
+        dataLine = &#34;\n\t&#34;.join(x for x in (dataLink, charLink, featureLink) if x)
+        setLine = &#34;, &#34;.join(x for x in (app.sets or {}))
+        console(
+            f&#34;TF:\n\t{tfLine}\n&#34; f&#34;Data:\n\t{dataLine}\n&#34; f&#34;{nodeInfo}&#34;,
+            f&#34;Sets: {setLine}\n&#34;,
+            f&#34;Features:\n{featureInfo}\n&#34;,
+            newline=False,
+        )</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.links.linksApi"><code class="name flex">
 <span>def <span class="ident">linksApi</span></span>(<span>app, silent='auto')</span>
@@ -1136,6 +1282,164 @@ sections of the work are part of it.</p>
 Normally the silent parameter is taken from the app,
 but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/links.py#L35-L186" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def linksApi(app, silent=SILENT_D):
+    &#34;&#34;&#34;Produce the link API.
+
+    The link API provides methods to maps nodes to URLs of web resources.
+    It also computes several provenance and documentation links from the
+    configuration settings of the corpus.
+
+
+    If a single volume has been loaded, there will be added a provenance notice
+    to the provenance data of the work as a whole,
+    essentially stating which volume from the work is being used and what top-level
+    sections of the work are part of it.
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
+        Normally the silent parameter is taken from the app,
+        but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
+    &#34;&#34;&#34;
+    inNb = app.inNb
+    _browse = app._browse
+    silent = silentConvert(silent)
+    backend = app.backend
+    app.showProvenance = types.MethodType(showProvenance, app)
+    app.header = types.MethodType(header, app)
+    app.flexLink = types.MethodType(flexLink, app)
+    app.webLink = types.MethodType(webLink, app)
+    isCompatible = app.isCompatible
+
+    aContext = app.context
+    appName = aContext.appName
+    appRelative = aContext.relative.removeprefix(&#34;/&#34;)
+    appPath = aContext.appPath
+    apiVersion = aContext.apiVersion
+    docUrl = aContext.docUrl
+    org = aContext.org or &#34;&#34;
+    repo = aContext.repo or &#34;&#34;
+    version = aContext.version
+    branch = aContext.provenanceSpec[&#34;branch&#34;]
+    corpus = aContext.corpus
+    featureBase = aContext.featureBase
+    featurePage = aContext.featurePage
+    charUrl = aContext.charUrl
+    charText = aContext.charText
+
+    apiVersionRep = &#34;&#34; if apiVersion is None else f&#34; v{apiVersion}&#34;
+
+    dataName = f&#34;{org} - {repo} {version}&#34;
+    collectionInfo = app.collectionInfo
+    if collectionInfo:
+        dataName += f&#34; collection {collectionInfo}&#34;
+    else:
+        volumeInfo = app.volumeInfo
+        if volumeInfo:
+            dataName += f&#34; volume {volumeInfo}&#34;
+
+    components = [appPath.rsplit(&#34;/&#34;, 1)[0]]
+    if appRelative:
+        components.append(appRelative)
+    components.append(version)
+    dataLink = (
+        outLink(
+            dataName,
+            docUrl,
+            f&#34;provenance of {corpus}&#34;,
+            asHtml=inNb is not None or _browse,
+        )
+        if isCompatible and repo is not None and docUrl
+        else &#34;/&#34;.join(components)
+        if appName.startswith(&#34;app:&#34;)
+        else &#34;/&#34;.join((x or &#34;&#34;) for x in (appPath, appName, version))
+    )
+    charLink = (
+        (
+            outLink(
+                &#34;Character table&#34;,
+                charUrl.format(tfDoc=URL_TFDOC),
+                charText,
+                asHtml=inNb is not None or _browse,
+            )
+            if isCompatible
+            else UNSUPPORTED
+        )
+        if charUrl
+        else &#34;&#34;
+    )
+    featureLink = (
+        (
+            outLink(
+                &#34;Feature docs&#34;,
+                featureBase.replace(&#34;&lt;feature&gt;&#34;, featurePage).format(version=version),
+                f&#34;{org} - {repo} feature documentation&#34;,
+                asHtml=inNb is not None or _browse,
+            )
+            if isCompatible and repo is not None and featureBase
+            else UNSUPPORTED
+        )
+        if isCompatible
+        else UNSUPPORTED
+    )
+    extraUrl = f&#34;{backendRep(backend, &#39;url&#39;)}/{org}/{repo}/blob/{branch}/{APP_APP}&#34;
+    appLink = (
+        outLink(
+            f&#34;{org}/{repo}/app {apiVersionRep}&#34;,
+            extraUrl,
+            f&#34;{appName} app&#34;,
+            asHtml=inNb is not None or _browse,
+        )
+        if isCompatible and repo is not None
+        else &#34;no app configured&#34;
+    )
+    tfLink = outLink(
+        f&#34;TF API {app.TF.version}&#34;,
+        APIREF,
+        &#34;text-fabric api&#34;,
+        asHtml=inNb is not None or _browse,
+    )
+    tfsLink = (
+        outLink(
+            &#34;Search Reference&#34;,
+            SEARCHREF,
+            &#34;Search Templates Introduction and Reference&#34;,
+            asHtml=inNb is not None or _browse,
+        )
+        if isCompatible
+        else UNSUPPORTED
+    )
+    tutLink = (
+        outLink(
+            &#34;Tutorial&#34;,
+            flexLink(app, &#34;tut&#34;),
+            &#34;Tutorial in Jupyter Notebook&#34;,
+            asHtml=inNb is not None or _browse,
+        )
+        if isCompatible and repo is not None
+        else UNSUPPORTED
+    )
+
+    app.appLink = appLink
+    app.dataLink = dataLink
+    app.charLink = charLink
+    app.featureLink = featureLink
+    app.tfLink = tfLink
+    app.tfsLink = tfsLink
+    app.tutLink = tutLink
+
+    if not app._browse:
+        if silent in {VERBOSE, AUTO, TERSE}:
+            header(app, allMeta=silent == VERBOSE)</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.links.outLink"><code class="name flex">
 <span>def <span class="ident">outLink</span></span>(<span>text, href, title=None, passage=None, clsName=None, target='_blank', asHtml=True)</span>
@@ -1161,6 +1465,49 @@ link element. Used by the TF browser.</dd>
 <dd>Whether we are in a notebook or in the browser.
 If not, a plain text representation of the link will be made.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/links.py#L514-L550" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def outLink(
+    text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;, asHtml=True
+):
+    &#34;&#34;&#34;Produce a formatted link.
+
+    Parameters
+    ----------
+    text: string/HTML
+        The text of the link.
+    href: string/URL
+        The URL of the link.
+    title: string, optional None
+        The hint of the link.
+    target: string, optional _blank
+        The target window / tab of the link.
+    clsName: string, optional default `None`
+        A CSS class name to add to the resulting link element
+    passage: string, optional None
+        A passage indicator, which will end up in the `sec` attribute of the
+        link element. Used by the TF browser.
+    asHtml: boolean, optional True
+        Whether we are in a notebook or in the browser.
+        If not, a plain text representation of the link will be made.
+    &#34;&#34;&#34;
+
+    titleAtt = &#34;&#34; if title is None else f&#39; title=&#34;{title}&#34;&#39;
+    clsAtt = f&#39; class=&#34;{clsName.lower()}&#34;&#39; if clsName else &#34;&#34;
+    targetAtt = f&#39; target=&#34;{target}&#34;&#39; if target else &#34;&#34;
+    passageAtt = f&#39; sec=&#34;{passage}&#34;&#39; if passage else &#34;&#34;
+    return (
+        (
+            f&#39;&lt;a{clsAtt}{targetAtt} href=&#34;{htmlEsc(href)}&#34;{titleAtt}{passageAtt}&gt;&#39;
+            f&#34;{text}&lt;/a&gt;&#34;
+        )
+        if asHtml
+        else f&#34;{text} =&gt; {href}&#34;
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.links.provenanceLink"><code class="name flex">
 <span>def <span class="ident">provenanceLink</span></span>(<span>backend, org, repo, version, branch, commit, local, release, relative)</span>
@@ -1190,6 +1537,74 @@ by a back-end repository</dd>
 <dt><strong><code>release</code></strong> :&ensp;<code>string</code></dt>
 <dd>The release tag of the repository</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/links.py#L905-L966" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def provenanceLink(
+    backend, org, repo, version, branch, commit, local, release, relative
+):
+    &#34;&#34;&#34;Generate a provenance link for a data source.
+
+    We assume the data source resides somewhere inside a back-end repository.
+
+    Parameters
+    ----------
+    backend: string
+        `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
+    org: string
+        Organization on GitHub or group on GitLab
+    repo: string
+        Repository on GitHub or project on GitLab
+    version: string
+        Version of the data source.
+        This is not the release or commit of a repo, but the subdirectory
+        corresponding with a data version under a `tf` directory with feature files.
+    branch: string
+        The branch on the back-end of the repository (typically `master` or `main`)
+    commit: string
+        The commit hash of the repository
+    local: boolean
+        Whether the data is on the local computer and not necessarily backed up
+        by a back-end repository
+    release: string
+        The release tag of the repository
+    &#34;&#34;&#34;
+
+    relative = prefixSlash(relative)
+    text = (
+        f&#34;data on local machine {relative}&#34;
+        if org is None or repo is None
+        else (
+            f&#34;{org}/{repo}{relative} v:{version}&#34;
+            f&#34;({Checkout.toString(commit, release, local, backend)})&#34;
+        )
+    )
+    relativeFlat = relative.removeprefix(&#34;/&#34;).replace(&#34;/&#34;, &#34;-&#34;)
+    bUrl = backendRep(backend, &#34;url&#34;)
+    url = (
+        None
+        if org is None or repo is None
+        else f&#34;{bUrl}/{org}/{repo}/tree/{branch}{relative}&#34;
+        if local
+        else (
+            (
+                (
+                    f&#34;{bUrl}/{org}/{repo}/releases/download/{release}&#34;
+                    f&#34;/{relativeFlat}-{version}.zip&#34;
+                )
+                if backend == GH
+                else (
+                    f&#34;{bUrl}/{org}/{repo}/-/archive/{release}&#34; f&#34;/{repo}-{version}.zip&#34;
+                )
+            )
+            if release
+            else f&#34;{bUrl}/{org}/{repo}/tree/{commit}{relative}&#34;
+        )
+    )
+    return (text, url)</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.links.showProvenance"><code class="name flex">
 <span>def <span class="ident">showProvenance</span></span>(<span>app, jobName='program code', author='program author')</span>
@@ -1209,6 +1624,48 @@ This item will be displayed together with the rest of the provenance.</dd>
 <dd>E.g. your own name.
 This item will be displayed together with the rest of the provenance.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/links.py#L414-L449" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
+    &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
+
+    This comes in handy if you have started with
+    `use(&#34;org/repo&#34;, silence=&#39;deep&#39;)` and still need to show the provenance.
+    Moreover, the provenance is shown in a formatted way.
+
+    Parameters
+    ----------
+    jobName: string, optional program code
+        E.g. the name of program in which you call this function.
+        In the TF browser the name of the job will be entered here.
+        This item will be displayed together with the rest of the provenance.
+
+    author: string, optional program author
+        E.g. your own name.
+        This item will be displayed together with the rest of the provenance.
+    &#34;&#34;&#34;
+
+    inNb = app.inNb
+    aContext = app.context
+    backend = app.backend
+    org = aContext.org
+    repo = aContext.repo
+    commit = aContext.commit
+    appProvenance = (
+        ((&#34;backend&#34;, backend), (&#34;org&#34;, org), (&#34;repo&#34;, repo), (&#34;commit&#34;, commit)),
+    )
+    provenance = (appProvenance, app.provenance)
+    setNames = (
+        tuple(sorted(app.sets.keys()))
+        if hasattr(app, &#34;sets&#34;) and type(app.sets) is dict
+        else ()
+    )
+    form = dict(jobName=jobName, author=author)
+    dh(wrapProvenance(form, provenance, setNames)[0], inNb=inNb)</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.links.webLink"><code class="name flex">
 <span>def <span class="ident">webLink</span></span>(<span>app, n, text=None, clsName=None, urlOnly=False)</span>
@@ -1250,6 +1707,151 @@ other attributes.</dd>
 <dt><code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code></dt>
 <dd>options allowed in <code>config.yaml</code></dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/links.py#L273-L411" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def webLink(
+    app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False
+):
+    &#34;&#34;&#34;Maps a node to a web resource.
+
+    Usually called as `A.webLink(...)`
+
+    The mapping is quite sophisticated. It will do sensible things for
+    section nodes and lexeme nodes, dependent on how they are configured in
+    the app&#39;s `config.yaml`.
+
+    !!! hint &#34;Customisable&#34;
+        You can customize the behaviour of `webLink()` to the needs of your corpus
+        by providing appropriate values in its `config.yaml`, especially for
+        `webBase`, `webLang`, `webOffset`, `webFeature`, `webUrl`, `webUrlLex`, and `webHint`.
+
+    Parameters
+    ----------
+    n: integer
+        A node
+    text: string, optional default `None`
+        The text of the link. If left out, a suitable text will be derived from
+        the node.
+    clsName: string, optional default `None`
+        A CSS class name to add to the resulting link element
+    urlOnly: boolean, optional False
+        If True, only the URL will be returned.
+    _asString: boolean, optional False
+        Whether to deliver the result as a piece of HTML or to display the link
+        on the (Jupyter) interface.
+    _noUrl: boolean, optional False
+        Whether to put the generated URL in the `href` attribute.
+        It can be inhibited. This is useful for the TF browser, which may want
+        to attach an action to the link and navigate to a location based on
+        other attributes.
+
+    See Also
+    --------
+    tf.advanced.settings: options allowed in `config.yaml`
+    &#34;&#34;&#34;
+
+    api = app.api
+    TF = api.TF
+    T = api.T
+    F = api.F
+    Fs = api.Fs
+
+    inNb = app.inNb
+    _browse = app._browse
+    aContext = app.context
+    webBase = aContext.webBase
+    webLang = aContext.webLang
+    webOffset = aContext.webOffset
+    webFeature = aContext.webFeature
+    webUrl = aContext.webUrl
+    webUrlZeros = aContext.webUrlZeros or {}
+    webUrlLex = aContext.webUrlLex
+    webLexId = aContext.webLexId
+    webHint = aContext.webHint
+    lexTypes = aContext.lexTypes
+    styles = aContext.styles
+
+    nType = F.otype.v(n)
+    passageText = None
+
+    if _noUrl:
+        href = &#34;#&#34;
+    elif nType in lexTypes:
+        if webUrlLex and webLexId:
+            lid = (
+                app.getLexId(n)
+                if webLexId is True
+                else Fs(webLexId).v(n)
+                if webLexId
+                else None
+            )
+            href = webUrlLex.replace(&#34;&lt;lid&gt;&#34;, str(lid))
+        elif webBase:
+            href = webBase
+        else:
+            href = None
+    else:
+        href = None
+        if webFeature:
+            if TF.isLoaded(webFeature, pretty=False)[webFeature]:
+                val = Fs(webFeature).v(n)
+                if val is not None:
+                    href = f&#34;{webBase}{val}&#34;
+        if href is None:
+            if webUrl:
+                href = webUrl
+                headingTuple = T.sectionFromNode(n, lang=webLang, fillup=True)
+                for i, heading in enumerate(headingTuple):
+                    defaultOffset = 0 if type(heading) is int else &#34;&#34;
+                    offset = (
+                        defaultOffset
+                        if webOffset is None
+                        else webOffset.get(i + 1, {}).get(
+                            headingTuple[i - 1], defaultOffset
+                        )
+                        if i &gt; 0
+                        else defaultOffset
+                    )
+                    value = &#34;&#34; if heading is None else str(heading + offset)
+                    leadingZeros = webUrlZeros.get(i + 1, 0)
+                    if 0 &lt; len(value) &lt; leadingZeros:
+                        value = &#34;0&#34; * (leadingZeros - len(value)) + value
+
+                    href = href.replace(f&#34;&lt;{i + 1}&gt;&#34;, value)
+            else:
+                href = None
+
+    if nType in lexTypes:
+        if text is None:
+            text = app.getText(False, n, nType, False, True, True, &#34;&#34;, None, None)
+    else:
+        passageText = app.sectionStrFromNode(n)
+        if text is None:
+            text = passageText
+
+    style = styles.get(nType, None)
+    if style:
+        clsName = f&#34;{clsName or &#39;&#39;} {style}&#34;
+    if href is None:
+        fullResult = text
+    else:
+        atts = dict(target=&#34;&#34;) if _noUrl else dict(title=webHint)
+        fullResult = outLink(
+            text,
+            href,
+            clsName=clsName,
+            passage=passageText,
+            asHtml=inNb is not None or _browse,
+            **atts,
+        )
+    result = href if urlOnly else fullResult
+    if _asString or urlOnly:
+        return result
+    dh(result, inNb=inNb)</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -1335,7 +1937,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

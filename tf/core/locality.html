@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.core.locality API documentation</title>
 <meta name="description" content="Local navigation between nodes." />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/locality.py#L1-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/locality.py#L1-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Local navigation between nodes.
@@ -404,7 +404,7 @@ same words, then that is a case where:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/locality.py#L9-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/locality.py#L9-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Locality:
     &#34;&#34;&#34;Methods by which you can navigate from a node to its neighbourhood.
@@ -739,6 +739,74 @@ But other nodes linked to the same set of slots as <code>n</code>
 may count as embeddee nodes.</p>
 </dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/locality.py#L153-L214" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def d(self, n, otype=None):
+    &#34;&#34;&#34;Produces an ordered tuple of *downward* nodes.
+
+    Downward nodes of a node are embedded nodes in that node.
+    One node is embedded in an other if all slots of the former are contained
+    in the slots of the latter.
+
+    Parameters
+    ----------
+
+    node: integer
+        The node whose embeddees will be delivered.
+    otype: string or set of strings
+        See `Locality`.
+
+    Returns
+    -------
+    tuple of integer
+        The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
+        left and big embeddees before right and small embeddees.
+
+        The result never includes `n` itself.
+        But other nodes linked to the same set of slots as `n`
+        may count as embeddee nodes.
+    &#34;&#34;&#34;
+
+    Fotype = self.api.F.otype
+    fOtype = Fotype.v
+    maxSlot = Fotype.maxSlot
+    if n &lt;= maxSlot:
+        return tuple()
+    maxNode = Fotype.maxNode
+    if n &gt; maxNode:
+        return tuple()
+
+    Eoslots = self.api.E.oslots
+    Crank = self.api.C.rank.data
+    levDown = self.api.C.levDown.data
+    slotType = Fotype.slotType
+    if otype is None:
+        return tuple(
+            sorted(
+                levDown[n - maxSlot - 1] + Eoslots.s(n), key=lambda m: Crank[m - 1],
+            )
+        )
+    elif otype == slotType:
+        return tuple(sorted(Eoslots.s(n), key=lambda m: Crank[m - 1]))
+    elif type(otype) is str:
+        return tuple(m for m in levDown[n - maxSlot - 1] if fOtype(m) == otype)
+    else:
+        if type(otype) not in SET_TYPES:
+            otype = set(otype)
+        return tuple(
+            sorted(
+                (
+                    k
+                    for k in levDown[n - maxSlot - 1] + Eoslots.s(n)
+                    if fOtype(k) in otype
+                ),
+                key=lambda m: Crank[m - 1],
+            )
+        )</code></pre>
+</details>
 </dd>
 <dt id="tf.core.locality.Locality.i"><code class="name flex">
 <span>def <span class="ident">i</span></span>(<span>self, n, otype=None)</span>
@@ -765,6 +833,67 @@ may count as intersector nodes.</p>
 <p>Slots themselves can be intersectors.</p>
 </dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/locality.py#L51-L105" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def i(self, n, otype=None):
+    &#34;&#34;&#34;Produces an ordered tuple of *intersecting* nodes
+
+    Intersecting nodes of a node have slots in common with that node.
+
+    Parameters
+    ----------
+
+    node: dict
+        The node whose intersectors will be delivered.
+    otype: string or set of strings
+        See `Locality`.
+
+    Returns
+    -------
+    tuple of integer
+        The tuple nodes is sorted in the
+        canonical order (`tf.core.nodes`).
+
+        The result never includes `n` itself.
+        But other nodes linked to the same set of slots as `n`
+        may count as intersector nodes.
+
+        Slots themselves can be intersectors.
+    &#34;&#34;&#34;
+
+    api = self.api
+    N = api.N
+    Fotype = api.F.otype
+    maxSlot = Fotype.maxSlot
+    if n &lt;= maxSlot:
+        return tuple()
+    maxNode = Fotype.maxNode
+    if n &gt; maxNode:
+        return tuple()
+    sortNodes = N.sortNodes
+    if not otype:
+        otype = set(Fotype.all)
+    elif type(otype) is str:
+        otype = {otype}
+    elif type(otype) not in SET_TYPES:
+        otype = set(otype)
+
+    slotType = Fotype.slotType
+    fOtype = Fotype.v
+    levUp = api.C.levUp.data
+    Eoslots = api.E.oslots
+
+    slots = Eoslots.s(n)
+    result = set()
+    for slot in slots:
+        result |= {m for m in levUp[slot - 1] if fOtype(m) in otype}
+        if slotType in otype:
+            result.add(slot)
+    return sortNodes(result - {n})</code></pre>
+</details>
 </dd>
 <dt id="tf.core.locality.Locality.n"><code class="name flex">
 <span>def <span class="ident">n</span></span>(<span>self, n, otype=None)</span>
@@ -786,6 +915,61 @@ the last slot of the latter.</p>
 <dd>The tuple nodes is sorted in the canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>),
 left and big embeddees before right and small embeddees.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/locality.py#L264-L312" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def n(self, n, otype=None):
+    &#34;&#34;&#34;Produces an ordered tuple of *next* nodes.
+
+    One node is next to an other if the first slot of the former just follows
+    the last slot of the latter.
+
+    Parameters
+    ----------
+
+    node: integer
+        The node whose next nodes will be delivered.
+    otype: string or set of strings
+        See `Locality`.
+
+    Returns
+    -------
+    tuple of integer
+        The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
+        left and big embeddees before right and small embeddees.
+    &#34;&#34;&#34;
+
+    if n &lt;= 0:
+        return tuple()
+    Fotype = self.api.F.otype
+    fOtype = Fotype.v
+    maxNode = Fotype.maxNode
+    maxSlot = Fotype.maxSlot
+    if n == maxSlot:
+        return tuple()
+    if n &gt; maxNode:
+        return tuple()
+
+    Eoslots = self.api.E.oslots.data
+    (firstNode, lastNode) = self.api.C.boundary.data
+
+    myNext = n + 1 if n &lt; maxSlot else Eoslots[n - maxSlot - 1][-1] + 1
+    if myNext &gt; maxSlot:
+        return ()
+
+    result = (myNext,) + tuple(firstNode[myNext - 1])
+
+    if otype is None:
+        return result
+    elif type(otype) is str:
+        return tuple(m for m in result if fOtype(m) == otype)
+    else:
+        if type(otype) not in SET_TYPES:
+            otype = set(otype)
+        return tuple(m for m in result if fOtype(m) in otype)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.locality.Locality.p"><code class="name flex">
 <span>def <span class="ident">p</span></span>(<span>self, n, otype=None)</span>
@@ -807,6 +991,59 @@ the first slots of the latter.</p>
 <dd>The tuple nodes is sorted in the canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>),
 but <em>reversed</em>: right and small embedders before left and big embedders.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/locality.py#L216-L262" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def p(self, n, otype=None):
+    &#34;&#34;&#34;Produces an ordered tuple of *previous* nodes.
+
+    One node is previous to an other if the last slot of the former just precedes
+    the first slots of the latter.
+
+    Parameters
+    ----------
+
+    node: integer
+        The node whose previous nodes will be delivered.
+    otype: string or set of strings
+        See `Locality`.
+
+    Returns
+    -------
+    tuple of integer
+        The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
+        but *reversed*: right and small embedders before left and big embedders.
+    &#34;&#34;&#34;
+
+    if n &lt;= 1:
+        return tuple()
+    Fotype = self.api.F.otype
+    fOtype = Fotype.v
+    maxNode = Fotype.maxNode
+    if n &gt; maxNode:
+        return tuple()
+
+    maxSlot = Fotype.maxSlot
+    Eoslots = self.api.E.oslots.data
+    (firstNode, lastNode) = self.api.C.boundary.data
+
+    myPrev = n - 1 if n &lt;= maxSlot else Eoslots[n - maxSlot - 1][0] - 1
+    if myPrev &lt;= 0:
+        return ()
+
+    result = tuple(lastNode[myPrev - 1]) + (myPrev,)
+
+    if otype is None:
+        return result
+    elif type(otype) is str:
+        return tuple(m for m in result if fOtype(m) == otype)
+    else:
+        if type(otype) not in SET_TYPES:
+            otype = set(otype)
+        return tuple(m for m in result if fOtype(m) in otype)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.locality.Locality.u"><code class="name flex">
 <span>def <span class="ident">u</span></span>(<span>self, n, otype=None)</span>
@@ -835,6 +1072,57 @@ may count as embedder nodes.</p>
 <p>Slots themselves are never embedders.</p>
 </dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/locality.py#L107-L151" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def u(self, n, otype=None):
+    &#34;&#34;&#34;Produces an ordered tuple of *upward* nodes.
+
+    Upward nodes of a node are embedders of that node.
+    One node embeds an other if all slots of the latter are contained in the slots
+    of the former.
+
+    Parameters
+    ----------
+
+    node: integer
+        The node whose embedders will be delivered.
+    otype: string or set of strings
+        See `Locality`.
+
+    Returns
+    -------
+    tuple of integer
+        The tuple nodes is sorted in the canonical order (`tf.core.nodes`),
+        but *reversed*: right and small embedders before left and big embedders.
+
+        The result never includes `n` itself.
+        But other nodes linked to the same set of slots as `n`
+        may count as embedder nodes.
+
+        Slots themselves are never embedders.
+    &#34;&#34;&#34;
+
+    if n &lt;= 0:
+        return tuple()
+    Fotype = self.api.F.otype
+    maxNode = Fotype.maxNode
+    if n &gt; maxNode:
+        return tuple()
+    fOtype = Fotype.v
+    levUp = self.api.C.levUp.data
+
+    if otype is None:
+        return tuple(levUp[n - 1])
+    elif type(otype) is str:
+        return tuple(m for m in levUp[n - 1] if fOtype(m) == otype)
+    else:
+        if type(otype) not in SET_TYPES:
+            otype = set(otype)
+        return tuple(m for m in levUp[n - 1] if fOtype(m) in otype)</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -925,7 +1213,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

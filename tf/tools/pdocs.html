@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.tools.pdocs API documentation</title>
 <meta name="description" content="" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/tools/pdocs.py#L1-L229" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/tools/pdocs.py#L1-L229" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import os
@@ -276,36 +276,126 @@ def shipDocs(org, repo, pkg, pdoc=True):
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/tools/pdocs.py#L21-L23" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def console(*args):
+    sys.stderr.write(&#34; &#34;.join(args) + &#34;\n&#34;)
+    sys.stderr.flush()</code></pre>
+</details>
 </dd>
 <dt id="tf.tools.pdocs.getCommand"><code class="name flex">
 <span>def <span class="ident">getCommand</span></span>(<span>pkg, asString=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/tools/pdocs.py#L171-L183" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getCommand(pkg, asString=False):
+    templateLoc = TEMPLATE_LOC.format(pkg)
+
+    pdoc3 = [
+        &#34;pdoc3&#34;,
+        &#34;--force&#34;,
+        &#34;--html&#34;,
+        &#34;--output-dir&#34;,
+        SITE,
+        &#34;--template-dir&#34;,
+        templateLoc,
+    ]
+    return &#34; &#34;.join(pdoc3) if asString else pdoc3</code></pre>
+</details>
 </dd>
 <dt id="tf.tools.pdocs.pdoc3"><code class="name flex">
 <span>def <span class="ident">pdoc3</span></span>(<span>pkg)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Build the docs into site.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/tools/pdocs.py#L199-L217" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def pdoc3(pkg):
+    &#34;&#34;&#34;Build the docs into site.&#34;&#34;&#34;
+
+    console(&#34;Build docs&#34;)
+    if os.path.exists(SITE):
+        console(f&#34;Remove previous build ({SITE})&#34;)
+        rmtree(SITE)
+    console(&#34;Generate docs with pdoc3&#34;)
+    run(f&#34;{getCommand(pkg, asString=True)} {pkg}&#34;, shell=True)
+    # console(&#34;Move docs into place&#34;)
+    # run(f&#34;mv {SITE}/{pkg}/* {SITE}&#34;, shell=True)
+    # rmtree(f&#34;{SITE}/{pkg}&#34;)
+    console(&#34;Copy over the images&#34;)
+    copytree(f&#34;{pkg}/docs/images&#34;, f&#34;{SITE}/{pkg}/images&#34;, dirs_exist_ok=True)
+    console(&#34;Copy over the stats&#34;)
+    copytree(f&#34;{pkg}/docs/stats&#34;, f&#34;{SITE}/{pkg}/stats&#34;, dirs_exist_ok=True)
+
+    # a link from the old docs URL to the new one
+    copyfile(f&#34;{pkg}/docs/index.html&#34;, f&#34;{SITE}/index.html&#34;)</code></pre>
+</details>
 </dd>
 <dt id="tf.tools.pdocs.pdoc3serve"><code class="name flex">
 <span>def <span class="ident">pdoc3serve</span></span>(<span>pkg)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Build the docs into site and serve them.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/tools/pdocs.py#L186-L196" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def pdoc3serve(pkg):
+    &#34;&#34;&#34;Build the docs into site and serve them.&#34;&#34;&#34;
+
+    proc = Popen([*getCommand(pkg), &#34;--http&#34;, &#34;:&#34;, pkg])
+    time.sleep(1)
+    run(f&#34;open http://localhost:8080/{pkg}&#34;, shell=True)
+    try:
+        proc.wait()
+    except KeyboardInterrupt:
+        pass
+    proc.terminate()</code></pre>
+</details>
 </dd>
 <dt id="tf.tools.pdocs.servePdocs"><code class="name flex">
 <span>def <span class="ident">servePdocs</span></span>(<span>pkg)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/tools/pdocs.py#L220-L221" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def servePdocs(pkg):
+    run(&#34;python -m http.server 9000&#34;, cwd=SITE, shell=True)</code></pre>
+</details>
 </dd>
 <dt id="tf.tools.pdocs.shipDocs"><code class="name flex">
 <span>def <span class="ident">shipDocs</span></span>(<span>org, repo, pkg, pdoc=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Build the docs into site and ship them.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/tools/pdocs.py#L224-L229" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def shipDocs(org, repo, pkg, pdoc=True):
+    &#34;&#34;&#34;Build the docs into site and ship them.&#34;&#34;&#34;
+
+    if pdoc:
+        pdoc3(pkg)
+    _gh_deploy(org, repo, pkg)</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -390,7 +480,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.ner.settings API documentation</title>
 <meta name="description" content="Corpus dependent setup of the annotation tool." />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/ner/settings.py#L1-L351" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/ner/settings.py#L1-L351" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Corpus dependent setup of the annotation tool.
 &#34;&#34;&#34;
@@ -450,6 +450,69 @@ differently than features with an unbounded set of values, such as <code>eid</co
 <dd>What the features are and what the keyword features are.
 These derive ultimately from the corpus-dependent <code>ner/config.yaml</code>.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/ner/settings.py#L138-L194" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def makeCss(features, keywordFeatures):
+    &#34;&#34;&#34;Generates CSS for the tool.
+
+    The CSS for this tool has a part that depends on the choice of entity features.
+    For now, the dependency is mild: keyword features such as `kind` are formatted
+    differently than features with an unbounded set of values, such as `eid`.
+
+    Parameters
+    ----------
+    features, keywordFeatures: iterable
+        What the features are and what the keyword features are.
+        These derive ultimately from the corpus-dependent `ner/config.yaml`.
+    &#34;&#34;&#34;
+    propMap = dict(
+        ff=&#34;font-family&#34;,
+        fz=&#34;font-size&#34;,
+        fw=&#34;font-weight&#34;,
+        fg=&#34;color&#34;,
+        bg=&#34;background-color&#34;,
+        bw=&#34;border-width&#34;,
+        bs=&#34;border-style&#34;,
+        bc=&#34;border-color&#34;,
+        br=&#34;border-radius&#34;,
+        p=&#34;padding&#34;,
+        m=&#34;margin&#34;,
+    )
+
+    def makeBlock(manner):
+        props = STYLES[manner]
+        defs = [f&#34;\t{propMap[abb]}: {val};\n&#34; for (abb, val) in props.items()]
+        return H.join(defs)
+
+    def makeCssDef(selector, *blocks):
+        return selector + &#34; {\n&#34; + H.join(blocks) + &#34;}\n&#34;
+
+    css = []
+
+    for feat in features:
+        manner = &#34;keyword&#34; if feat in keywordFeatures else &#34;free&#34;
+
+        plain = makeBlock(manner)
+        bordered = makeBlock(f&#34;{manner}_bordered&#34;)
+        active = makeBlock(f&#34;{manner}_active&#34;)
+        borderedActive = makeBlock(f&#34;{manner}_bordered_active&#34;)
+
+        css.extend(
+            [
+                makeCssDef(f&#34;.{feat}&#34;, plain),
+                makeCssDef(f&#34;.{feat}.active&#34;, active),
+                makeCssDef(f&#34;span.{feat}_sel,button.{feat}_sel&#34;, plain, bordered),
+                makeCssDef(f&#34;button.{feat}_sel[st=v]&#34;, borderedActive, active),
+            ]
+        )
+
+    featureCss = H.join(css, sep=&#34;\n&#34;)
+    allCss = H.style(featureCss, type=&#34;text/css&#34;)
+    return allCss</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -535,7 +598,7 @@ running that program are specified. See <code><a title="tf.ner.variants" href="v
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/ner/settings.py#L197-L351" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/ner/settings.py#L197-L351" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Settings:
     def __init__(self):
@@ -706,6 +769,23 @@ running that program are specified. See <code><a title="tf.ner.variants" href="v
 <div class="desc"><p>Print something to the output.</p>
 <p>This works exactly as <code><a title="tf.core.helpers.console" href="../core/helpers.html#tf.core.helpers.console">console()</a></code></p>
 <p>When the silent member of the object is True, the message will be suppressed.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/ner/settings.py#L306-L316" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def console(self, msg, **kwargs):
+    &#34;&#34;&#34;Print something to the output.
+
+    This works exactly as `tf.core.helpers.console`
+
+    When the silent member of the object is True, the message will be suppressed.
+    &#34;&#34;&#34;
+    silent = self.silent
+
+    if not silent:
+        console(msg, **kwargs)</code></pre>
+</details>
 </dd>
 <dt id="tf.ner.settings.Settings.consoleLine"><code class="name flex">
 <span>def <span class="ident">consoleLine</span></span>(<span>self, isError, indent, msg)</span>
@@ -726,6 +806,46 @@ some decoration to make it more conspicuous.</dd>
 <dt><strong><code>msg</code></strong> :&ensp;<code>string</code></dt>
 <dd>The text of the message.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/ner/settings.py#L318-L351" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def consoleLine(self, isError, indent, msg):
+    &#34;&#34;&#34;Print a formatted line to the output.
+
+    When the silent member of the object is True, the message will be suppressed,
+    if it is not an error message.
+
+    Parameters
+    ----------
+    isError: boolean or void
+        If True, it the message is an error message, and it will be shown.
+        If False, the message, if it is shown, will be shown as a normal message.
+        If None, the message, if it is shown, will be preceded and followed by
+        some decoration to make it more conspicuous.
+    indent: integer
+        The number of quads to indent the message with. A quad is two spaces.
+    msg: string
+        The text of the message.
+    &#34;&#34;&#34;
+    silent = self.silent
+
+    if silent and not isError:
+        return
+
+    tabs = &#34;  &#34; * indent
+    head = &#34;-&#34; * len(msg)
+
+    if isError is None:
+        console(&#34;&#34;)
+        console(f&#34;{tabs}{head}&#34;)
+
+    console(f&#34;{tabs}{msg}\n&#34;, error=isError)
+
+    if isError is None:
+        console(f&#34;{tabs}{head}&#34;)</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -824,7 +944,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.core.files API documentation</title>
 <meta name="description" content="" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -31,7 +31,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/files.py#L1-L881" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L1-L881" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import json
@@ -1035,6 +1035,14 @@ Put a line</p>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L68-L69" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def abspath(path):
+    return normpath(os.path.abspath(path))</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.annotateDir"><code class="name flex">
 <span>def <span class="ident">annotateDir</span></span>(<span>app, tool)</span>
@@ -1059,6 +1067,37 @@ of the corpus</li>
 <dt><code>string</code></dt>
 <dd>The path of the working directory for that tool and that corpus</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L276-L300" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def annotateDir(app, tool):
+    &#34;&#34;&#34;Return the input and output and report directories for a specific annotation tool.
+
+    *   The input directory is located next to the TF data of the corpus
+    *   The output directory is located in the `_temp` directory next to the TF data of
+        the corpus
+        of the corpus
+
+    Parameters
+    ----------
+    app: object
+        the TF app
+    tool: string
+        The name of the annotation tool
+
+    Returns
+    -------
+    string
+        The path of the working directory for that tool and that corpus
+    &#34;&#34;&#34;
+    context = app.context
+    appPath = context.appPath
+    localDir = context.localDir
+    baseDir = dirNm(appPath)
+    return (f&#34;{baseDir}/{tool}&#34;, f&#34;{localDir}/{tool}&#34;)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.backendRep"><code class="name flex">
 <span>def <span class="ident">backendRep</span></span>(<span>be, kind, default=None)</span>
@@ -1112,6 +1151,119 @@ but only if that module has a different back-end than the main module.</p>
 <dt><code>string</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L167-L273" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def backendRep(be, kind, default=None):
+    &#34;&#34;&#34;Various back-end dependent values.
+
+    First of all, the back-end value is
+    normalized. Then related values are computed.
+
+    Parameters
+    ----------
+    be: string or None
+        The raw back-end value.
+        It will be normalized first, where missing, undefined, empty values are
+        converted to the string `github`, and other values will be lower-cased.
+        Also, `github.com` and `gitlab.com` will be shortened to `github` and `gitlab`.
+
+    kind: string
+        Indicates what kind of related value should be returned:
+
+        *   `norm`: the normalized value as described above
+        *   `tech`: technology of the back-end: either `github` or `gitlab` or None;
+            we assume that there is only one GitHub; that there are many GitLabs;
+            any back-end that is not `github` is an instance of `gitlab`.
+        *   `name`: lowercase shortest name of the back-end: `github` or `gitlab`
+            or a server name like `gitlab.huc.knaw.nl`
+        *   `machine`: lowercase machine name of the back-end: `github.com` or
+            `gitlab.com`
+            or a server name like `gitlab.huc.knaw.nl`
+        *   `spec`: enclosed in `&lt;` and `&gt;`. Depending on the parameter `default`
+            the empty string is returned instead.
+        *   `clone`: base directory where clones of repos in this back-end are stored
+            `~/github`, etc.
+        *   `cache`: base directory where data downloads from this back-end are stored:
+            `~/text-fabric-data/github`, etc.
+        *   `url`: URL of the online back-end
+        *   `urlnb`: URL of notebooks from the online back-end, rendered on NB-Viewer
+        *   `pages`: base URL of the Pages service of the back-end
+
+    default: boolean, optional False
+        Only relevant for `kind` = `rep`.
+        If `default` is passed and not None and `be` is equal to `default`,
+        then the empty string is returned.
+
+        Explanation: this is used to supply a back-end specifier to a module
+        but only if that module has a different back-end than the main module.
+
+    Returns
+    -------
+    string
+    &#34;&#34;&#34;
+
+    be = (be or &#34;&#34;).lower()
+    be = (
+        GH
+        if be in {None, &#34;&#34;, GH, f&#34;{GH}.com&#34;}
+        else GL
+        if be in {GL, f&#34;{GL}.com&#34;}
+        else be
+    )
+    beTail = &#34;.&#34;.join(be.split(&#34;.&#34;)[1:])
+
+    if kind == &#34;norm&#34;:
+        return be
+
+    if kind == &#34;tech&#34;:
+        return be if be in {GH, GL} else GL
+
+    if kind == &#34;name&#34;:
+        return &#34;GitHub&#34; if be == GH else &#34;GitLab&#34; if be == GL else be
+
+    if kind == &#34;machine&#34;:
+        return &#34;github.com&#34; if be == GH else &#34;gitlab.com&#34; if be == GL else be
+
+    if kind == &#34;rep&#34;:
+        if default is not None:
+            default = backendRep(default, &#34;norm&#34;)
+            if be == default:
+                return &#34;&#34;
+        return f&#34;&lt;{be}&gt;&#34;
+
+    if kind == &#34;clone&#34;:
+        return f&#34;{_homeDir}/{be}&#34;
+
+    if kind == &#34;cache&#34;:
+        return f&#34;{_homeDir}/text-fabric-data/{be}&#34;
+
+    if kind == &#34;url&#34;:
+        return URL_GH if be == GH else URL_GL if be == GL else f&#34;https://{be}&#34;
+
+    if kind == &#34;urlapi&#34;:
+        return (
+            URL_GH_API if be == GH else URL_GL_API if be == GL else f&#34;https://api.{be}&#34;
+        )
+
+    if kind == &#34;urlupload&#34;:
+        return (
+            URL_GH_UPLOAD
+            if be == GH
+            else URL_GL_UPLOAD
+            if be == GL
+            else f&#34;https://api.{be}&#34;
+        )
+
+    if kind == &#34;urlnb&#34;:
+        return f&#34;{URL_NB}/{be}&#34;
+
+    if kind == &#34;pages&#34;:
+        return f&#34;{GH}.io&#34; if be == GH else f&#34;{GL}.io&#34; if be == GL else f&#34;pages.{beTail}&#34;
+    return None</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.chDir"><code class="name flex">
 <span>def <span class="ident">chDir</span></span>(<span>directory)</span>
@@ -1123,6 +1275,21 @@ but only if that module has a different back-end than the main module.</p>
 <dt><strong><code>directory</code></strong> :&ensp;<code>string</code></dt>
 <dd>The directory to change to.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L713-L721" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def chDir(directory):
+    &#34;&#34;&#34;Change to other directory.
+
+    Parameters
+    ----------
+    directory: string
+        The directory to change to.
+    &#34;&#34;&#34;
+    return os.chdir(directory)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.clearTree"><code class="name flex">
 <span>def <span class="ident">clearTree</span></span>(<span>path)</span>
@@ -1136,6 +1303,41 @@ all the time.</p>
 <p>path:
 The directory in question. A leading <code>~</code> will be expanded to the user's
 home directory.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L410-L438" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def clearTree(path):
+    &#34;&#34;&#34;Remove all files from a directory, recursively, but leave subdirectories.
+
+    Reason: we want to inspect output in an editor.
+    But if we remove the directories, the editor looses its current directory
+    all the time.
+
+    Parameters
+    ----------
+    path:
+        The directory in question. A leading `~` will be expanded to the user&#39;s
+        home directory.
+    &#34;&#34;&#34;
+
+    subdirs = []
+    path = expanduser(path)
+
+    with os.scandir(path) as dh:
+        for (i, entry) in enumerate(dh):
+            name = entry.name
+            if name.startswith(&#34;.&#34;):
+                continue
+            if entry.is_file():
+                os.remove(f&#34;{path}/{name}&#34;)
+            elif entry.is_dir():
+                subdirs.append(name)
+
+    for subdir in subdirs:
+        clearTree(f&#34;{path}/{subdir}&#34;)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.dirAllFiles"><code class="name flex">
 <span>def <span class="ident">dirAllFiles</span></span>(<span>path, ignore=None)</span>
@@ -1158,6 +1360,55 @@ home directory.</p></div>
 <dd>The names of the files under <code>path</code>, starting with <code>path</code>, followed
 by the bit relative to <code>path</code>.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L657-L699" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def dirAllFiles(path, ignore=None):
+    &#34;&#34;&#34;Gets all the files found by `path`.
+
+    The result is just `[path]` if `path` is a file, otherwise the list of files under
+    `path`, recursively.
+
+    The files are sorted alphabetically by path name.
+
+    Parameters
+    ----------
+    path: string
+        The path to the file or directory on the file system.
+    ignore: set
+        Names of directories that must be skipped
+
+    Returns
+    -------
+    tuple of string
+        The names of the files under `path`, starting with `path`, followed
+        by the bit relative to `path`.
+    &#34;&#34;&#34;
+    if fileExists(path):
+        return [path]
+
+    if not dirExists(path):
+        return []
+
+    files = []
+
+    if not ignore:
+        ignore = set()
+
+    for entry in os.listdir(path):
+        name = f&#34;{path}/{entry}&#34;
+
+        if os.path.isfile(name):
+            files.append(name)
+        elif os.path.isdir(name):
+            if entry in ignore:
+                continue
+            files.extend(dirAllFiles(name, ignore=ignore))
+
+    return tuple(sorted(files))</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.dirContents"><code class="name flex">
 <span>def <span class="ident">dirContents</span></span>(<span>path)</span>
@@ -1178,6 +1429,44 @@ There is no attempt to sort the files.</p>
 <dt><code>tuple</code> of <code>tuple</code></dt>
 <dd>The subdirectories and the files.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L623-L654" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def dirContents(path):
+    &#34;&#34;&#34;Gets the contents of a directory.
+
+    Only the direct entries in the directory (not recursively), and only real files
+    and folders.
+
+    The list of files and folders will be returned separately.
+    There is no attempt to sort the files.
+
+    Parameters
+    ----------
+    path: string
+        The path to the directory on the file system.
+
+    Returns
+    -------
+    tuple of tuple
+        The subdirectories and the files.
+    &#34;&#34;&#34;
+    if not dirExists(path):
+        return ((), ())
+
+    files = []
+    dirs = []
+
+    for entry in os.listdir(path):
+        if os.path.isfile(f&#34;{path}/{entry}&#34;):
+            files.append(entry)
+        elif os.path.isdir(f&#34;{path}/{entry}&#34;):
+            dirs.append(entry)
+
+    return (tuple(files), tuple(dirs))</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.dirCopy"><code class="name flex">
 <span>def <span class="ident">dirCopy</span></span>(<span>pathSrc, pathDst, noclobber=False)</span>
@@ -1185,24 +1474,80 @@ There is no attempt to sort the files.</p>
 <dd>
 <div class="desc"><p>Copies a directory if it exists as directory.</p>
 <p>Wipes the destination directory, if it exists.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L601-L614" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def dirCopy(pathSrc, pathDst, noclobber=False):
+    &#34;&#34;&#34;Copies a directory if it exists as directory.
+
+    Wipes the destination directory, if it exists.
+    &#34;&#34;&#34;
+    if dirExists(pathSrc):
+        if dirExists(pathDst):
+            if noclobber:
+                return False
+        dirRemove(pathDst)
+        copytree(pathSrc, pathDst)
+        return True
+    else:
+        return False</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.dirEmpty"><code class="name flex">
 <span>def <span class="ident">dirEmpty</span></span>(<span>target)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L405-L407" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def dirEmpty(target):
+    target = normpath(target)
+    return not os.path.exists(target) or not os.listdir(target)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.dirExists"><code class="name flex">
 <span>def <span class="ident">dirExists</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Whether a path exists as directory on the file system.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L571-L581" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def dirExists(path):
+    &#34;&#34;&#34;Whether a path exists as directory on the file system.&#34;&#34;&#34;
+    return (
+        False
+        if path is None
+        else True
+        if path == &#34;&#34;
+        else os.path.isdir(path)
+        if path
+        else True
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.dirMake"><code class="name flex">
 <span>def <span class="ident">dirMake</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a directory if it does not already exist as directory.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L617-L620" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def dirMake(path):
+    &#34;&#34;&#34;Creates a directory if it does not already exist as directory.&#34;&#34;&#34;
+    if not dirExists(path):
+        os.makedirs(path, exist_ok=True)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.dirMove"><code class="name flex">
 <span>def <span class="ident">dirMove</span></span>(<span>pathSrc, pathDst)</span>
@@ -1210,30 +1555,90 @@ There is no attempt to sort the files.</p>
 <dd>
 <div class="desc"><p>Moves a directory if it exists as directory.</p>
 <p>Refuses the operation in the target exists.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L590-L598" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def dirMove(pathSrc, pathDst):
+    &#34;&#34;&#34;Moves a directory if it exists as directory.
+
+    Refuses the operation in the target exists.
+    &#34;&#34;&#34;
+    if not dirExists(pathSrc) or dirExists(pathDst):
+        return False
+    os.rename(pathSrc, pathDst)
+    return True</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.dirNm"><code class="name flex">
 <span>def <span class="ident">dirNm</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the directory part of a file name.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L473-L475" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def dirNm(path):
+    &#34;&#34;&#34;Get the directory part of a file name.&#34;&#34;&#34;
+    return os.path.dirname(path)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.dirRemove"><code class="name flex">
 <span>def <span class="ident">dirRemove</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Removes a directory if it exists as directory.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L584-L587" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def dirRemove(path):
+    &#34;&#34;&#34;Removes a directory if it exists as directory.&#34;&#34;&#34;
+    if dirExists(path):
+        rmtree(path)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.expandDir"><code class="name flex">
 <span>def <span class="ident">expandDir</span></span>(<span>obj, dirName)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L94-L101" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def expandDir(obj, dirName):
+    if dirName.startswith(&#34;~&#34;):
+        dirName = dirName.replace(&#34;~&#34;, obj.homeDir, 1)
+    elif dirName.startswith(&#34;..&#34;):
+        dirName = dirName.replace(&#34;..&#34;, obj.parentDir, 1)
+    elif dirName.startswith(&#34;.&#34;):
+        dirName = dirName.replace(&#34;.&#34;, obj.curDir, 1)
+    return normpath(dirName)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.expanduser"><code class="name flex">
 <span>def <span class="ident">expanduser</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L72-L77" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def expanduser(path):
+    nPath = normpath(path)
+    if nPath.startswith(&#34;~&#34;):
+        return f&#34;{_homeDir}{nPath[1:]}&#34;
+
+    return nPath</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.extNm"><code class="name flex">
 <span>def <span class="ident">extNm</span></span>(<span>path)</span>
@@ -1242,6 +1647,20 @@ There is no attempt to sort the files.</p>
 <div class="desc"><p>Get the extension part of a file name.</p>
 <p>The dot is not included.
 If there is no extension, the empty string is returned.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L483-L490" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def extNm(path):
+    &#34;&#34;&#34;Get the extension part of a file name.
+
+    The dot is not included.
+    If there is no extension, the empty string is returned.
+    &#34;&#34;&#34;
+    parts = fileNm(path).rsplit(&#34;.&#34;, 1)
+    return &#34;&#34; if len(parts) == 0 else parts[-1]</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.fileCopy"><code class="name flex">
 <span>def <span class="ident">fileCopy</span></span>(<span>pathSrc, pathDst)</span>
@@ -1249,6 +1668,23 @@ If there is no extension, the empty string is returned.</p></div>
 <dd>
 <div class="desc"><p>Copies a file if it exists as file.</p>
 <p>Wipes the destination file, if it exists.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L532-L542" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def fileCopy(pathSrc, pathDst):
+    &#34;&#34;&#34;Copies a file if it exists as file.
+
+    Wipes the destination file, if it exists.
+    &#34;&#34;&#34;
+    if pathSrc == pathDst:
+        return
+
+    if fileExists(pathSrc):
+        fileRemove(pathDst)
+        copy(pathSrc, pathDst)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.fileCopyExpr"><code class="name flex">
 <span>def <span class="ident">fileCopyExpr</span></span>(<span>dirSrc, dirDst)</span>
@@ -1256,12 +1692,41 @@ If there is no extension, the empty string is returned.</p></div>
 <dd>
 <div class="desc"><p>Copies the <code>__checkout__.txt</code> file from one directory to an other.</p>
 <p>Wipes the destination file, if it exists.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L545-L558" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def fileCopyExpr(dirSrc, dirDst):
+    &#34;&#34;&#34;Copies the `__checkout__.txt` file from one directory to an other.
+
+    Wipes the destination file, if it exists.
+    &#34;&#34;&#34;
+    pathSrc = f&#34;{dirSrc}/{EXPRESS_SYNC}&#34;
+    pathDst = f&#34;{dirDst}/{EXPRESS_SYNC}&#34;
+
+    if pathSrc == pathDst:
+        return
+
+    if fileExists(pathSrc):
+        fileRemove(pathDst)
+        copy(pathSrc, pathDst)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.fileExists"><code class="name flex">
 <span>def <span class="ident">fileExists</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Whether a path exists as file on the file system.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L521-L523" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def fileExists(path):
+    &#34;&#34;&#34;Whether a path exists as file on the file system.&#34;&#34;&#34;
+    return os.path.isfile(path)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.fileMove"><code class="name flex">
 <span>def <span class="ident">fileMove</span></span>(<span>pathSrc, pathDst)</span>
@@ -1269,12 +1734,35 @@ If there is no extension, the empty string is returned.</p></div>
 <dd>
 <div class="desc"><p>Moves a file if it exists as file.</p>
 <p>Wipes the destination file, if it exists.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L561-L568" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def fileMove(pathSrc, pathDst):
+    &#34;&#34;&#34;Moves a file if it exists as file.
+
+    Wipes the destination file, if it exists.
+    &#34;&#34;&#34;
+    if fileExists(pathSrc):
+        fileRemove(pathDst)
+    os.rename(pathSrc, pathDst)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.fileNm"><code class="name flex">
 <span>def <span class="ident">fileNm</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the file part of a file name.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L478-L480" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def fileNm(path):
+    &#34;&#34;&#34;Get the file part of a file name.&#34;&#34;&#34;
+    return os.path.basename(path)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.fileOpen"><code class="name flex">
 <span>def <span class="ident">fileOpen</span></span>(<span>*args, **kwargs)</span>
@@ -1284,12 +1772,39 @@ If there is no extension, the empty string is returned.</p></div>
 <p>This function calls <code>open()</code> with the same arguments, but if the optional
 argument <code>encoding</code> is missing and the mode argument does not contain a <code>b</code>
 (binary file), then <code>encoding="utf8"</code> is supplied.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L38-L48" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def fileOpen(*args, **kwargs):
+    &#34;&#34;&#34;Wrapper around `open()`, making sure `encoding=&#34;utf8&#34; is passed.
+
+    This function calls `open()` with the same arguments, but if the optional
+    argument `encoding` is missing and the mode argument does not contain a `b`
+    (binary file), then `encoding=&#34;utf8&#34;` is supplied.
+    &#34;&#34;&#34;
+
+    if &#34;encoding&#34; in kwargs or (&#34;mode&#34; in kwargs and &#34;b&#34; in kwargs[&#34;mode&#34;]):
+        return open(*args, **kwargs)
+    return open(*args, **kwargs, encoding=&#34;utf8&#34;)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.fileRemove"><code class="name flex">
 <span>def <span class="ident">fileRemove</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Removes a file if it exists as file.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L526-L529" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def fileRemove(path):
+    &#34;&#34;&#34;Removes a file if it exists as file.&#34;&#34;&#34;
+    if fileExists(path):
+        os.remove(path)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.getCwd"><code class="name flex">
 <span>def <span class="ident">getCwd</span></span>(<span>)</span>
@@ -1301,6 +1816,21 @@ argument <code>encoding</code> is missing and the mode argument does not contain
 <dt><code>string</code></dt>
 <dd>The current directory.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L702-L710" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getCwd():
+    &#34;&#34;&#34;Get current directory.
+
+    Returns
+    -------
+    string
+        The current directory.
+    &#34;&#34;&#34;
+    return os.getcwd()</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.getLocation"><code class="name flex">
 <span>def <span class="ident">getLocation</span></span>(<span>targetDir=None)</span>
@@ -1328,6 +1858,68 @@ goes into the <code>relative</code> component, preceded with a backslash if it i
 <dd>Consisting of <code>backend</code>, <code>org</code>, <code>repo</code>, <code>relative</code>.
 <code>relative</code> is either empty or it starts with a "/" plus a non-empty path.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L109-L164" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getLocation(targetDir=None):
+    &#34;&#34;&#34;Get back-end, org, repo, relative of directory.
+
+    Parameters
+    ----------
+    targetDir: string, optional None
+        If None, we take the current directory.
+        Otherwise, if it starts with a `/` we take it as the absolute
+        target directory.
+        Otherwise, we append it to the absolute path of the current directory,
+        with a `/` in between.
+
+    We assume the target directory is somewhere inside
+
+    `~/backend/org/repo`
+
+    If it is immediately inside this, we set `relative` to `&#34;&#34;`.
+
+    If it is deeper down, we assume the reference directory is the parent of the
+    current directory, and the path of this parent, relative to the repo directory
+    goes into the `relative` component, preceded with a backslash if it is non-empty.
+
+    Returns
+    -------
+    tuple
+        Consisting of `backend`, `org`, `repo`, `relative`.
+        `relative` is either empty or it starts with a &#34;/&#34; plus a non-empty path.
+    &#34;&#34;&#34;
+    curDir = normpath(os.getcwd())
+    if targetDir is not None:
+        targetDir = normpath(targetDir)
+
+    destDir = (
+        curDir
+        if targetDir is None
+        else targetDir
+        if targetDir.startswith(&#34;/&#34;)
+        else f&#34;{curDir}/{targetDir}&#34;
+    )
+    destDir = unexpanduser(destDir)
+
+    if not destDir.startswith(&#34;~/&#34;):
+        return (None, None, None, None)
+
+    destDir = destDir.removeprefix(&#34;~/&#34;)
+    parts = destDir.split(&#34;/&#34;)
+
+    if len(parts) == 1:
+        return (parts[0], None, None, None)
+    if len(parts) == 2:
+        return (parts[0], parts[1], None, None)
+    if len(parts) in {2, 3}:
+        return (parts[0], parts[1], parts[2], &#34;&#34;)
+
+    relative = prefixSlash(&#34;/&#34;.join(parts[3:-1]))
+    return (parts[0], parts[1], parts[2], relative)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.initTree"><code class="name flex">
 <span>def <span class="ident">initTree</span></span>(<span>path, fresh=False, gentle=False)</span>
@@ -1347,30 +1939,104 @@ home directory.</p>
 <dd>When existing content is removed, only files are recursively removed, not
 subdirectories.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L441-L470" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def initTree(path, fresh=False, gentle=False):
+    &#34;&#34;&#34;Make sure a directory exists, optionally clean it.
+
+    Parameters
+    ----------
+    path:
+        The directory in question. A leading `~` will be expanded to the user&#39;s
+        home directory.
+
+        If the directory does not exist, it will be created.
+
+    fresh: boolean, optional False
+        If True, existing contents will be removed, more or less gently.
+
+    gentle: boolean, optional False
+        When existing content is removed, only files are recursively removed, not
+        subdirectories.
+    &#34;&#34;&#34;
+
+    path = expanduser(path)
+    exists = os.path.exists(path)
+    if fresh:
+        if exists:
+            if gentle:
+                clearTree(path)
+            else:
+                rmtree(path)
+
+    if not exists or fresh:
+        os.makedirs(path, exist_ok=True)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.isDir"><code class="name flex">
 <span>def <span class="ident">isDir</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Whether path exists and is a directory.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L516-L518" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def isDir(path):
+    &#34;&#34;&#34;Whether path exists and is a directory.&#34;&#34;&#34;
+    return os.path.isdir(path)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.isFile"><code class="name flex">
 <span>def <span class="ident">isFile</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Whether path exists and is a file.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L511-L513" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def isFile(path):
+    &#34;&#34;&#34;Whether path exists and is a file.&#34;&#34;&#34;
+    return os.path.isfile(path)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.normpath"><code class="name flex">
 <span>def <span class="ident">normpath</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L51-L55" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def normpath(path):
+    if path is None:
+        return None
+    norm = os.path.normpath(path)
+    return &#34;/&#34;.join(norm.split(os.path.sep))</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.prefixSlash"><code class="name flex">
 <span>def <span class="ident">prefixSlash</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Prefix a / before a path if it is non-empty and not already starts with it.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L104-L106" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def prefixSlash(path):
+    &#34;&#34;&#34;Prefix a / before a path if it is non-empty and not already starts with it.&#34;&#34;&#34;
+    return f&#34;/{path}&#34; if path and not path.startswith(&#34;/&#34;) else path</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.readJson"><code class="name flex">
 <span>def <span class="ident">readJson</span></span>(<span>text=None, plain=False, asFile=None, preferTuples=False)</span>
@@ -1399,6 +2065,52 @@ we will represent lists as tuples.</dd>
 <dt><code>object</code></dt>
 <dd>The resulting data structure.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L724-L763" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def readJson(text=None, plain=False, asFile=None, preferTuples=False):
+    &#34;&#34;&#34;Read a JSON file or string.
+
+    The input data is either a text string or a file name or a file handle.
+    Exactly one of the optional parameters `text` and `asFile` should be `None`.
+
+    Parameters
+    ----------
+    text: string, optional None
+        The input text if it is a string.
+    asFile: string | object, optional None
+        The input text if it is a file.
+        If the value of `asFile` is a string, it is taken as a file name to read.
+        Otherwise, it is taken as a file handle from which data can be read.
+    plain: boolean, optional False
+        If True, it return a dictionary, otherwise it wraps the data structure
+        recursively in an AttrDict.
+    preferTuples: boolean, optional False
+        If the resulting data structure is to be wrapped in an AttrDict,
+        we will represent lists as tuples.
+
+    Returns
+    -------
+    object
+        The resulting data structure.
+    &#34;&#34;&#34;
+    if asFile is None:
+        cfg = json.loads(text)
+    else:
+        if type(asFile) is str:
+            if fileExists(asFile):
+                with fileOpen(asFile) as fh:
+                    cfg = json.load(fh)
+            else:
+                cfg = {}
+        else:
+            # in this case asFile should be a file handle
+            cfg = json.load(asFile)
+
+    return cfg if plain else deepAttrDict(cfg, preferTuples=preferTuples)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.readYaml"><code class="name flex">
 <span>def <span class="ident">readYaml</span></span>(<span>text=None, plain=False, asFile=None, preferTuples=True, preferLists=True)</span>
@@ -1427,24 +2139,97 @@ we will represent lists as tuples.</dd>
 <dt><code>object</code></dt>
 <dd>The resulting data structure.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L807-L844" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def readYaml(text=None, plain=False, asFile=None, preferTuples=True, preferLists=True):
+    &#34;&#34;&#34;Read a YAML file or string.
+
+    The input data is either a text string or a file name or a file handle.
+    Exactly one of the optional parameters `text` and `asFile` should be `None`.
+
+    Parameters
+    ----------
+    text: string, optional None
+        The input text if it is a string.
+    asFile: string | object, optional None
+        The input text if it is a file.
+        If the value of `asFile` is a string, it is taken as a file name to read.
+        Otherwise, it is taken as a file handle from which data can be read.
+    plain: boolean, optional False
+        If True, it return a dictionary, otherwise it wraps the data structure
+        recursively in an AttrDict.
+    preferTuples: boolean, optional False
+        If the resulting data structure is to be wrapped in an AttrDict,
+        we will represent lists as tuples.
+
+    Returns
+    -------
+    object
+        The resulting data structure.
+    &#34;&#34;&#34;
+    kwargs = dict(Loader=yaml.FullLoader)
+
+    if asFile is None:
+        cfg = yaml.load(text, **kwargs)
+    else:
+        if fileExists(asFile):
+            with fileOpen(asFile) as fh:
+                cfg = yaml.load(fh, **kwargs)
+        else:
+            cfg = {}
+
+    return cfg if plain else deepAttrDict(cfg, preferTuples=preferTuples)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.replaceExt"><code class="name flex">
 <span>def <span class="ident">replaceExt</span></span>(<span>path, newExt)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Replace the extension of a path by another one. Specify it without dot.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L500-L503" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def replaceExt(path, newExt):
+    &#34;&#34;&#34;Replace the extension of a path by another one. Specify it without dot.&#34;&#34;&#34;
+    (main, ext) = os.path.splitext(path)
+    return f&#34;{main}.{newExt}&#34;</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.setDir"><code class="name flex">
 <span>def <span class="ident">setDir</span></span>(<span>obj)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L88-L91" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setDir(obj):
+    obj.homeDir = expanduser(&#34;~&#34;)
+    obj.curDir = normpath(os.getcwd())
+    (obj.parentDir, x) = os.path.split(obj.curDir)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.splitPath"><code class="name flex">
 <span>def <span class="ident">splitPath</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Split a file name in a directory part and a file part.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L506-L508" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def splitPath(path):
+    &#34;&#34;&#34;Split a file name in a directory part and a file part.&#34;&#34;&#34;
+    return os.path.split(path)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.str_presenter"><code class="name flex">
 <span>def <span class="ident">str_presenter</span></span>(<span>dumper, data)</span>
@@ -1452,18 +2237,55 @@ we will represent lists as tuples.</dd>
 <dd>
 <div class="desc"><p>configures yaml for dumping multiline strings
 Ref: <a href="https://stackoverflow.com/questions/8640959">https://stackoverflow.com/questions/8640959</a></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L24-L31" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def str_presenter(dumper, data):
+    &#34;&#34;&#34;configures yaml for dumping multiline strings
+    Ref: https://stackoverflow.com/questions/8640959
+    &#34;&#34;&#34;
+    if data.count(&#39;\n&#39;) &gt; 0:  # check for multiline string
+        return dumper.represent_scalar(&#39;tag:yaml.org,2002:str&#39;, data, style=&#39;|&#39;)
+
+    return dumper.represent_scalar(&#39;tag:yaml.org,2002:str&#39;, data)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.stripExt"><code class="name flex">
 <span>def <span class="ident">stripExt</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Strip the extension of a file name, if there is one.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L493-L497" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def stripExt(path):
+    &#34;&#34;&#34;Strip the extension of a file name, if there is one.&#34;&#34;&#34;
+    (d, f) = (dirNm(path), fileNm(path))
+    sep = &#34;/&#34; if d else &#34;&#34;
+    return f&#34;{d}{sep}{f.rsplit(&#39;.&#39;, 1)[0]}&#34;</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.unexpanduser"><code class="name flex">
 <span>def <span class="ident">unexpanduser</span></span>(<span>path)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L80-L85" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def unexpanduser(path):
+    nPath = normpath(path)
+    # if nPath.startswith(_homeDir):
+    #    return f&#34;~{nPath[len(_homeDir):]}&#34;
+
+    return nPath.replace(_homeDir, &#34;~&#34;)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.writeJson"><code class="name flex">
 <span>def <span class="ident">writeJson</span></span>(<span>data, asFile=None, **kwargs)</span>
@@ -1490,6 +2312,51 @@ By default, we use <code>indent=1, ensure_ascii=False</code>.</dd>
 <dd>If asFile is not None, the function returns None and the result is written
 to a file. Otherwise, the result string is returned.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L766-L804" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def writeJson(data, asFile=None, **kwargs):
+    &#34;&#34;&#34;Write data as JSON.
+
+    The output is either delivered as string or written to a file.
+
+    Parameters
+    ----------
+    data: object
+        The input data.
+    asFile: string | object, optional None
+        The output destination.
+        If `None`, the output text is delivered as the function result.
+        If the value of `asFile` is a string, it is taken as a file name to write to.
+        Otherwise, it is taken as a file handle to which text can be written.
+    kwargs: dict, optional {}
+        Additional paramters for the underlying json.dump method.
+        By default, we use `indent=1, ensure_ascii=False`.
+
+    Returns
+    -------
+    str | void
+        If asFile is not None, the function returns None and the result is written
+        to a file. Otherwise, the result string is returned.
+    &#34;&#34;&#34;
+    if &#34;indent&#34; not in kwargs:
+        kwargs[&#34;indent&#34;] = 1
+    if &#34;ensure_ascii&#34; not in kwargs:
+        kwargs[&#34;ensure_ascii&#34;] = False
+
+    if type(asFile) is str:
+        with fileOpen(asFile, &#34;w&#34;) as fh:
+            json.dump(data, fh, **kwargs)
+    else:
+        dumped = json.dumps(data, **kwargs)
+
+        if asFile is None:
+            return dumped
+
+        asFile.write(dumped)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.files.writeYaml"><code class="name flex">
 <span>def <span class="ident">writeYaml</span></span>(<span>data, asFile=None, sorted=False)</span>
@@ -1515,6 +2382,47 @@ Otherwise, it is taken as a file handle to which text can be written.</dd>
 <dd>If asFile is not None, the function returns None and the result is written
 to a file. Otherwise, the result string is returned.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/files.py#L847-L881" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def writeYaml(data, asFile=None, sorted=False):
+    &#34;&#34;&#34;Write data as YAML.
+
+    The output is either delivered as string or written to a file.
+
+    Parameters
+    ----------
+    data: object
+        The input data.
+    asFile: string | object, optional None
+        The output destination.
+        If `None`, the output text is delivered as the function result.
+        If the value of `asFile` is a string, it is taken as a file name to write to.
+        Otherwise, it is taken as a file handle to which text can be written.
+    sorted: boolean, optional False
+        If True, when writing out a dictionary, its keys will be sorted.
+
+    Returns
+    -------
+    str | void
+        If asFile is not None, the function returns None and the result is written
+        to a file. Otherwise, the result string is returned.
+    &#34;&#34;&#34;
+    kwargs = dict(allow_unicode=True, sort_keys=sorted)
+
+    if type(asFile) is str:
+        with fileOpen(asFile, mode=&#34;w&#34;) as fh:
+            yaml.dump(data, fh, **kwargs)
+    else:
+        dumped = yaml.dump(data, **kwargs)
+
+        if asFile is None:
+            return dumped
+
+        asFile.write(dumped)</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -1658,7 +2566,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.advanced.search API documentation</title>
 <meta name="description" content="Calls from the advanced API to the Search API." />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -32,7 +32,7 @@ crossorigin>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/advanced/search.py#L1-L264" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/search.py#L1-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Calls from the advanced API to the Search API.
@@ -312,6 +312,32 @@ def runSearchCondensed(app, query, cache, condenseType):
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/search.py#L16-L35" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getQueryFeatures(exe):
+    qnodes = getattr(exe, &#34;qnodes&#34;, [])
+    nodeMap = getattr(exe, &#34;nodeMap&#34;, {})
+    nodeFeatures = tuple(
+        (i, tuple(sorted(set(q[1].keys()) | nodeMap.get(i, set()))))
+        for (i, q) in enumerate(qnodes)
+    )
+
+    qedges = getattr(exe, &#34;qedges&#34;, [])
+    edgeMap = getattr(exe, &#34;edgeMap&#34;, {})
+
+    edgeFeatures = set()
+
+    for (f, rela, t) in qedges:
+        edgeName = edgeMap.get(rela, (None,))[0]
+        if edgeName is not None:
+            edgeFeatures.add(edgeName)
+    edgeFeatures = tuple(sorted(edgeFeatures))
+
+    return (nodeFeatures, edgeFeatures)</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.search.runSearch"><code class="name flex">
 <span>def <span class="ident">runSearch</span></span>(<span>app, query, cache)</span>
@@ -326,6 +352,59 @@ and returned.</p>
 <p class="admonition-title">Context web app</p>
 <p>The intended context of this function is: web app.</p>
 </div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/search.py#L192-L238" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def runSearch(app, query, cache):
+    &#34;&#34;&#34;A wrapper around the generic search interface of TF.
+
+    Before running the TF search, the *query* will be looked up in the *cache*.
+    If present, its cached results / error messages will be returned.
+    If not, the query will be run, results / error messages collected, put in the *cache*,
+    and returned.
+
+    !!! note &#34;Context web app&#34;
+        The intended context of this function is: web app.
+    &#34;&#34;&#34;
+
+    api = app.api
+    S = api.S
+    N = api.N
+    sortKeyTuple = N.sortKeyTuple
+    plainSearch = S.search
+
+    cacheKey = (query, False)
+    if cacheKey in cache:
+        return cache[cacheKey]
+    options = dict(_msgCache=[])
+    if app.sets is not None:
+        options[&#34;sets&#34;] = app.sets
+    (queryResults, status, messages, exe) = plainSearch(query, here=False, **options)
+    queryResults = tuple(sorted(queryResults, key=sortKeyTuple))
+    nodeFeatures = ()
+    edgeFeatures = set()
+
+    if exe:
+        (nodeFeatures, edgeFeatures) = getQueryFeatures(exe)
+
+    (runStatus, runMessages) = wrapMessages(S._msgCache)
+    cache[cacheKey] = (
+        queryResults,
+        (status, runStatus),
+        (messages, runMessages),
+        nodeFeatures,
+        edgeFeatures,
+    )
+    return (
+        queryResults,
+        (status, runStatus),
+        (messages, runMessages),
+        nodeFeatures,
+        edgeFeatures,
+    )</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.search.runSearchCondensed"><code class="name flex">
 <span>def <span class="ident">runSearchCondensed</span></span>(<span>app, query, cache, condenseType)</span>
@@ -342,6 +421,36 @@ Then it condenses the results, puts them in the <em>cache</em>, and returns them
 <p class="admonition-title">Context web app</p>
 <p>The intended context of this function is: web app.</p>
 </div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/search.py#L241-L264" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def runSearchCondensed(app, query, cache, condenseType):
+    &#34;&#34;&#34;A wrapper around the generic search interface of TF.
+
+    When query results need to be condensed into a container,
+    this function takes care of that.
+    It first tries the *cache* for condensed query results.
+    If that fails,
+    it collects the bare query results from the cache or by running the query.
+    Then it condenses the results, puts them in the *cache*, and returns them.
+
+    !!! note &#34;Context web app&#34;
+        The intended context of this function is: web app.
+    &#34;&#34;&#34;
+
+    api = app.api
+    cacheKey = (query, True, condenseType)
+    if cacheKey in cache:
+        return cache[cacheKey]
+    (queryResults, status, messages, nodeFeatures, edgeFeatures) = runSearch(
+        app, query, cache
+    )
+    queryResults = condense(api, queryResults, condenseType, multiple=True)
+    cache[cacheKey] = (queryResults, status, messages, nodeFeatures, edgeFeatures)
+    return (queryResults, status, messages, nodeFeatures, edgeFeatures)</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.search.search"><code class="name flex">
 <span>def <span class="ident">search</span></span>(<span>app, query, silent='auto', sets=None, shallow=False, sort=True, limit=None)</span>
@@ -432,12 +541,178 @@ has been passed, you get a warning message.</p>
 the Jupyter notebook).
 Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.advanced.search.runSearch">runSearch()</a></code>.</p>
 </div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/search.py#L38-L189" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def search(
+    app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, limit=None
+):
+    &#34;&#34;&#34;Search with some high-level features.
+
+    This function calls the lower level `tf.search.search.Search` facility aka `S`.
+    But whereas the `S` version returns a generator which yields the results
+    one by one, the `A` version collects all results and sorts them in the
+    canonical order (`tf.core.nodes`).
+    (but you can change the sorting, see the `sort` parameter).
+    It then reports the number of results.
+
+    It will also set the display parameter `tupleFeatures` and `extraFeatures`
+    in such a way that subsequent calls to `tf.advanced.display.export` emit
+    the features that have been used in the query.
+
+    The node features used in the query go into the `tupleFeatures`, the edge
+    features go into the `extraFeatures`.
+
+    Parameters
+    ----------
+
+    query: dict
+        the search template (`tf.about.searchusage`)
+        that has to be searched for.
+
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
+
+    shallow: boolean, optional False
+        If `True` or `1`, the result is a set of things that match the top-level element
+        of the `query`.
+
+        If `2` or a bigger number `n`, return the set of truncated result tuples: only
+        the first `n` members of each tuple are retained.
+
+        If `False` or `0`, a list of all result tuples will be returned.
+
+    sets: dict, optional None
+        If not `None`, it should be a dictionary of sets, keyed by a names.
+        In `query` you can refer to those names to invoke those sets.
+
+        For example, if you have a set `gappedPhrases` of all phrase nodes
+        that have a gap, you can pass `sets=dict(gphrase=gappedPhrases)`,
+        and then in your query you can say
+
+            gphrase function=Pred
+              word sp=verb
+
+        etc.
+
+        This is handy when you need node sets that cannot be conveniently queried.
+        You can produce them by hand-coding.
+        Once you got them, you can use them over and over again in queries.
+        Or you can save them with `tf.lib.writeSets`
+        and use them in the TF browser.
+
+        If the app has been loaded with the `setFile` parameter,
+        the sets found in that file will automatically be added to the sets passed
+        in this argument.
+        If you pass sets with a name that also occur in the sets from the app,
+        then the sets you pass override the sets of the app.
+
+    sort: boolean, optional True
+        If `True` (default), search results will be returned in
+        canonical order (`tf.core.nodes`).
+
+        !!! note &#34;canonical sort key for tuples&#34;
+            This sort is achieved by using the function
+
+                tf.core.nodes.Nodes.sortKeyTuple
+
+            as sort key.
+
+        If it is a *sort key*, i.e. function that can be applied to tuples of nodes
+        returning values, then this key will be used to sort the results.
+
+        If it is a `False` value, no sorting will be applied.
+
+    limit: integer, optional None
+        If `limit` is a positive number, it will fetch only that many results.
+        If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+        !!! caution &#34;there is an upper *fail limit* for safety reasons.
+            The limit is a factor times the max node in your corpus.
+            See `tf.parameters.SEARCH_FAIL_FACTOR`.
+            If this *fail limit* is exceeded in cases where no positive `limit`
+            has been passed, you get a warning message.
+
+    !!! hint &#34;search template reference&#34;
+        See the search template reference (`tf.about.searchusage`)
+
+    !!! note &#34;Context Jupyter&#34;
+        The intended context of this function is: an ordinary Python program (including
+        the Jupyter notebook).
+        Web apps can better use `tf.advanced.search.runSearch`.
+    &#34;&#34;&#34;
+
+    warning = app.warning
+    isSilent = app.isSilent
+    setSilent = app.setSilent
+    api = app.api
+    S = api.S
+    N = api.N
+    sortKeyTuple = N.sortKeyTuple
+
+    wasSilent = isSilent()
+
+    silent = silentConvert(silent)
+
+    passSets = {**app.sets} if app.sets else {}
+    if sets:
+        for (name, s) in sets.items():
+            passSets[name] = s
+
+    results = S.search(query, sets=passSets, shallow=shallow, limit=limit)
+
+    if not shallow:
+        if not sort:
+            results = list(results)
+        elif sort is True:
+            results = sorted(results, key=sortKeyTuple)
+        else:
+            try:
+                sortedResults = sorted(results, key=sort)
+            except Exception as e:
+                console(
+                    (
+                        &#34;WARNING: your sort key function caused an error\n&#34;
+                        f&#34;{str(e)}&#34;
+                        &#34;\nYou get unsorted results&#34;
+                    ),
+                    error=True,
+                )
+                sortedResults = list(results)
+            results = sortedResults
+
+        nodeFeatures = ()
+        edgeFeatures = ()
+
+        if S.exe:
+            (nodeFeatures, edgeFeatures) = getQueryFeatures(S.exe)
+            app.displaySetup(
+                tupleFeatures=nodeFeatures, extraFeatures=(edgeFeatures, {})
+            )
+
+    nResults = len(results)
+    plural = &#34;&#34; if nResults == 1 else &#34;s&#34;
+    setSilent(silent)
+    warning(f&#34;{nResults} result{plural}&#34;)
+    setSilent(wasSilent)
+    return results</code></pre>
+</details>
 </dd>
 <dt id="tf.advanced.search.searchApi"><code class="name flex">
 <span>def <span class="ident">searchApi</span></span>(<span>app)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/advanced/search.py#L12-L13" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def searchApi(app):
+    app.search = types.MethodType(search, app)</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -521,7 +796,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

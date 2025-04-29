@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.core.timestamp API documentation</title>
 <meta name="description" content="Timed messages …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -34,7 +34,7 @@ with a time indication.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/timestamp.py#L1-L337" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L1-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Timed messages
@@ -411,6 +411,22 @@ class Timestamp:
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L37-L46" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def silentConvert(arg):
+    if arg is None:
+        return SILENT_D
+    if arg is False:
+        return VERBOSE
+    if arg is True:
+        return DEEP
+    if type(arg) is str and arg in {VERBOSE, AUTO, TERSE, DEEP}:
+        return arg
+    return not not arg</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -460,7 +476,7 @@ Do not show the number of results after searches.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/core/timestamp.py#L49-L337" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L49-L337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Timestamp:
     def __init__(self, silent=SILENT_D, level=None):
@@ -759,6 +775,27 @@ Do not show the number of results after searches.</p>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L129-L143" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def cache(self, _asString=False):
+    if _asString:
+        lines = []
+        for (error, nl, msgRep) in self.log:
+            lines.append(&#34;{}{}&#34;.format(msgRep, &#34;\n&#34; if nl else &#34;&#34;))
+        result = &#34;&#34;.join(lines)
+    else:
+        for (error, nl, msgRep) in self.log:
+            channel = sys.stderr if error else sys.stdout
+            channel.write(&#34;{}{}&#34;.format(msgRep, &#34;\n&#34; if nl else &#34;&#34;))
+        sys.stderr.flush()
+        sys.stdout.flush()
+    self.log = []
+    if _asString:
+        return result</code></pre>
+</details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.debug"><code class="name flex">
 <span>def <span class="ident">debug</span></span>(<span>self, msg, tm=True, nl=True, cache=0, force=False)</span>
@@ -784,6 +821,37 @@ nothing happens.</p>
 <p class="admonition-title">Silence</p>
 <p>Informational messages are not displayed in silent mode.</p>
 </div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L145-L169" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def debug(self, msg, tm=True, nl=True, cache=0, force=False):
+    &#34;&#34;&#34;Sends a debug message to the standard output.
+
+    Debug messages are normally silenced, in that case
+    nothing happens.
+
+    Parameters
+    ----------
+    msg: string
+        The string to be displayed
+    tm: boolean, optional True
+        Whether the message is to be prepended with the elapsed time.
+    nl: boolean, optional True
+        Whether a newline should be appended to the message.
+    cache: integer, optional 0
+        Whether the message should be cached.
+    force: boolean, optional False
+        If True, any silent condition is overridden.
+
+    !!! caution &#34;Silence&#34;
+        Informational messages are not displayed in silent mode.
+    &#34;&#34;&#34;
+
+    if force or self.silent in {VERBOSE}:
+        self.raw_msg(msg, tm=tm, nl=nl, cache=cache)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.error"><code class="name flex">
 <span>def <span class="ident">error</span></span>(<span>self, msg, tm=True, nl=True, cache=0, force=True)</span>
@@ -808,6 +876,34 @@ a reddish background color.</p>
 <p>Warning messages are displayed irrespective of the
 silent mode.</p>
 </div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L223-L244" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def error(self, msg, tm=True, nl=True, cache=0, force=True):
+    &#34;&#34;&#34;Sends an warning message to the standard error.
+
+    In a Jupyter notebook, the standard error is displayed with
+    a reddish background color.
+
+    Parameters
+    ----------
+    msg: string
+        The string to be displayed
+    tm: boolean, optional True
+        Whether the message is to be prepended with the elapsed time.
+    nl: boolean, optional True
+        Whether a newline should be appended to the message.
+    cache: integer, optional 0
+        Whether the message should be cached.
+
+    !!! caution &#34;Silence&#34;
+        Warning messages are displayed irrespective of the  silent mode.
+    &#34;&#34;&#34;
+
+    self.raw_msg(msg, tm=tm, nl=nl, cache=cache, error=True)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.indent"><code class="name flex">
 <span>def <span class="ident">indent</span></span>(<span>self, level=None, reset=False)</span>
@@ -829,6 +925,49 @@ but not below zero. <code>True</code> increases the indent with one level,
 <dt><strong><code>reset</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>If <code>True</code>, the elapsed time to will be reset to 0 at the given level.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L246-L282" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def indent(self, level=None, reset=False, _verbose=None):
+    &#34;&#34;&#34;Changes the indentation and timing of forthcoming messages.
+
+    Messages can be indented. Multiline messages will have the indent
+    prepended to each of its lines.
+
+    The reported time is with respect to a starting point, which can be reset.
+    The starting points at different levels are independent of each other.
+
+    Parameters
+    ----------
+    level: integer|boolean, optional None
+        The indentation level.
+        If an integer, it sets the indentation level.
+        If a boolean, it decreases or increases the indentation level,
+        but not below zero. `True` increases the indent with one level,
+        `False` decreases the indent.
+    reset: boolean, optional False
+        If `True`, the elapsed time to will be reset to 0 at the given level.
+    &#34;&#34;&#34;
+
+    self.level = (
+        0
+        if level is None
+        else level
+        if type(level) is int
+        else self.level + 1
+        if level
+        else self.level - 1
+    )
+    if self.level &lt; 0:
+        self.level = 0
+    self.levelRep = self.oneLevelRep * self.level
+    if reset:
+        self.timestamp[self.level] = time.time()
+    if _verbose is not None:
+        self.verbose = _verbose</code></pre>
+</details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.info"><code class="name flex">
 <span>def <span class="ident">info</span></span>(<span>self, msg, tm=True, nl=True, cache=0, force=False)</span>
@@ -854,6 +993,37 @@ nothing happens.</p>
 <p class="admonition-title">Silence</p>
 <p>Informational messages are not displayed in silent mode.</p>
 </div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L171-L195" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def info(self, msg, tm=True, nl=True, cache=0, force=False):
+    &#34;&#34;&#34;Sends an informational message to the standard output.
+
+    Info messages may have been silenced, in that case
+    nothing happens.
+
+    Parameters
+    ----------
+    msg: string
+        The string to be displayed
+    tm: boolean, optional True
+        Whether the message is to be prepended with the elapsed time.
+    nl: boolean, optional True
+        Whether a newline should be appended to the message.
+    cache: integer, optional 0
+        Whether the message should be cached.
+    force: boolean, optional False
+        If True, any silent condition is overridden.
+
+    !!! caution &#34;Silence&#34;
+        Informational messages are not displayed in silent mode.
+    &#34;&#34;&#34;
+
+    if force or self.silent in {VERBOSE, AUTO}:
+        self.raw_msg(msg, tm=tm, nl=nl, cache=cache)</code></pre>
+</details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.isSilent"><code class="name flex">
 <span>def <span class="ident">isSilent</span></span>(<span>self)</span>
@@ -865,18 +1035,72 @@ nothing happens.</p>
 <dt><code>string</code></dt>
 <dd>See <code><a title="tf.core.timestamp.VERBOSE" href="#tf.core.timestamp.VERBOSE">VERBOSE</a></code>, <code><a title="tf.core.timestamp.AUTO" href="#tf.core.timestamp.AUTO">AUTO</a></code>, <code><a title="tf.core.timestamp.TERSE" href="#tf.core.timestamp.TERSE">TERSE</a></code>, <code><a title="tf.core.timestamp.DEEP" href="#tf.core.timestamp.DEEP">DEEP</a></code>.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L284-L292" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def isSilent(self):
+    &#34;&#34;&#34;The current verbosity.
+
+    Returns
+    -------
+    string
+        See `VERBOSE`, `AUTO`, `TERSE`, `DEEP`.
+    &#34;&#34;&#34;
+    return self.silent</code></pre>
+</details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.raw_msg"><code class="name flex">
 <span>def <span class="ident">raw_msg</span></span>(<span>self, msg, tm=True, nl=True, cache=0, error=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L100-L124" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def raw_msg(self, msg, tm=True, nl=True, cache=0, error=False):
+    # cache is a list: append to cache, do not output anything
+    # cache = -1: only to cache
+    # cache =  1: to cache and to console
+    # cache =  0: only to console
+    if self.verbose != -2 and self.level &gt;= self.verbose:
+        return
+    if type(msg) is not str:
+        msg = repr(msg)
+    msg = ux(msg)
+    if tm:
+        msgRep = f&#34;{self.levelRep}{self._elapsed():&gt;7} {msg}&#34;.replace(
+            &#34;\n&#34;, &#34;\n&#34; + self.levelRep
+        )
+    else:
+        msgRep = f&#34;{self.levelRep}{msg}&#34;.replace(&#34;\n&#34;, &#34;\n&#34; + self.levelRep)
+    if type(cache) is list:
+        cache.append((error, nl, msgRep))
+    else:
+        if cache:
+            self.log.append((error, nl, msgRep))
+        if cache &gt;= 0:
+            channel = sys.stderr if error else sys.stdout
+            channel.write(&#34;{}{}&#34;.format(msgRep, &#34;\n&#34; if nl else &#34;&#34;))
+            channel.flush()</code></pre>
+</details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.reset"><code class="name flex">
 <span>def <span class="ident">reset</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L126-L127" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def reset(self):
+    self.log = []</code></pre>
+</details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.setSilent"><code class="name flex">
 <span>def <span class="ident">setSilent</span></span>(<span>self, silent)</span>
@@ -888,12 +1112,40 @@ nothing happens.</p>
 <dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
 <dd>See <code><a title="tf.core.timestamp.Timestamp" href="#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L294-L304" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setSilent(self, silent):
+    &#34;&#34;&#34;Set the verbosity.
+
+    Parameters
+    ----------
+    silent: string, optional tf.core.timestamp.SILENT_D
+        See `tf.core.timestamp.Timestamp`
+    &#34;&#34;&#34;
+
+    silent = silentConvert(silent)
+    self.silent = silent</code></pre>
+</details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.silentOff"><code class="name flex">
 <span>def <span class="ident">silentOff</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Enable informational messages.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L319-L323" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def silentOff(self):
+    &#34;&#34;&#34;Enable informational messages.&#34;&#34;&#34;
+
+    wasSilent = getattr(self, &#34;wasSilent&#34;, AUTO)
+    self.silent = wasSilent</code></pre>
+</details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.silentOn"><code class="name flex">
 <span>def <span class="ident">silentOn</span></span>(<span>self, deep=False)</span>
@@ -905,6 +1157,24 @@ nothing happens.</p>
 <dt><strong><code>deep</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>If <code>True</code> also suppress warnings.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L306-L317" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def silentOn(self, deep=False):
+    &#34;&#34;&#34;Suppress informational messages.
+
+    Parameters
+    ----------
+    deep: boolean, optional False
+        If `True` also suppress warnings.
+    &#34;&#34;&#34;
+
+    wasSilent = self.silent
+    self.wasSilent = wasSilent if wasSilent in {VERBOSE, AUTO, TERSE} else AUTO
+    self.silent = DEEP if deep else TERSE</code></pre>
+</details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.warning"><code class="name flex">
 <span>def <span class="ident">warning</span></span>(<span>self, msg, tm=True, nl=True, cache=0, force=False)</span>
@@ -930,6 +1200,37 @@ nothing happens.</p>
 <p class="admonition-title">Silence</p>
 <p>Warning messages are not displayed if silent mode is <code>deep</code>.</p>
 </div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/core/timestamp.py#L197-L221" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def warning(self, msg, tm=True, nl=True, cache=0, force=False):
+    &#34;&#34;&#34;Sends an warning message to the standard output.
+
+    Warning messages may have been silenced, in that case
+    nothing happens.
+
+    Parameters
+    ----------
+    msg: string
+        The string to be displayed
+    tm: boolean, optional True
+        Whether the message is to be prepended with the elapsed time.
+    nl: boolean, optional True
+        Whether a newline should be appended to the message.
+    cache: integer, optional 0
+        Whether the message should be cached.
+    force: boolean, optional False
+        If True, any silent condition is overridden.
+
+    !!! caution &#34;Silence&#34;
+        Warning messages are not displayed if silent mode is `deep`.
+    &#34;&#34;&#34;
+
+    if force or self.silent in {VERBOSE, AUTO, TERSE}:
+        self.raw_msg(msg, tm=tm, nl=nl, cache=cache)</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -1041,7 +1342,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

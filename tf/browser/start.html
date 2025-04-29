@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.1" />
+<meta name="generator" content="pdoc 0.11.6" />
 <title>tf.browser.start API documentation</title>
 <meta name="description" content="Start the TF browser …" />
 <!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
@@ -89,7 +89,7 @@ provided the previous invocation has been terminated.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/093210fd89e2181c7844307f9458e3489c1946fb/tf/browser/start.py#L1-L260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/start.py#L1-L260" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Start the TF browser
@@ -365,18 +365,127 @@ if __name__ == &#34;__main__&#34;:
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/start.py#L162-L163" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def bMsg(url):
+    return f&#34;\n\tOpen a webbrowser and navigate to url {url}\n&#34;</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.start.main"><code class="name flex">
 <span>def <span class="ident">main</span></span>(<span>cargs=['--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/start.py#L210-L256" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def main(cargs=sys.argv[1:]):
+    console(BANNER)
+    if len(cargs) &gt;= 1 and any(
+        arg in {&#34;--help&#34;, &#34;-help&#34;, &#34;-h&#34;, &#34;?&#34;, &#34;-?&#34;} for arg in cargs
+    ):
+        console(HELP)
+        return
+    if len(cargs) &gt;= 1 and any(arg == &#34;-v&#34; for arg in cargs):
+        return
+
+    forceChrome = &#34;--chrome&#34; in cargs
+    debug = &#34;debug&#34; in cargs
+    cargs = [c for c in cargs if c not in {&#34;debug&#34;, &#34;--chrome&#34;}]
+
+    newCargs = []
+    tool = None
+
+    for x in cargs:
+        if x.startswith(&#34;--tool=&#34;):
+            tool = x[7:]
+            if tool not in TOOLS:
+                console(f&#39;Unrecognized tool: &#34;{tool}&#34;&#39;)
+                console(f&#34;&#34;&#34;Recognized tools are: {&#34;, &#34;.join(sorted(TOOLS))}&#34;&#34;&#34;)
+                return
+        else:
+            newCargs.append(x)
+
+    toolUrl = &#34;&#34; if tool is None else f&#34;/{tool}/index&#34;
+
+    cargs = newCargs
+
+    portWeb = getPort(argApp(cargs, True))
+    noweb = argNoweb(cargs)
+    url = f&#34;{PROTOCOL}{HOST}:{portWeb}{toolUrl}&#34;
+
+    webapp = setup(debug, *cargs)
+
+    if not webapp:
+        return
+
+    if noweb:
+        console(bMsg(url))
+        runWeb(webapp, debug, portWeb)
+    else:
+        p = Process(target=startBrowser, args=(url, forceChrome, debug))
+        p.start()
+        runWeb(webapp, debug, portWeb)</code></pre>
+</details>
 </dd>
 <dt id="tf.browser.start.startBrowser"><code class="name flex">
 <span>def <span class="ident">startBrowser</span></span>(<span>url, forceChrome, debug)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/browser/start.py#L166-L207" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def startBrowser(url, forceChrome, debug):
+    opened = False
+    new = 0
+    autoraise = True
+
+    sleep(1)
+    runMain = os.environ.get(&#34;WERKZEUG_RUN_MAIN&#34;)
+
+    if debug and runMain:
+        console(&#34;browser has been opened when the initial process started&#34;)
+        return
+
+    if forceChrome:
+        browser = &#34;Chrome browser&#34;
+        try:
+            console(f&#34;trying {browser} ...&#34;)
+            controller = webbrowser.get(&#34;chrome&#34;)
+            opened = controller.open(url, new=new, autoraise=autoraise)
+        except Exception:
+            opened = False
+
+        if opened:
+            console(f&#34;corpus opened in {browser}.&#34;)
+        else:
+            console(f&#34;could not start {browser}!&#34;)
+
+    if not opened:
+        browser = &#34;default browser&#34;
+        extra = &#34; instead&#34; if forceChrome else &#34;&#34;
+        try:
+            console(f&#34;trying {browser}{extra} ...&#34;)
+            opened = webbrowser.open(url, new=new, autoraise=autoraise)
+        except Exception:
+            opened = False
+
+        if opened:
+            console(f&#34;corpus opened in {browser}{extra}.&#34;)
+        else:
+            console(f&#34;could not start {browser}{extra}!&#34;)
+
+    if not opened:
+        console(bMsg(url))</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -464,7 +573,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>
