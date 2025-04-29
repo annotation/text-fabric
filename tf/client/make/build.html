@@ -2,24 +2,34 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.6" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
 <title>tf.client.make.build API documentation</title>
-<meta name="description" content="Usage …" />
-<!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
-integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
-crossorigin>
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css"
-integrity="sha512-uVeAgzAmieLUTGba0qr9vXQgVD7fko2kcbYIKIraXUIDg9iJLxveTFUrg3DJhqn3cAf3HFDbgmhq0eGko5wEAA=="
-crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
-<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<meta name="description" content="Usage …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
-<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
 </head>
 <body>
 <main>
@@ -78,1407 +88,6 @@ also:</p>
 <li><code><a title="tf.client.make.help" href="help.html">tf.client.make.help</a></code></li>
 <li><code><a title="tf.about.clientmanual" href="../../about/clientmanual.html">tf.about.clientmanual</a></code></li>
 </ul>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1-L1395" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">&#34;&#34;&#34;
-# Usage
-
-After installing TF, you have a new command `tf-make`.
-You can use this on the command-line to build new search interfaces for existing
-TF apps.
-
-Such a search interface is a static HTML page, powered by a JavaScript program
-that reads the corpus data from JavaScript variables.
-
-You can build the interface and deploy the HTML page to GitHub Pages
-(GitLab pages not yet supported),
-after which it is usable for everyone.
-
-## Prerequisites
-
-1.  A TF dataset that has a TF App, e.g. `CambridgeSemiticsLab/nena_tf`
-    [github.com/CambridgeSemiticsLab/nena_tf](https://github.com/CambridgeSemiticsLab/nena_tf).
-    This is the normative example for now.
-1.  An accompanying repository in the same organization, with the same name
-    but with `-search` appended to the name.
-1.  Within that `-search` repo, a subdirectory
-    [layeredsearch](https://github.com/CambridgeSemiticsLab/nena_tf-search/tree/master/layeredsearch)
-    with definitions of search interfaces
-    (you can define multiple search interfaces for one dataset).
-    Within this directory:
-    1.  `config.yaml`: common metadata of all defined search interfaces
-    1.  for each search interface a folder
-        whose name is the name of the search interface, containing
-        1.  `config.yaml`: definition of this specific search interface
-        1.  `logo.png`: a logo
-        1.  `custom.css`: additional styling (may be empty)
-        1.  `mkdata.py`: a module containing a few functions that wrap the
-            corpus data into JavaScript variables:
-            1.  `makeLegends(maker)`: produce abbreviation lists for some layers
-            1.  `record(maker)`: produce all the search data: full texts of layers and
-                mappings between nodes and positions in those texts
-
-            The `maker` argument is passed by the builder, and contains
-            the definition of the layers and the API of a loaded TF dataset.
-
-## Commands
-
-See  also:
-
-*   `tf.client.make.help`
-*   `tf.about.clientmanual`
-&#34;&#34;&#34;
-
-import sys
-import re
-import types
-import webbrowser
-
-from textwrap import dedent
-from datetime import datetime as dt, UTC
-from subprocess import Popen, PIPE
-from time import sleep
-from zipfile import ZipFile
-from importlib import util
-
-# from tf.fabric import Fabric
-from tf.app import use
-from tf.fabric import Fabric
-from tf.browser.command import getPort
-from tf.core.helpers import specFromRanges, rangesFromSet, console as cs
-from tf.core.files import (
-    LS,
-    fileOpen,
-    normpath,
-    abspath,
-    backendRep,
-    URL_TFDOC,
-    APP_CONFIG,
-    fileExists,
-    dirNm,
-    dirMake,
-    fileCopy,
-    chDir,
-    scanDir,
-    readYaml,
-    writeYaml,
-    writeJson,
-)
-from tf.parameters import REPO, ZIP_OPTIONS
-
-from .gh import deploy
-from .help import HELP
-
-TEMP = &#34;_temp&#34;
-ZIP_OPTIONS = {&#34;compresslevel&#34;: 6, **ZIP_OPTIONS}
-
-CONFIG_FILE = normpath(f&#34;{dirNm(abspath(__file__))}/{APP_CONFIG}&#34;)
-STATIC_DIR = normpath(f&#34;{dirNm(dirNm(abspath(__file__)))}/static&#34;)
-
-
-def console(*args, error=False):
-    device = sys.stderr if error else sys.stdout
-    device.write(&#34; &#34;.join(args) + &#34;\n&#34;)
-    device.flush()
-
-
-def invertMap(legend):
-    return (
-        None
-        if legend is None
-        else {v: k for (k, v) in legend.items()}
-        if type(legend) is dict
-        else legend
-    )
-
-
-def readArgsLegacy():
-    class Args:
-        pass
-
-    Args.backend = None
-    Args.dataset = None
-    Args.repo = None
-    Args.client = None
-    Args.command = None
-
-    args = sys.argv[1:]
-
-    if not len(args) or any(arg in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;} for arg in args):
-        console(HELP)
-        return None
-
-    if not len(args):
-        console(&#34;Missing org/repo&#34;)
-        return None
-
-    newArgs = []
-    for arg in args:
-        if arg.startswith(&#34;--backend=&#34;):
-            Args.backend = arg[11:]
-        else:
-            newArgs.append(arg)
-    args = newArgs
-
-    dataset = args[0]
-    args = args[1:]
-
-    if not len(args):
-        console(&#34;Missing client or command&#34;)
-        return None
-
-    if args[0] in {&#34;serve&#34;, &#34;ship&#34;, &#34;make&#34;}:
-        client = None
-        command = args[0]
-        args = args[1:]
-    else:
-        client = args[0]
-        args = args[1:]
-
-        if not len(args):
-            console(&#34;No command given&#34;)
-            return None
-
-        command = args[0]
-        args = args[1:]
-
-    Args.dataset = dataset
-    Args.client = client
-    Args.command = command
-    Args.folder = None
-    Args.appFolder = None
-    Args.debugState = None
-
-    if command not in {
-        &#34;serve&#34;,
-        &#34;v&#34;,
-        &#34;i&#34;,
-        &#34;config&#34;,
-        &#34;corpus&#34;,
-        &#34;client&#34;,
-        &#34;clientdebug&#34;,
-        &#34;debug&#34;,
-        &#34;publish&#34;,
-        &#34;ship&#34;,
-        &#34;make&#34;,
-    }:
-        console(HELP)
-        console(f&#34;Wrong arguments: «{&#39; &#39;.join(args)}»&#34;)
-        return None
-
-    if command == &#34;serve&#34;:
-        if len(args) &lt; 1:
-            Args.folder = None
-        else:
-            Args.folder = args[0]
-
-    elif command == &#34;make&#34;:
-        if len(args) &lt; 1:
-            Args.folder = None
-            Args.appFolder = None
-        else:
-            Args.folder = args[1] if len(args) &gt; 1 else args[0]
-            Args.appFolder = args[0] if len(args) &gt; 1 else None
-
-    elif command == &#34;debug&#34;:
-        if len(args) &lt; 1 or args[0] not in {&#34;on&#34;, &#34;off&#34;}:
-            console(&#34;say on or off&#34;)
-            return None
-
-        Args.debugState = args[0]
-    return Args
-
-
-class Make:
-    def __init__(
-        self,
-        dataset,
-        client,
-        backend=None,
-        A=None,
-        folder=None,
-        appFolder=None,
-        debugState=None,
-    ):
-        if A is not None:
-            self.A = A
-
-        class C:
-            pass
-
-        self.C = C
-        self.backend = backend
-        self.dataset = dataset
-        self.client = client
-        self.folder = normpath(folder)
-        self.appFolder = normpath(appFolder)
-        self.debugState = debugState
-        self.good = True
-
-        if dataset:
-            console(&#34;configuring ...&#34;)
-            if not self.config():
-                self.good = False
-            console(&#34;success&#34; if self.good else &#34;failed&#34;)
-
-    def doCommand(self, command):
-        if command == &#34;serve&#34;:
-            self.serve()
-        elif command == &#34;v&#34;:
-            self.showVersion()
-        elif command == &#34;i&#34;:
-            self.adjustVersion()
-        elif command == &#34;debug&#34;:
-            self.adjustDebug()
-        elif command == &#34;config&#34;:
-            self.makeConfig()
-        elif command == &#34;corpus&#34;:
-            self.makeCorpus()
-        elif command == &#34;client&#34;:
-            self.makeClient()
-        elif command == &#34;clientdebug&#34;:
-            self.debugState = &#34;on&#34;
-            self.makeClient()
-            self.adjustDebug()
-        elif command == &#34;publish&#34;:
-            self.publish()
-        elif command == &#34;ship&#34;:
-            self.ship()
-        elif command == &#34;make&#34;:
-            self.make()
-
-    def config(self):
-        C = self.C
-
-        backend = self.backend
-        dataset = self.dataset
-        parts = dataset.split(&#34;/&#34;)
-        if len(parts) != 2:
-            console(&#34;Dataset not given as org/repo&#34;)
-            return False
-        (org, repo) = parts
-        self.org = org
-        self.repo = repo
-
-        client = self.client
-        folder = self.folder
-        appFolder = self.appFolder
-        versionFile = f&#34;{STATIC_DIR}/version.yaml&#34;
-        self.versionFile = versionFile
-
-        bUrl = backendRep(backend, &#34;rep&#34;)
-
-        settings = readYaml(asFile=versionFile, plain=True)
-        lsVersion = settings[&#34;lsVersion&#34;]
-
-        mainConfig = readYaml(asFile=CONFIG_FILE, plain=True)
-
-        cloneBase = backendRep(backend, &#34;clone&#34;)
-
-        c = dict(
-            backend=backend,
-            org=org,
-            repo=repo,
-            client=client,
-            lsVersion=lsVersion,
-            mainConfig=mainConfig,
-            lsDocUrl=f&#34;{URL_TFDOC}/about/clientmanual.html&#34;,
-            lsDocSimpleUrl=f&#34;{URL_TFDOC}/about/manual.html&#34;,
-            searchRepo=&#34;«repo»-search&#34;,
-            rel=&#34;site&#34;,
-            generatorUrl=f&#34;{URL_TFDOC}/client/make/build.html&#34;,
-            sourceUrl=f&#34;{bUrl}/«org»/«searchRepo»/tree/master/layeredsearch&#34;,
-            issueUrl=f&#34;{bUrl}/«org»/«searchRepo»/issues&#34;,
-            staticDir=STATIC_DIR,
-            appDir=f&#34;{cloneBase}/«org»/«searchRepo»&#34;,
-            localDir=f&#34;«appDir»/{TEMP}&#34;,
-            configDir=f&#34;«appDir»/{LS}&#34; if appFolder is None else f&#34;{appFolder}/{LS}&#34;,
-            lsConfig=f&#34;«configDir»/{APP_CONFIG}&#34;,
-            clientConfigFile=f&#34;«configDir»/«client»/{APP_CONFIG}&#34;,
-            clientMake=&#34;mkdata&#34;,
-            clientMakeDir=&#34;«configDir»/«client»&#34;,
-            clientMakeFile=&#34;«clientMakeDir»/«clientMake».py&#34;,
-            clientCss=&#34;«configDir»/«client»/custom.css&#34;,
-            clientLogo=&#34;«configDir»/«client»/logo.png&#34;,
-            pngInDir=&#34;«staticDir»/png&#34;,
-            cssInDir=&#34;«staticDir»/css&#34;,
-            htmlInDir=&#34;«staticDir»/html&#34;,
-            jsInDir=&#34;«staticDir»/js&#34;,
-            jslibInDir=&#34;«staticDir»/jslib&#34;,
-            template=&#34;«htmlInDir»/template.html&#34;,
-            index=&#34;«htmlInDir»/index.html&#34;,
-            siteDir=&#34;«appDir»/«rel»&#34; if folder is None else folder,
-            appClientDir=&#34;«siteDir»/«client»&#34;,
-            textClientDir=&#34;«localDir»/«client»&#34;,
-            pngOutDir=&#34;«appClientDir»/png&#34;,
-            cssOutDir=&#34;«appClientDir»/css&#34;,
-            htmlOutDir=&#34;«siteDir»&#34;,
-            jsOutDir=&#34;«appClientDir»/js&#34;,
-            jslibOutDir=&#34;«appClientDir»/jslib&#34;,
-            jsCorpusDir=&#34;«appClientDir»/corpus&#34;,
-            jsInit=&#34;«jsCorpusDir»/init.js&#34;,
-            jsApp=&#34;app.js&#34;,
-            jsDefs=&#34;defs.js&#34;,
-            jsAll=&#34;all.js&#34;,
-            jsAllPath=&#34;«appClientDir»/«jsAll»&#34;,
-            htmlIndex=&#34;«siteDir»/index.html&#34;,
-            htmlClient=&#34;«appClientDir»/index.html&#34;,
-            htmlLocalFile=&#34;index-local.html&#34;,
-            htmlLocal=&#34;«appClientDir»/«htmlLocalFile»&#34;,
-            favicon=&#34;favicon.ico&#34;,
-            packageUrl=&#34;../«client».zip&#34;,
-        )
-
-        fillRe = re.compile(r&#34;«([a-zA-Z0-9_.]+)»&#34;)
-
-        def fillSub(match):
-            k = match.group(1)
-            parts = k.split(&#34;.&#34;, 1)
-            return (
-                c.get(parts[0], {}).get(parts[1], &#34;&#34;)
-                if len(parts) == 2
-                else c.get(parts[0], &#34;&#34;)
-            )
-
-        def fillin(src, k, v):
-            if type(v) is str:
-                while fillRe.search(v):
-                    v = fillRe.sub(fillSub, v)
-                src[k] = v
-            if type(v) is dict:
-                for (m, w) in v.items():
-                    fillin(src[k], m, w)
-            if type(v) in {list, tuple}:
-                if type(v) is tuple:
-                    src[k] = list(v)
-                for (m, w) in enumerate(v):
-                    fillin(src[k], m, w)
-
-        for (k, v) in c.items():
-            fillin(c, k, v)
-
-        lsConfig = c[&#34;lsConfig&#34;]
-        if not fileExists(lsConfig):
-            console(f&#34;No {APP_CONFIG} found for {org}/{repo}: {lsConfig}&#34;)
-            return None
-
-        settings = readYaml(asFile=lsConfig, plain=True)
-        for (k, v) in settings.items():
-            c[k] = v
-            fillin(c, k, v)
-
-        if client is not None:
-            clientConfigFile = c[&#34;clientConfigFile&#34;]
-            if not fileExists(clientConfigFile):
-                console(
-                    f&#34;No {APP_CONFIG} found for {org}/{repo}:{client}: {clientConfigFile}&#34;
-                )
-                return None
-
-            settings = readYaml(asFile=clientConfigFile, plain=True)
-            for (k, v) in settings.items():
-                c[k] = v
-                fillin(c, k, v)
-
-            self.importMake(c=c)
-
-            d = dict(
-                dataLocation=f&#34;{cloneBase}/«data.org»/«data.repo»/«data.rel»&#34;,
-                dataUrl=f&#34;{bUrl}/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»&#34;,
-                writingUrl=f&#34;{URL_TFDOC}/writing/«writing».html&#34;,
-                urls=dict(
-                    cheatsheet=(
-                        &#34;regexp cheat sheet&#34;,
-                        (
-                            &#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/&#34;
-                            &#34;Regular_Expressions/Cheatsheet&#34;
-                        ),
-                        &#34;cheat sheet of regular expressions&#34;,
-                    ),
-                    license=(
-                        &#34;MIT&#34;,
-                        &#34;https://mit-license.org&#34;,
-                        &#34;website of MIT license&#34;,
-                    ),
-                    maker=(
-                        None,
-                        &#34;https://di.huc.knaw.nl/text-analysis-en.html&#34;,
-                        &#34;Website of KNAW/Humanities Cluster/Team Text&#34;,
-                    ),
-                    corpus=(
-                        None,
-                        &#34;«corpus.url»&#34;,
-                        &#34;«corpus.tip»&#34;,
-                    ),
-                    corpus2=(
-                        &#34;«corpus.text»&#34;,
-                        &#34;«corpus.url»&#34;,
-                        &#34;«corpus.tip»&#34;,
-                    ),
-                    author=(
-                        &#34;Dirk Roorda&#34;,
-                        &#34;https://pure.knaw.nl/portal/en/persons/dirk-roorda&#34;,
-                        &#34;profile of the author&#34;,
-                    ),
-                    author1=(
-                        &#34;«author1.text»&#34;,
-                        &#34;«author1.url»&#34;,
-                        &#34;«author1.tip»&#34;,
-                    ),
-                    author2=(
-                        &#34;«author2.text»&#34;,
-                        &#34;«author2.url»&#34;,
-                        &#34;«author2.tip»&#34;,
-                    ),
-                    tf=(
-                        None,
-                        URL_TFDOC,
-                        &#34;TF documentation website&#34;,
-                    ),
-                    lsdoc=(
-                        &#34;user manual (full)&#34;,
-                        &#34;«lsDocUrl»&#34;,
-                        &#34;user manual for the full search interface&#34;,
-                    ),
-                    lsdocsimple=(
-                        &#34;user manual (simple)&#34;,
-                        &#34;«lsDocSimpleUrl»&#34;,
-                        &#34;user manual for the simplified search interface&#34;,
-                    ),
-                    datadoc=(
-                        &#34;data (feature) documentation&#34;,
-                        &#34;«data.docUrl»&#34;,
-                        &#34;explanation of the features in the dataset&#34;,
-                    ),
-                    data=(
-                        &#34;based on TF data version «data.version»&#34;,
-                        &#34;«dataUrl»&#34;,
-                        &#34;online repository of the underlying TF data&#34;,
-                    ),
-                    generator=(
-                        f&#34;{REPO}/client&#34;,
-                        &#34;«generatorUrl»&#34;,
-                        &#34;the generator of this search interface&#34;,
-                    ),
-                    source=(
-                        &#34;«searchRepo»&#34;,
-                        &#34;«sourceUrl»&#34;,
-                        &#34;source code of the definition of this search interface&#34;,
-                    ),
-                    issue=(
-                        &#34;Report an issue&#34;,
-                        &#34;«issueUrl»&#34;,
-                        &#34;report issues&#34;,
-                    ),
-                    package=(
-                        &#34;download&#34;,
-                        &#34;«packageUrl»&#34;,
-                        &#34;zip file for offline use&#34;,
-                    ),
-                    writing=(
-                        &#34;«writing»&#34;,
-                        &#34;«writingUrl»&#34;,
-                        &#34;characters and transliteration for «writing»&#34;,
-                    ),
-                ),
-            )
-
-            for (k, v) in d.items():
-                c[k] = v
-                fillin(c, k, v)
-
-            setattr(
-                C,
-                &#34;debugConfig&#34;,
-                dict(
-                    setup=dict(
-                        file=f&#34;{c[&#39;jsOutDir&#39;]}/{c[&#39;jsDefs&#39;]}&#34;,
-                        re=re.compile(r&#34;&#34;&#34;export const DEBUG = ([a-z]+)&#34;&#34;&#34;),
-                        mask=&#34;export const DEBUG = {}&#34;,
-                    ),
-                ),
-            )
-
-        for (k, v) in c.items():
-            setattr(C, k, v)
-
-        for (setting, default) in (
-            (&#34;linkLevelMin&#34;, 1),
-            (&#34;linkLevelMax&#34;, 3),
-            (&#34;memSavingMethod&#34;, 0),
-        ):
-            if getattr(C, setting, None) is None:
-                setattr(C, setting, default)
-
-        return True
-
-    def importMake(self, c=None):
-        client = self.client
-        org = self.org
-        repo = self.repo
-
-        if c is None:
-            C = self.C
-            clientMake = C.clientMake
-            clientMakeDir = C.clientMakeDir
-            clientMakeFile = C.clientMakeFile
-        else:
-            clientMake = c[&#34;clientMake&#34;]
-            clientMakeDir = c[&#34;clientMakeDir&#34;]
-            clientMakeFile = c[&#34;clientMakeFile&#34;]
-
-        try:
-            moduleName = f&#34;tf.client.ls.{org}.{repo}.{client}.{clientMake}&#34;
-            spec = util.spec_from_file_location(moduleName, clientMakeFile)
-            code = util.module_from_spec(spec)
-            sys.path.insert(0, clientMakeDir)
-            spec.loader.exec_module(code)
-            sys.path.pop(0)
-            self.makeLegends = types.MethodType(code.makeLegends, self)
-            self.record = types.MethodType(code.record, self)
-
-        except Exception as e:
-            console(f&#34;Cannot make data for {org}/{repo}:{client}: {str(e)}&#34;)
-            return None
-
-    def makeClientSettings(self):
-        C = self.C
-        org = self.org
-        repo = self.repo
-        layerSettings = C.layerSettings
-        A = self.A
-        api = A.api
-        Cp = api.C
-
-        self.makeLegends()
-
-        typeSeq = list(layerSettings)
-        typesLower = {}
-
-        for (i, tp) in enumerate(typeSeq):
-            typesLower[tp] = typeSeq[0 : i + 1]
-
-        # set up the configuration that informs the client code
-        # and the code that generates the data for the client
-
-        urls = C.urls
-        tutUrl = self.A.flexLink(&#34;tut&#34;)
-        urls[&#34;related&#34;] = (
-            f&#34;tf {org}/{repo}&#34;,
-            tutUrl,
-            &#34;using TF on the same corpus&#34;,
-        )
-
-        clientConfig = dict(
-            memSavingMethod=C.memSavingMethod,
-            mainConfig=C.mainConfig,
-            defs=dict(
-                lsVersion=C.lsVersion,
-                client=C.client,
-                backend=C.backend,
-                org=C.org,
-                repo=C.repo,
-                urls=urls,
-                description=C.description,
-            ),
-            ntypes=typeSeq,
-            typesLower=typesLower,
-            defaultSettings=C.defaultSettings,
-            defaultFlags=C.defaultFlags,
-            keyboard=getattr(C, &#34;keyboard&#34;, None),
-        )
-
-        # check visible- and focus- attributes
-
-        theFocuses = []
-        theVisibles = []
-
-        for (nType, typeInfo) in layerSettings.items():
-            if typeInfo.get(&#34;focus&#34;, False):
-                theFocuses.append(nType)
-
-            for (name, layerInfo) in layerSettings[nType].get(&#34;layers&#34;, {}).items():
-                if layerInfo.get(&#34;visible&#34;, False):
-                    theVisibles.append((nType, name))
-                theMap = layerInfo.get(&#34;legend&#34;, None)
-                if theMap is not None and type(theMap) is dict:
-                    default = layerInfo.get(&#34;default&#34;, None)
-                    if default is not None:
-                        theMap[&#34;&#34;] = default
-
-        if len(theFocuses) == 0:
-            focusType = None
-            console(&#34;No node type is declared as result focus\n&#34;)
-        else:
-            focusType = theFocuses[0]
-            if len(theFocuses) &gt; 1:
-                console(&#34;Multiple node types declared as result focus:\n&#34;)
-                console(&#34;\t&#34; + (&#34;, &#34;.join(theFocuses)) + &#34;\n&#34;)
-            else:
-                console(&#34;Node type declared as result focus:\n&#34;)
-                console(f&#34;\t{focusType}\n&#34;)
-
-        clientConfig[&#34;focusType&#34;] = focusType
-
-        if len(theVisibles) == 0:
-            console(&#34;No layer type is declared as visible in the result (&#39;visible&#39;)\n&#34;)
-        else:
-            console(&#34;Layers declared as visible in the result (&#39;visible&#39;):\n&#34;)
-            console(&#34;\t&#34; + (&#34;, &#34;.join(&#34;/&#34;.join(s) for s in theVisibles)) + &#34;\n&#34;)
-
-        visible = {}
-        layers = {}
-        levels = {}
-
-        ntypesinitTF = {level[0]: level[2] for level in Cp.levels.data}
-        ntypessizeTF = {level[0]: level[3] - level[2] + 1 for level in Cp.levels.data}
-        ntypesinit = {}
-        ntypessize = {}
-
-        for (level, typeInfo) in layerSettings.items():
-            nType = typeInfo.get(&#34;nType&#34;, level)
-            ntypesinit[level] = ntypesinitTF[nType]
-            ntypessize[level] = ntypessizeTF[nType]
-            levels[level] = typeInfo.get(&#34;description&#34;, &#34;&#34;)
-
-            ti = typeInfo.get(&#34;layers&#34;, None)
-            if ti is None:
-                continue
-
-            visible[level] = {layer: ti[layer].get(&#34;visible&#34;, False) for layer in ti}
-            layers[level] = {}
-
-            for layer in ti:
-                explain = ti[layer].get(&#34;explain&#34;, None)
-                valueMap = invertMap(ti[layer].get(&#34;legend&#34;, None))
-                valueMapAcro = type(valueMap) is dict
-                layers[level][layer] = dict(
-                    explain=explain,
-                    valueMap=valueMap,
-                    valueMapAcro=valueMapAcro,
-                    tip=ti[layer].get(&#34;tip&#34;, False),
-                    pos=ti[layer][&#34;pos&#34;] or layer,
-                    pattern=ti[layer].get(&#34;example&#34;, &#34;&#34;),
-                    description=ti[layer].get(&#34;description&#34;, &#34;&#34;),
-                )
-
-        for (k, v) in (
-            (&#34;ntypesinit&#34;, ntypesinit),
-            (&#34;ntypessize&#34;, ntypessize),
-            (&#34;dtypeOf&#34;, {typeSeq[i + 1]: tp for (i, tp) in enumerate(typeSeq[0:-1])}),
-            (&#34;utypeOf&#34;, {tp: typeSeq[i + 1] for (i, tp) in enumerate(typeSeq[0:-1])}),
-            (&#34;visible&#34;, visible),
-            (&#34;levels&#34;, levels),
-            (&#34;layers&#34;, layers),
-        ):
-            clientConfig[k] = v
-        self.clientConfig = clientConfig
-
-    def loadTf(self):
-        C = self.C
-        backend = C.backend
-        org = C.org
-        repo = C.repo
-        version = C.data[&#34;version&#34;]
-        A = use(
-            f&#34;{org}/{repo}:clone&#34;, checkout=&#34;clone&#34;, backend=backend, version=version
-        )
-        self.A = A
-
-    def makeConfig(self):
-        if not getattr(self, &#34;A&#34;, None):
-            self.loadTf()
-        if not getattr(self, &#34;clientConfig&#34;, None):
-            self.makeClientSettings()
-        self.dumpConfig()
-
-    def makeLinks(self):
-        C = self.C
-        A = self.A
-        api = A.api
-        T = api.T
-        F = api.F
-
-        linkLevelMin = C.linkLevelMin
-        linkLevelMax = C.linkLevelMax
-        sTypes = T.sectionTypes[linkLevelMin - 1 : linkLevelMax]
-        A.info(f&#34;links for types {&#39;, &#39;.join(sTypes)}&#34;)
-        links = {
-            sType: {n: A.webLink(n, urlOnly=True) for n in F.otype.s(sType)}
-            for sType in sTypes
-        }
-        for (sType, sLinks) in links.items():
-            A.info(f&#34;{sType:&lt;20}: {len(sLinks):&gt;6} links&#34;, tm=False)
-        A.info(&#34;done&#34;)
-        self.links = links
-
-    def makeCorpus(self):
-        if not getattr(self, &#34;A&#34;, None):
-            self.loadTf()
-        if not getattr(self, &#34;clientConfig&#34;, None):
-            self.makeClientSettings()
-        A = self.A
-
-        A.info(&#34;Make links ...&#34;)
-        self.makeLinks()
-
-        A.info(&#34;Recording ...&#34;)
-        self.record()
-
-        A.info(&#34;Dumping ...&#34;)
-        return self.dumpCorpus()
-
-    def dumpConfig(self):
-        C = self.C
-        A = self.A
-        clientConfig = self.clientConfig
-
-        destData = C.jsCorpusDir
-        dirMake(destData)
-
-        fileNameConfig = f&#34;{destData}/config.js&#34;
-
-        with fileOpen(fileNameConfig, mode=&#34;w&#34;) as fh:
-            fh.write(&#34;const configData = &#34;)
-            writeJson(clientConfig, asFile=fh)
-        A.info(f&#34;Config written to file {fileNameConfig}&#34;)
-
-    def compress(self, data):
-        sets = {}
-
-        compressed = []
-
-        for n in sorted(data):
-            sets.setdefault(data[n], []).append(n)
-
-        for (value, nset) in sorted(sets.items(), key=lambda x: (x[1][0], x[1][-1])):
-            nSpec = (
-                list(nset)[0] if len(nset) == 1 else specFromRanges(rangesFromSet(nset))
-            )
-            compressed.append(f&#34;{nSpec}\t{value}&#34;)
-
-        return compressed
-
-    def dumpCorpus(self):
-        C = self.C
-        A = self.A
-        layerSettings = C.layerSettings
-        memSavingMethod = C.memSavingMethod
-        debug = self.debugState == &#34;on&#34;
-
-        up = self.up
-        recorders = self.recorders
-        accumulators = self.accumulators
-
-        texts = {}
-        posinfo = {}
-
-        for (level, typeInfo) in layerSettings.items():
-            ti = typeInfo.get(&#34;layers&#34;, None)
-            if ti is None:
-                continue
-
-            texts[level] = {layer: None for layer in ti}
-            posinfo[level] = {layer: None for layer in ti if ti[layer][&#34;pos&#34;] is None}
-
-        A.info(&#34;wrap recorders for delivery&#34;)
-        good = True
-
-        for (level, typeInfo) in recorders.items():
-            A.info(f&#34;\t{level}&#34;)
-            for (layer, x) in typeInfo.items():
-                A.info(f&#34;\t\t{layer}&#34;)
-                texts[level][layer] = x.text()
-                if memSavingMethod == 0:
-                    posinfo[level][layer] = x.positions(simple=True)
-                elif memSavingMethod == 1:
-                    posResult = x.rPositions(acceptMaterialOutsideNodes=True)
-                    if type(posResult) is str:
-                        A.error(&#34;Memory optimization cannot be applied to this layer&#34;)
-                        A.error(&#34;because of violation of the assumptions:&#34;)
-                        A.error(posResult)
-                        good = False
-                    posinfo[level][layer] = posResult
-
-        A.info(&#34;wrap accumulators for delivery&#34;)
-        for (level, typeInfo) in accumulators.items():
-            A.info(f&#34;\t{level}&#34;)
-            for (layer, x) in typeInfo.items():
-                A.info(f&#34;\t\t{layer}&#34;)
-                texts[level][layer] = &#34;&#34;.join(x)
-
-        data = dict(
-            texts=texts,
-            posinfo=posinfo,
-            up=self.compress(up),
-        )
-        data[&#34;links&#34;] = self.links
-
-        A.indent(reset=True)
-        A.info(&#34;Dumping data to compact json files&#34;)
-
-        destData = C.jsCorpusDir
-        dirMake(destData)
-
-        if debug:
-            textLoc = C.textClientDir
-            dirMake(textLoc)
-
-        def writeDataFile(name, address, thisData, asString=False):
-            parent = textLoc if debug and asString else destData
-            file = name.lower() + (&#34;.txt&#34; if debug and asString else &#34;.js&#34;)
-            path = f&#34;{parent}/{file}&#34;
-            heading = f&#34;corpusData[{address}] = &#34;
-            with fileOpen(path, mode=&#34;w&#34;) as fh:
-                fh.write(heading)
-                if asString:
-                    fh.write(&#34;`&#34;)
-                    fh.write(thisData)
-                    fh.write(&#34;`&#34;)
-                else:
-                    writeJson(
-                        thisData,
-                        asFile=fh,
-                        indent=None,
-                        separators=(&#34;,&#34;, &#34;:&#34;),
-                    )
-                if asString:
-                    A.info(f&#34;Data {name} also written to {path}&#34;)
-                else:
-                    A.info(f&#34;Data {name} stored in {path}&#34;)
-
-        init = [&#34;var corpusData = {}\n&#34;]
-
-        for (partName, partData) in data.items():
-            if partName in {&#34;texts&#34;, &#34;posinfo&#34;}:
-                init.append(f&#39;corpusData[&#34;{partName}&#34;] = {{}}\n&#39;)
-                for (nType, tpData) in partData.items():
-                    init.append(f&#39;corpusData[&#34;{partName}&#34;][&#34;{nType}&#34;] = {{}}\n&#39;)
-                    for (layer, lrData) in tpData.items():
-                        writeDataFile(
-                            f&#34;{partName}-{nType}-{layer}&#34;,
-                            f&#39;&#34;{partName}&#34;][&#34;{nType}&#34;][&#34;{layer}&#34;&#39;,
-                            lrData,
-                        )
-                if debug and partName == &#34;texts&#34;:
-                    for (nType, tpData) in partData.items():
-                        for (layer, lrData) in tpData.items():
-                            writeDataFile(
-                                f&#34;{partName}-{nType}-{layer}&#34;,
-                                f&#39;&#34;{partName}&#34;][&#34;{nType}&#34;][&#34;{layer}&#34;&#39;,
-                                lrData,
-                                asString=True,
-                            )
-            else:
-                writeDataFile(partName, f&#39;&#34;{partName}&#34;&#39;, partData)
-        with fileOpen(C.jsInit, mode=&#34;w&#34;) as fh:
-            fh.write(&#34;&#34;.join(init))
-
-        return good
-
-    def makeCombined(self):
-        C = self.C
-
-        commentRe = re.compile(r&#34;&#34;&#34;[ \t]*/\*.*?\*/[ \t]*&#34;&#34;&#34;, re.S)
-        importRe = re.compile(r&#39;&#39;&#39;import\s+\{.*?\}\s+from\s+&#34;[^&#34;]*\.js&#34;&#39;&#39;&#39;, re.S)
-        exportRe = re.compile(r&#34;&#34;&#34;^export[ ]+&#34;&#34;&#34;, re.M)
-        whiteRe = re.compile(r&#34;&#34;&#34;^\s+$&#34;&#34;&#34;, re.M)
-        nlRe = re.compile(r&#34;&#34;&#34;\n\n+&#34;&#34;&#34;)
-
-        def getJSModule(module):
-            with fileOpen(f&#34;{C.jsOutDir}/{module}&#34;) as fh:
-                text = fh.read()
-            text = importRe.sub(&#34;&#34;, text)
-            text = exportRe.sub(&#34;&#34;, text)
-            text = commentRe.sub(&#34;&#34;, text)
-            text = whiteRe.sub(&#34;&#34;, text)
-            text = nlRe.sub(&#34;\n&#34;, text)
-            return text
-
-        modules = []
-
-        with scanDir(C.jsOutDir) as it:
-            for entry in it:
-                name = entry.name
-                if (
-                    not entry.is_file()
-                    or name.startswith(&#34;.&#34;)
-                    or not name.endswith(&#34;.js&#34;)
-                ):
-                    continue
-                modules.append(entry.name)
-        console(&#34;, &#34;.join(module[0:-3] for module in modules))
-
-        content = {module: getJSModule(module) for module in modules}
-
-        header = dedent(
-            &#34;&#34;&#34;
-            /*eslint-env jquery*/
-            /* global configData */
-            /* global corpusData */
-
-            &#34;&#34;&#34;
-        )
-        combined = (
-            header
-            + content[C.jsDefs]
-            + &#34;\n\n&#34;
-            + &#34;\n\n&#34;.join(
-                text
-                for (name, text) in content.items()
-                if name not in {C.jsDefs, C.jsApp}
-            )
-            + &#34;\n\n&#34;
-            + content[C.jsApp]
-        )
-        with fileOpen(C.jsAllPath, mode=&#34;w&#34;) as fh:
-            fh.write(combined)
-        console(f&#34;Combined js file written to {C.jsAllPath}&#34;)
-
-    def makeHtml(self):
-        C = self.C
-        lsVersion = C.lsVersion
-
-        # index of all clients
-
-        clients = {}
-
-        for thisClient in self.getAllClients():
-            thisConfig = f&#34;{C.configDir}/{thisClient}/{APP_CONFIG}&#34;
-            desc = readYaml(asFile=thisConfig, plain=True).get(&#34;short&#34;, &#34;&#34;)
-            clients[thisClient] = desc
-
-        with fileOpen(C.index) as fh:
-            template = fh.read()
-            htmlIndex = template.replace(&#34;«org»&#34;, C.org).replace(&#34;«repo»&#34;, C.repo)
-            htmlIndex = htmlIndex.replace(&#34;«client»&#34;, C.client)
-
-            html = []
-            for (thisClient, desc) in clients.items():
-                html.append(
-                    dedent(
-                        f&#34;&#34;&#34;
-                        &lt;dt&gt;&lt;a href=&#34;{thisClient}/index.html&#34;&gt;{thisClient}&lt;/a&gt;&lt;/dt&gt;
-                        &lt;dd&gt;{desc}&lt;/dd&gt;
-                        &#34;&#34;&#34;
-                    )
-                )
-
-            htmlIndex = htmlIndex.replace(&#34;«clients»&#34;, &#34;&#34;.join(html))
-
-        with fileOpen(C.htmlIndex, mode=&#34;w&#34;) as fh:
-            fh.write(htmlIndex)
-        console(f&#34;html file written to {C.htmlIndex}&#34;)
-
-        # client and client-local
-
-        with scanDir(C.jsCorpusDir) as it:
-            scripts = []
-            for entry in it:
-                file = entry.name
-                if not file.endswith(&#34;.js&#34;):
-                    continue
-                if file.startswith(&#34;texts-&#34;) or file.startswith(&#34;posinfo-&#34;):
-                    scripts.append(f&#39;&lt;script defer src=&#34;corpus/{file}«v»&#34;&gt;&lt;/script&gt;&#39;)
-            corpusScripts = &#34;\n&#34;.join(scripts)
-
-        with fileOpen(C.template) as fh:
-            template = fh.read()
-            htmlNormal = template.replace(
-                &#34;«js»&#34;, &#39;&#39;&#39;type=&#34;module&#34; src=&#34;js/app.js«v»&#34;&#39;&#39;&#39;
-            )
-            htmlNormal = htmlNormal.replace(&#34;«corpus»&#34;, corpusScripts)
-            htmlNormal = htmlNormal.replace(&#34;«v»&#34;, f&#34;?v={lsVersion}&#34;)
-            htmlNormal = htmlNormal.replace(&#34;«org»&#34;, C.org).replace(&#34;«repo»&#34;, C.repo)
-            htmlNormal = htmlNormal.replace(&#34;«client»&#34;, C.client)
-            htmlLocal = template.replace(&#34;«js»&#34;, f&#39;&#39;&#39;defer src=&#34;{C.jsAll}&#34;&#39;&#39;&#39;)
-            htmlLocal = htmlLocal.replace(&#34;«corpus»&#34;, corpusScripts)
-            htmlLocal = htmlLocal.replace(&#34;«v»&#34;, &#34;&#34;)
-            htmlLocal = htmlLocal.replace(&#34;«org»&#34;, C.org).replace(&#34;«repo»&#34;, C.repo)
-            htmlLocal = htmlLocal.replace(&#34;«client»&#34;, C.client)
-
-        with fileOpen(C.htmlClient, mode=&#34;w&#34;) as fh:
-            fh.write(htmlNormal)
-        console(f&#34;html file written to {C.htmlClient}&#34;)
-
-        with fileOpen(C.htmlLocal, mode=&#34;w&#34;) as fh:
-            fh.write(htmlLocal)
-        console(f&#34;html file (for use with file://) written to {C.htmlLocal}&#34;)
-
-    def makeClient(self):
-        &#34;&#34;&#34;
-        We create a client app in the target directory.
-
-        The client consists of HTML/CSS/PNG files plus a modular JavaScript program.
-
-        Module loading does not work when you open the HTML file locally
-        (i.e. when the HTML is not served by a server).
-
-        N.B. There is a difference between a local web server serving at `localhost`
-        and opening the file directly into your browser by double clicking on it.
-
-        In the first case, you see in the URL bar of your browser
-        something that starts with
-        `http://` or `https://`, in the second case you see `file://` instead.
-
-        Modular JavaScript does not work with `file://` origins.
-
-        For that case, we bundle the modules into one,
-        and let a «client»-local.html include it
-
-        We also zip the client into {C.client}.zip so that users can download it easily
-
-        However, if the `debugState` is on, we skip all steps that are unnecessary
-        to see the updated client working.
-        But we do save an extra copy of the texts to the local directory in such a way
-        that they can be easily inspected.
-        &#34;&#34;&#34;
-
-        # copy over the static files
-
-        C = self.C
-        debug = self.debugState == &#34;on&#34;
-
-        for (srcDir, dstDir) in (
-            (C.pngInDir, C.pngOutDir),
-            (C.cssInDir, C.cssOutDir),
-            (C.jsInDir, C.jsOutDir),
-            (C.jslibInDir, C.jslibOutDir),
-            (C.htmlInDir, C.htmlOutDir),
-        ):
-            dirMake(dstDir)
-
-            with scanDir(srcDir) as it:
-                for entry in it:
-                    name = entry.name
-                    if not entry.is_file() or name.startswith(&#34;.&#34;):
-                        continue
-                    srcFile = f&#34;{srcDir}/{name}&#34;
-                    if srcFile != C.template:
-                        fileCopy(srcFile, f&#34;{dstDir}/{name}&#34;)
-        fileCopy(f&#34;{C.staticDir}/{C.favicon}&#34;, f&#34;{C.siteDir}/{C.favicon}&#34;)
-
-        # move the custom files in place
-
-        for (srcFile, dstFile) in (
-            (C.clientCss, f&#34;{C.cssOutDir}/{C.client}.css&#34;),
-            (C.clientLogo, f&#34;{C.pngOutDir}/{C.client}.png&#34;),
-        ):
-            fileCopy(srcFile, dstFile)
-
-        console(&#34;Copied static files&#34;)
-
-        # create combined JavaScript file
-
-        if not debug:
-            self.makeCombined()
-
-        self.makeHtml()
-
-        if not debug:
-            self.zipApp()
-
-    def zipApp(self):
-        C = self.C
-        items = set(
-            &#34;&#34;&#34;
-            css
-            corpus
-            jslib
-            png
-            favicon.ico
-        &#34;&#34;&#34;.strip().split()
-        )
-        items.add(C.htmlLocalFile)
-        items.add(C.jsAll)
-
-        zipped = f&#34;{C.siteDir}/{C.client}.zip&#34;
-
-        with ZipFile(zipped, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
-            with scanDir(C.appClientDir) as it:
-                for entry in it:
-                    file = entry.name
-                    if file not in items:
-                        continue
-                    if entry.is_file():
-                        zipFile.write(f&#34;{C.appClientDir}/{file}&#34;, arcname=file)
-                        console(f&#34;adding {file}&#34;)
-                    else:
-                        with scanDir(f&#34;{C.appClientDir}/{file}&#34;) as sit:
-                            for sentry in sit:
-                                sfile = sentry.name
-                                if sentry.is_file and not sfile.startswith(&#34;.&#34;):
-                                    sfile = f&#34;{file}/{sfile}&#34;
-                                    zipFile.write(
-                                        f&#34;{C.appClientDir}/{sfile}&#34;, arcname=sfile
-                                    )
-                                    console(f&#34;adding {sfile}&#34;)
-        console(f&#34;Packaged client into {zipped}&#34;)
-
-    def publish(self, allClients=True):
-        C = self.C
-        appDir = C.appDir
-        siteDir = C.siteDir
-        backend = self.backend
-        org = self.org
-        repo = self.repo
-        client = self.client
-        clients = self.getAllClients() if allClients or client is None else [client]
-        domain = backendRep(backend, &#34;pages&#34;)
-        console(
-            f&#34;Publishing on {domain} &#34;
-            f&#34;{org}/{repo}:{&#39;,&#39;.join(clients)} from {siteDir} ...&#34;
-        )
-        chDir(appDir)
-        if backend is None:
-            deploy(C.org, C.searchRepo)
-        else:
-            console(
-                f&#34;Deploying Pages on GitLab ({backend}) not yet supported&#34;, error=True
-            )
-
-    def ship(self, publish=True):
-        self.adjustVersion()
-        self.makeConfig()
-        good = self.makeCorpus()
-        if good:
-            self.makeClient()
-            self.adjustDebug()
-            if publish:
-                self.publish()
-
-    def make(self):
-        self.makeConfig()
-        good = self.makeCorpus()
-        if good:
-            self.makeClient()
-            self.adjustDebug()
-
-    def serve(self):
-        dataset = self.dataset
-        client = self.client
-        C = self.C
-        chDir(C.siteDir)
-        port = getPort(f&#34;{dataset}, {client}&#34;)
-        if port is None:
-            cs(&#34;Cannot find a free port between 8000 and 8100&#34;)
-            return
-
-        console(f&#34;HTTP serving files in {C.siteDir} on port {port}&#34;)
-        server = Popen(
-            [&#34;python3&#34;, &#34;-m&#34;, &#34;http.server&#34;, str(port)],
-            stdout=PIPE,
-            bufsize=1,
-            encoding=&#34;utf-8&#34;,
-        )
-        sleep(1)
-        webbrowser.open(f&#34;http://localhost:{port}/index.html&#34;, new=2, autoraise=True)
-        stopped = server.poll()
-        if not stopped:
-            try:
-                console(&#34;Press &lt;Ctrl+C&gt; to stop the HTTP server&#34;)
-                if server:
-                    for line in server.stdout:
-                        console(line)
-            except KeyboardInterrupt:
-                console(&#34;&#34;)
-                if server:
-                    server.terminate()
-                    console(&#34;Http server has stopped&#34;)
-
-    def incVersion(self):
-        C = self.C
-        lsVersion = C.lsVersion
-        parts = lsVersion.split(&#34;@&#34;, 1)
-        v = int(parts[0].lstrip(&#34;v&#34;).lstrip(&#34;0&#34;), base=10)
-        now = dt.now(UTC).isoformat(timespec=&#34;seconds&#34;)
-        self.lsVersion = f&#34;v{v + 1:&gt;03}@{now}&#34;
-        C.lsVersion = self.lsVersion
-
-    def showVersion(self):
-        C = self.C
-        lsVersion = C.lsVersion
-        versionFile = self.versionFile
-        console(f&#34;{lsVersion} (according to {versionFile})&#34;)
-
-    def adjustVersion(self):
-        C = self.C
-        versionFile = self.versionFile
-
-        currentVersion = C.lsVersion
-        self.incVersion()
-        newVersion = C.lsVersion
-
-        writeYaml(dict(lsVersion=newVersion), asFile=versionFile)
-
-        console(f&#34;Version went from `{currentVersion}` to `{newVersion}`&#34;)
-
-    def replaceDebug(self, mask, value):
-        def subVersion(match):
-            return mask.format(value)
-
-        return subVersion
-
-    def getDebugs(self):
-        C = self.C
-
-        debugs = {}
-        good = True
-
-        for (key, c) in C.debugConfig.items():
-            cfile = c[&#34;file&#34;]
-            with fileOpen(cfile) as fh:
-                text = fh.read()
-            match = c[&#34;re&#34;].search(text)
-            if not match:
-                console(f&#34;No debug found in {cfile}&#34;)
-                good = False
-                continue
-            debug = match.group(1)
-            debugs[cfile] = debug
-
-        if not good:
-            return False
-        return debugs
-
-    def showDebug(self):
-        debugInfo = self.getDebugs()
-        if debugInfo is None:
-            return False
-        return True
-
-        for (source, debug) in debugInfo.items():
-            console(f&#34;{debug} (according to {source})&#34;)
-
-    def adjustDebug(self):
-        C = self.C
-        debugState = self.debugState
-
-        if not self.showDebug():
-            return
-
-        newValue = &#34;true&#34; if debugState == &#34;on&#34; else &#34;false&#34;
-
-        for (key, c) in C.debugConfig.items():
-            console(f&#39;Adjusting debug in {c[&#34;file&#34;]}&#39;)
-            with fileOpen(c[&#34;file&#34;]) as fh:
-                text = fh.read()
-            text = c[&#34;re&#34;].sub(self.replaceDebug(c[&#34;mask&#34;], newValue), text)
-            with fileOpen(c[&#34;file&#34;], mode=&#34;w&#34;) as fh:
-                fh.write(text)
-
-        console(f&#34;Debug set to {newValue}&#34;)
-        if not self.showDebug():
-            return
-
-    def getAllClients(self):
-        C = self.C
-        configDir = C.configDir
-
-        clients = []
-
-        with scanDir(configDir) as it:
-            for entry in it:
-                client = entry.name
-                if not entry.is_dir() or client.startswith(&#34;.&#34;):
-                    continue
-                clients.append(client)
-        return clients
-
-
-def makeSearchClients(dataset, folder, appFolder, backend=None, dataDir=None):
-    DEBUG_STATE = &#34;off&#34;
-
-    Mk = Make(
-        dataset,
-        None,
-        backend=backend,
-        folder=folder,
-        appFolder=appFolder,
-        debugState=DEBUG_STATE,
-    )
-    clients = Mk.getAllClients()
-    # version = Mk.C.data[&#34;version&#34;]
-
-    def getDataFromDir():
-        TF = Fabric(locations=dataDir, modules=[&#34;&#34;])
-        api = TF.loadAll()
-        A = use(appFolder, api=api)
-        return A
-
-    A = None if dataDir is None else getDataFromDir()
-    for client in clients:
-        cs(f&#34;\n\no-o-o-o-o-o-o {client} o-o-o-o-o-o-o-o\n\n&#34;)
-        ThisMk = Make(
-            dataset,
-            client,
-            backend=backend,
-            A=A,
-            folder=folder,
-            appFolder=appFolder,
-            debugState=DEBUG_STATE,
-        )
-        ThisMk.make()
-        A = ThisMk.A
-
-
-def main():
-    Args = readArgsLegacy()
-    if Args is None:
-        return 0
-
-    backend = Args.backend
-    dataset = Args.dataset
-    client = Args.client
-    command = Args.command
-    folder = Args.folder
-    appFolder = Args.appFolder
-    debugState = Args.debugState
-
-    if not dataset:
-        return
-
-    if not client:
-        if command not in {&#34;serve&#34;, &#34;ship&#34;, &#34;make&#34;}:
-            return
-
-    Mk = Make(
-        dataset,
-        client,
-        backend=backend,
-        folder=folder,
-        appFolder=appFolder,
-        debugState=debugState,
-    )
-
-    if command in {&#34;ship&#34;, &#34;make&#34;} and client is None:
-        clients = Mk.getAllClients()
-        for client in clients:
-            ThisMk = Make(
-                dataset,
-                client,
-                backend=backend,
-                folder=folder,
-                appFolder=appFolder,
-                debugState=debugState,
-            )
-            if command == &#34;ship&#34;:
-                ThisMk.ship(publish=False)
-            else:
-                ThisMk.make()
-        if command == &#34;ship&#34;:
-            Mk.publish()
-        return
-
-    return Mk.doCommand(command)
-
-
-if __name__ == &#34;__main__&#34;:
-    sys.exit(main())</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -1491,27 +100,26 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">console</span></span>(<span>*args, error=False)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L97-L100" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L97-L100" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def console(*args, error=False):
     device = sys.stderr if error else sys.stdout
     device.write(&#34; &#34;.join(args) + &#34;\n&#34;)
     device.flush()</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.invertMap"><code class="name flex">
 <span>def <span class="ident">invertMap</span></span>(<span>legend)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L103-L110" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L103-L110" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def invertMap(legend):
     return (
@@ -1522,16 +130,16 @@ if __name__ == &#34;__main__&#34;:
         else legend
     )</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.main"><code class="name flex">
 <span>def <span class="ident">main</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1343-L1391" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1343-L1391" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     Args = readArgsLegacy()
@@ -1583,16 +191,16 @@ if __name__ == &#34;__main__&#34;:
 
     return Mk.doCommand(command)</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.makeSearchClients"><code class="name flex">
 <span>def <span class="ident">makeSearchClients</span></span>(<span>dataset, folder, appFolder, backend=None, dataDir=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1307-L1340" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1307-L1340" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def makeSearchClients(dataset, folder, appFolder, backend=None, dataDir=None):
     DEBUG_STATE = &#34;off&#34;
@@ -1629,16 +237,16 @@ if __name__ == &#34;__main__&#34;:
         ThisMk.make()
         A = ThisMk.A</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.readArgsLegacy"><code class="name flex">
 <span>def <span class="ident">readArgsLegacy</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L113-L207" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L113-L207" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def readArgsLegacy():
     class Args:
@@ -1736,6 +344,7 @@ if __name__ == &#34;__main__&#34;:
         Args.debugState = args[0]
     return Args</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 </dl>
 </section>
@@ -1747,11 +356,10 @@ if __name__ == &#34;__main__&#34;:
 <span>(</span><span>dataset, client, backend=None, A=None, folder=None, appFolder=None, debugState=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L210-L1304" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L210-L1304" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class Make:
     def __init__(
@@ -2849,17 +1457,17 @@ if __name__ == &#34;__main__&#34;:
                 clients.append(client)
         return clients</code></pre>
 </details>
+<div class="desc"></div>
 <h3>Methods</h3>
 <dl>
 <dt id="tf.client.make.build.Make.adjustDebug"><code class="name flex">
 <span>def <span class="ident">adjustDebug</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1271-L1290" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1271-L1290" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def adjustDebug(self):
     C = self.C
@@ -2882,16 +1490,16 @@ if __name__ == &#34;__main__&#34;:
     if not self.showDebug():
         return</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.adjustVersion"><code class="name flex">
 <span>def <span class="ident">adjustVersion</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1222-L1232" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1222-L1232" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def adjustVersion(self):
     C = self.C
@@ -2905,16 +1513,16 @@ if __name__ == &#34;__main__&#34;:
 
     console(f&#34;Version went from `{currentVersion}` to `{newVersion}`&#34;)</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.compress"><code class="name flex">
 <span>def <span class="ident">compress</span></span>(<span>self, data)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L764-L778" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L764-L778" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def compress(self, data):
     sets = {}
@@ -2932,16 +1540,16 @@ if __name__ == &#34;__main__&#34;:
 
     return compressed</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.config"><code class="name flex">
 <span>def <span class="ident">config</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L268-L531" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L268-L531" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def config(self):
     C = self.C
@@ -3208,16 +1816,16 @@ if __name__ == &#34;__main__&#34;:
 
     return True</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.doCommand"><code class="name flex">
 <span>def <span class="ident">doCommand</span></span>(<span>self, command)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L242-L266" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L242-L266" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def doCommand(self, command):
     if command == &#34;serve&#34;:
@@ -3245,16 +1853,16 @@ if __name__ == &#34;__main__&#34;:
     elif command == &#34;make&#34;:
         self.make()</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.dumpConfig"><code class="name flex">
 <span>def <span class="ident">dumpConfig</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L749-L762" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L749-L762" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def dumpConfig(self):
     C = self.C
@@ -3271,16 +1879,16 @@ if __name__ == &#34;__main__&#34;:
         writeJson(clientConfig, asFile=fh)
     A.info(f&#34;Config written to file {fileNameConfig}&#34;)</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.dumpCorpus"><code class="name flex">
 <span>def <span class="ident">dumpCorpus</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L780-L895" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L780-L895" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def dumpCorpus(self):
     C = self.C
@@ -3399,16 +2007,16 @@ if __name__ == &#34;__main__&#34;:
 
     return good</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.getAllClients"><code class="name flex">
 <span>def <span class="ident">getAllClients</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1292-L1304" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1292-L1304" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getAllClients(self):
     C = self.C
@@ -3424,16 +2032,16 @@ if __name__ == &#34;__main__&#34;:
             clients.append(client)
     return clients</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.getDebugs"><code class="name flex">
 <span>def <span class="ident">getDebugs</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1240-L1260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1240-L1260" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getDebugs(self):
     C = self.C
@@ -3457,16 +2065,16 @@ if __name__ == &#34;__main__&#34;:
         return False
     return debugs</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.importMake"><code class="name flex">
 <span>def <span class="ident">importMake</span></span>(<span>self, c=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L533-L560" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L533-L560" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def importMake(self, c=None):
     client = self.client
@@ -3497,16 +2105,16 @@ if __name__ == &#34;__main__&#34;:
         console(f&#34;Cannot make data for {org}/{repo}:{client}: {str(e)}&#34;)
         return None</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.incVersion"><code class="name flex">
 <span>def <span class="ident">incVersion</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1207-L1214" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1207-L1214" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def incVersion(self):
     C = self.C
@@ -3517,16 +2125,16 @@ if __name__ == &#34;__main__&#34;:
     self.lsVersion = f&#34;v{v + 1:&gt;03}@{now}&#34;
     C.lsVersion = self.lsVersion</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.loadTf"><code class="name flex">
 <span>def <span class="ident">loadTf</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L695-L704" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L695-L704" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def loadTf(self):
     C = self.C
@@ -3539,16 +2147,16 @@ if __name__ == &#34;__main__&#34;:
     )
     self.A = A</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.make"><code class="name flex">
 <span>def <span class="ident">make</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1168-L1173" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1168-L1173" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def make(self):
     self.makeConfig()
@@ -3557,32 +2165,16 @@ if __name__ == &#34;__main__&#34;:
         self.makeClient()
         self.adjustDebug()</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.makeClient"><code class="name flex">
 <span>def <span class="ident">makeClient</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>We create a client app in the target directory.</p>
-<p>The client consists of HTML/CSS/PNG files plus a modular JavaScript program.</p>
-<p>Module loading does not work when you open the HTML file locally
-(i.e. when the HTML is not served by a server).</p>
-<p>N.B. There is a difference between a local web server serving at <code>localhost</code>
-and opening the file directly into your browser by double clicking on it.</p>
-<p>In the first case, you see in the URL bar of your browser
-something that starts with
-<code>http://</code> or <code>https://</code>, in the second case you see <code>file://</code> instead.</p>
-<p>Modular JavaScript does not work with <code>file://</code> origins.</p>
-<p>For that case, we bundle the modules into one,
-and let a «client»-local.html include it</p>
-<p>We also zip the client into {C.client}.zip so that users can download it easily</p>
-<p>However, if the <code>debugState</code> is on, we skip all steps that are unnecessary
-to see the updated client working.
-But we do save an extra copy of the texts to the local directory in such a way
-that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1026-L1097" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1026-L1097" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def makeClient(self):
     &#34;&#34;&#34;
@@ -3657,16 +2249,32 @@ that they can be easily inspected.</p></div>
     if not debug:
         self.zipApp()</code></pre>
 </details>
+<div class="desc"><p>We create a client app in the target directory.</p>
+<p>The client consists of HTML/CSS/PNG files plus a modular JavaScript program.</p>
+<p>Module loading does not work when you open the HTML file locally
+(i.e. when the HTML is not served by a server).</p>
+<p>N.B. There is a difference between a local web server serving at <code>localhost</code>
+and opening the file directly into your browser by double clicking on it.</p>
+<p>In the first case, you see in the URL bar of your browser
+something that starts with
+<code>http://</code> or <code>https://</code>, in the second case you see <code>file://</code> instead.</p>
+<p>Modular JavaScript does not work with <code>file://</code> origins.</p>
+<p>For that case, we bundle the modules into one,
+and let a «client»-local.html include it</p>
+<p>We also zip the client into {C.client}.zip so that users can download it easily</p>
+<p>However, if the <code>debugState</code> is on, we skip all steps that are unnecessary
+to see the updated client working.
+But we do save an extra copy of the texts to the local directory in such a way
+that they can be easily inspected.</p></div>
 </dd>
 <dt id="tf.client.make.build.Make.makeClientSettings"><code class="name flex">
 <span>def <span class="ident">makeClientSettings</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L562-L693" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L562-L693" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def makeClientSettings(self):
     C = self.C
@@ -3801,16 +2409,16 @@ that they can be easily inspected.</p></div>
         clientConfig[k] = v
     self.clientConfig = clientConfig</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.makeCombined"><code class="name flex">
 <span>def <span class="ident">makeCombined</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L897-L954" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L897-L954" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def makeCombined(self):
     C = self.C
@@ -3871,16 +2479,16 @@ that they can be easily inspected.</p></div>
         fh.write(combined)
     console(f&#34;Combined js file written to {C.jsAllPath}&#34;)</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.makeConfig"><code class="name flex">
 <span>def <span class="ident">makeConfig</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L706-L711" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L706-L711" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def makeConfig(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3889,16 +2497,16 @@ that they can be easily inspected.</p></div>
         self.makeClientSettings()
     self.dumpConfig()</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.makeCorpus"><code class="name flex">
 <span>def <span class="ident">makeCorpus</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L733-L747" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L733-L747" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def makeCorpus(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3916,16 +2524,16 @@ that they can be easily inspected.</p></div>
     A.info(&#34;Dumping ...&#34;)
     return self.dumpCorpus()</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.makeHtml"><code class="name flex">
 <span>def <span class="ident">makeHtml</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L956-L1024" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L956-L1024" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def makeHtml(self):
     C = self.C
@@ -3997,16 +2605,16 @@ that they can be easily inspected.</p></div>
         fh.write(htmlLocal)
     console(f&#34;html file (for use with file://) written to {C.htmlLocal}&#34;)</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.makeLinks"><code class="name flex">
 <span>def <span class="ident">makeLinks</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L713-L731" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L713-L731" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def makeLinks(self):
     C = self.C
@@ -4028,16 +2636,16 @@ that they can be easily inspected.</p></div>
     A.info(&#34;done&#34;)
     self.links = links</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.publish"><code class="name flex">
 <span>def <span class="ident">publish</span></span>(<span>self, allClients=True)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1136-L1156" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1136-L1156" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def publish(self, allClients=True):
     C = self.C
@@ -4061,16 +2669,16 @@ that they can be easily inspected.</p></div>
             f&#34;Deploying Pages on GitLab ({backend}) not yet supported&#34;, error=True
         )</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.replaceDebug"><code class="name flex">
 <span>def <span class="ident">replaceDebug</span></span>(<span>self, mask, value)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1234-L1238" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1234-L1238" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def replaceDebug(self, mask, value):
     def subVersion(match):
@@ -4078,16 +2686,16 @@ that they can be easily inspected.</p></div>
 
     return subVersion</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.serve"><code class="name flex">
 <span>def <span class="ident">serve</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1175-L1205" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1175-L1205" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def serve(self):
     dataset = self.dataset
@@ -4121,16 +2729,16 @@ that they can be easily inspected.</p></div>
                 server.terminate()
                 console(&#34;Http server has stopped&#34;)</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.ship"><code class="name flex">
 <span>def <span class="ident">ship</span></span>(<span>self, publish=True)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1158-L1166" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1158-L1166" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def ship(self, publish=True):
     self.adjustVersion()
@@ -4142,16 +2750,16 @@ that they can be easily inspected.</p></div>
         if publish:
             self.publish()</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.showDebug"><code class="name flex">
 <span>def <span class="ident">showDebug</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1262-L1269" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1262-L1269" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def showDebug(self):
     debugInfo = self.getDebugs()
@@ -4162,16 +2770,16 @@ that they can be easily inspected.</p></div>
     for (source, debug) in debugInfo.items():
         console(f&#34;{debug} (according to {source})&#34;)</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.showVersion"><code class="name flex">
 <span>def <span class="ident">showVersion</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1216-L1220" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1216-L1220" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def showVersion(self):
     C = self.C
@@ -4179,16 +2787,16 @@ that they can be easily inspected.</p></div>
     versionFile = self.versionFile
     console(f&#34;{lsVersion} (according to {versionFile})&#34;)</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.client.make.build.Make.zipApp"><code class="name flex">
 <span>def <span class="ident">zipApp</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1099-L1134" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/client/make/build.py#L1099-L1134" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def zipApp(self):
     C = self.C
@@ -4227,6 +2835,7 @@ that they can be easily inspected.</p></div>
                                 console(f&#34;adding {sfile}&#34;)
     console(f&#34;Packaged client into {zipped}&#34;)</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 </dl>
 </dd>
@@ -4243,8 +2852,8 @@ that they can be easily inspected.</p></div>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
 disabled minlength="2">
 </form>
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.css" integrity="sha512-b+T2i3P45i1LZM7I00Ci5QquB9szqaxu+uuk5TUSGjZQ4w4n+qujQiIuvTv2BxE7WCGQCifNMksyKILDiHzsOg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.js" integrity="sha512-2B9/byNV1KKRm5nQ2RLViPFD6U4dUjDGwuW1GU+ImJh8YinPU9Zlq1GzdTMO+G2ROrB5o1qasJBy1ttYz0wCug==" crossorigin></script>
 <style>
 .modal-dialog iframe {
 width: 100vw;
@@ -4285,7 +2894,6 @@ setTimeout(() => input.focus(), 100);
 }).setContent('<iframe src="' + url + '"></iframe>').open();
 }
 </script>
-<h1>Index</h1>
 <div class="toc">
 <ul>
 <li><a href="#usage">Usage</a><ul>
@@ -4352,7 +2960,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>

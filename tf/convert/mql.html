@@ -2,24 +2,34 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.11.6" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
 <title>tf.convert.mql API documentation</title>
-<meta name="description" content="MQL …" />
-<!-- integrity SRI from https://cdnjs.com/libraries/10up-sanitize.css/11.0.1 -->
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css"
-integrity="sha512-kcbluZFacWN57NgWZ4aH6eUMBEaTyErFhIFD3y5qYZbKuuyImH0K/AKsBbfXlivh2z5C+3IDTIhI11YmKomzmA=="
-crossorigin>
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css"
-integrity="sha512-uVeAgzAmieLUTGba0qr9vXQgVD7fko2kcbYIKIraXUIDg9iJLxveTFUrg3DJhqn3cAf3HFDbgmhq0eGko5wEAA=="
-crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
-<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<meta name="description" content="MQL …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
-<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
 </head>
 <body>
 <main>
@@ -142,1096 +152,6 @@ spectacularly. So do not do that.</p>
 <pre><code class="language-sh">cd ~/Downloads
 rm dataset ; mql -b 3 &lt; dataset.mql
 </code></pre>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L1-L1084" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">&#34;&#34;&#34;
-# MQL
-
-You can interchange with [MQL data](https://emdros.org).
-TF can read and write MQL dumps.
-An MQL dump is a text file, like an SQL dump.
-It contains the instructions to create and fill a complete database.
-
-## Correspondence TF and MQL
-
-After exporting a TF dataset to MQL, the resulting MQL database has the
-following properties with respect to the TF dataset it comes from:
-
-*   the TF *slots* correspond exactly with the MQL *monads* and have the same
-    numbers; provided the monad numbers in the MQL dump are consecutive. In MQL
-    this is not obligatory. Even if there gaps in the monads sequence, we will
-    fill the holes during conversion, so the slots are tightly consecutive;
-*   the TF *nodes* correspond exactly with the MQL *objects* and have the same
-    numbers
-
-## Node features in MQL
-
-The values of TF features are of two types, `int` and `str`, and they translate
-to corresponding MQL types `integer` and `string`. The actual values do not
-undergo any transformation.
-
-That means that in MQL queries, you use quotes if the feature is a string feature.
-Only if the feature is a number feature, you may omit the quotes:
-
-```
-[word sp=&#39;verb&#39;]
-[verse chapter=1 and verse=1]
-```
-
-## Integers in MQL
-
-We restrict the values of integers to those between minus `2 ** 31 - 1` and plus
-`2 ** 31 - 1` because Emdros does not dealt with arbitrarily small or large integers.
-If there are TF features with integer values that are out of bounds, it
-will be reported, and no conversion will be made.
-
-## Enumeration types
-
-It is attractive to use enumeration types for the values of a feature, where ever
-possible, because then you can query those features in MQL with `IN` and without
-quotes:
-
-```
-[chapter book IN (Genesis, Exodus)]
-```
-
-We will generate enumerations for eligible features.
-
-Integer values can already be queried like this, even if they are not part of an
-enumeration. So we restrict ourselves to node features with string values. We
-put the following extra restrictions:
-
-*   the number of distinct values is less than 1000
-*   all values must be legal C names, in practice: starting with a letter,
-    followed by letters, digits, or `_`. The letters can only be plain ASCII
-    letters, uppercase and lowercase.
-
-Features that comply with these restrictions will get an enumeration type.
-Currently, we provide no ways to configure this in more detail.
-
-Instead of creating separate enumeration types for individual features,
-we collect all enumerated values for all those features into one
-big enumeration type.
-
-The reason is that MQL considers equal values in different types as
-distinct values. If we had separate types, we could never compare
-values for different features.
-
-## Edge features in MQL
-
-There is no place for edge values in MQL. There is only one concept of feature
-in MQL: object features, which are node features.
-But TF edges without values can be seen as node features: nodes are
-mapped onto sets of nodes to which the edges go. And that notion is supported by
-MQL:
-edge features are translated into MQL features of type `LIST OF id_d`,
-i.e. lists of object identifiers.
-
-!!! caution &#34;TF Edge features become multivalued when translated to MQL&#34;
-    This has an important consequence: a feature in MQL with type `id_d` translates
-    to an edge in TF. If we translate this edge back to MQL, we get a feature of type
-    `LIST OF id_d`.
-
-    Queries in the original MQL with conditions like
-
-    ```
-    [object_type edge_feature = some_id]
-    ```
-
-    will not work for the edge feature that has made the roundtrip through TF.
-    Instead, when working in the round-tripped MQL, you have to say
-
-    ```
-    [object_type edge_feature HAS some_id]
-    ```
-
-## Naming of features in MQL
-
-!!! caution &#34;Legal names in MQL&#34;
-    MQL names for databases, object types and features must be valid C identifiers
-    (yes, the computer language C).
-
-The requirements are for names are:
-
-*   start with a letter (ASCII, upper-case or lower-case)
-*   follow by any sequence of ASCII upper / lower-case letters or digits or
-    underscores (`_`)
-*   avoid being a reserved word in the C language
-
-So, we have to change names coming from TF if they are invalid in MQL. We do
-that by replacing illegal characters by `_`, and, if the result does not start
-with a letter, we prepend an `x`. We do not check whether the name is a reserved
-C word.
-
-With these provisos:
-
-*   the given `dbName` correspond to the MQL *database name*
-*   the TF `otypes` correspond to the MQL *objects*
-*   the TF `features` correspond to the MQL *features*
-
-The MQL export is usually quite massive (500MB for the Hebrew Bible).
-It can be compressed greatly, especially by the program `bzip2`.
-
-!!! caution &#34;Existing database&#34;
-    If you try to import an MQL file in Emdros, and there exists already a file or
-    directory with the same name as the MQL database, your import will fail
-    spectacularly. So do not do that.
-
-A good way to prevent clashes:
-
-*   export the MQL to outside your `~/text-fabric-data` directory, e.g. to
-    `~/Downloads`;
-*   before importing the MQL file, delete the previous copy;
-
-Delete existing copy:
-
-``` sh
-cd ~/Downloads
-rm dataset ; mql -b 3 &lt; dataset.mql
-```
-&#34;&#34;&#34;
-
-import re
-from itertools import chain
-from ..parameters import WARP, OTYPE, OSLOTS
-from ..core.fabric import FabricCore
-from ..core.helpers import (
-    cleanName,
-    isClean,
-    specFromRanges,
-    rangesFromList,
-    setFromSpec,
-    nbytes,
-    console,
-)
-from ..core.files import (
-    fileOpen,
-    expanduser as ex,
-    unexpanduser as ux,
-    expandDir,
-    dirMake,
-    DOWNLOADS,
-)
-from ..core.timestamp import SILENT_D, silentConvert
-
-# If a feature, with type string, has less than ENUM_LIMIT values,
-# an enumeration type for it will be created
-# provided all values of that feature are a valid name for MQL.
-
-ENUM_LIMIT = 1000
-
-ONE_ENUM_TYPE = True
-
-MAX_INT = 2**31 - 1
-MIN_INT = -MAX_INT
-
-
-def exportMQL(app, mqlDb, exportDir=None):
-    &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
-
-    Parameters
-    ----------
-    app: object
-        A `tf.advanced.app.App` object, which holds the corpus data
-        that will be exported to MQL.
-    mqlDb: string
-        Name of the MQL database
-    exportDir: string, optional None
-        Directory where the MQL data will be saved.
-        If None is given, it will end up in the same repo as the dataset, in a new
-        top-level subdirectory called `mql`.
-        The exported data will be written to file `exportDir/mqlDb.mql`.
-        If `exportDir` starts with `~`, the `~` will be expanded to your
-        home directory.
-        Likewise, `..` will be expanded to the parent of the current directory,
-        and `.` to the current directory, both only at the start of `exportDir`.
-
-    Returns
-    -------
-    None
-
-    See Also
-    --------
-    tf.convert.mql
-    &#34;&#34;&#34;
-    indent = app.indent
-    indent(level=0, reset=True)
-
-    if exportDir is None:
-        repoLocation = getattr(app, &#34;repoLocation&#34;, None)
-        if repoLocation is None:
-            locations = getattr(app, &#34;locations&#34;, None)
-            if locations is None or len(locations) == 0:
-                baseDir = DOWNLOADS
-            else:
-                baseDir = expandDir(app, f&#34;{locations[0]}/..&#34;)
-        else:
-            baseDir = repoLocation
-        exportDir = f&#34;{baseDir}/mql&#34;
-    else:
-        exportDir = expandDir(app, exportDir)
-
-    mqlNameClean = cleanName(mqlDb)
-    mql = MQL(app, mqlNameClean, exportDir)
-    mql.write()
-
-
-def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=None):
-    &#34;&#34;&#34;Converts an MQL database dump to a TF dataset.
-
-    Parameters
-    ----------
-    mqlFile: string
-        Path to the file which contains the MQL code.
-    saveDir: string
-        Path to where a new TF app will be created.
-    silent: string
-        How silent the newly created TF object must be.
-
-    slotType: string
-        You have to tell which object type in the MQL file acts as the slot type,
-        because TF cannot see that on its own.
-
-    otext: dict
-        You can pass the information about sections and text formats as
-        the parameter `otext`. This info will end up in the `otext.tf` feature.
-        Pass it as a dictionary of keys and values, like so:
-
-            otext = {
-                &#39;fmt:text-trans-plain&#39;: &#39;{glyphs}{trailer}&#39;,
-                &#39;sectionFeatures&#39;: &#39;book,chapter,verse&#39;,
-            }
-
-    meta: dict
-        Likewise, you can add a dictionary keyed by features
-        that will added to the metadata of the corresponding features.
-
-        You may also add metadata for the empty feature `&#34;&#34;`,
-        this will be added to the metadata of all features.
-        Handy to add provenance data there.
-
-        Example:
-
-            meta = {
-                &#34;&#34;: dict(
-                    dataset=&#39;DLC&#39;,
-                    datasetName=&#39;Digital Language Corpus&#39;,
-                    author=&#34;That &#39;s me&#34;,
-                ),
-                &#34;sp&#34;: dict(
-                    description: &#34;part-of-speech&#34;,
-                ),
-            }
-
-        !!! note &#34;description&#34;
-            TF will display all metadata information under the
-            key `description` in a more prominent place than the other
-            metadata.
-
-        !!! caution &#34;`value type`&#34;
-            Do not pass the value types of the features here.
-
-    Returns
-    -------
-    object
-        A `tf.core.fabric.FabricCore` object holding the conversion result of the
-        MQL data into TF.
-    &#34;&#34;&#34;
-
-    TF = FabricCore(locations=saveDir, silent=silent)
-    tmObj = TF.tmObj
-    indent = tmObj.indent
-
-    indent(level=0, reset=True)
-    (good, nodeFeatures, edgeFeatures, metaData) = tfFromMql(
-        mqlFile, tmObj, slotType=slotType, otext=otext, meta=meta
-    )
-    if good:
-        TF.save(nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures, metaData=metaData)
-    return TF
-
-
-class MQL:
-    def __init__(self, app, mqlDb, exportDir, silent=SILENT_D):
-        self.app = app
-        self.silent = silentConvert(silent)
-        app.setSilent(silent)
-        warning = app.warning
-
-        self.mqlNameOrig = mqlDb
-        exportDir = ex(exportDir)
-        self.exportDir = exportDir
-
-        cleanDb = cleanName(mqlDb)
-        if cleanDb != mqlDb:
-            warning(f&#39;db name &#34;{mqlDb}&#34; =&gt; &#34;{cleanDb}&#34;&#39;)
-        self.mqlDb = cleanDb
-
-        self.enums = {}
-        self._check()
-
-    def write(self):
-        silent = self.silent
-        app = self.app
-        error = app.error
-        info = app.info
-        indent = app.indent
-        exportDir = self.exportDir
-
-        if not self.good:
-            return
-
-        dirMake(self.exportDir)
-
-        mqlFile = f&#34;{self.exportDir}/{self.mqlDb}.mql&#34;
-        try:
-            fm = fileOpen(mqlFile, mode=&#34;w&#34;)
-        except Exception:
-            error(f&#34;Could not write to {ux(mqlFile)}&#34;)
-            self.good = False
-            return
-
-        info(f&#34;Loading {len(self.featureList)} features&#34;)
-        for ft in self.featureList:
-            fObj = self.features[ft]
-            fObj.load(silent=silent)
-
-        self.fm = fm
-        self._writeStartDb()
-        self._writeEnums()
-        self._writeTypes()
-        self._writeDataAll()
-        self._writeEndDb()
-        indent(level=0)
-        info(f&#34;MQL in {ux(exportDir)}&#34;)
-        info(&#34;Done&#34;)
-
-    def _check(self):
-        silent = self.silent
-        app = self.app
-        error = app.error
-        info = app.info
-        indent = app.indent
-        tfFeatures = app.api.TF.features
-
-        info(f&#34;Checking features of dataset {self.mqlDb}&#34;)
-
-        self.features = {}
-        self.featureList = []
-        indent(level=1)
-        good = True
-
-        for f, fo in sorted(tfFeatures.items()):
-            if fo.method is not None or f in WARP:
-                continue
-
-            fo.load(metaOnly=True, silent=silent)
-
-            if fo.isConfig:
-                continue
-
-            if fo.dataType == &#34;int&#34;:
-                fMap = fo.data
-                outOfBound = {x for x in fMap.values() if x &lt; MIN_INT or x &gt; MAX_INT}
-                nOutOfBound = len(outOfBound)
-
-                if nOutOfBound:
-                    error(
-                        f&#39;integer feature &#34;{f}&#34; has {nOutOfBound} values &#39;
-                        f&#34;less than {MIN_INT} or larger than {MAX_INT}&#34;
-                    )
-                    good = False
-
-            cleanF = cleanName(f)
-
-            if cleanF != f:
-                error(f&#39;feature &#34;{f}&#34; =&gt; &#34;{cleanF}&#34;&#39;)
-
-            self.featureList.append(cleanF)
-            self.features[cleanF] = fo
-
-        for feat in (OTYPE, OSLOTS, &#34;__levels__&#34;):
-            if feat not in tfFeatures:
-                error(
-                    &#34;{} feature {} is missing from data set&#34;.format(
-                        (
-                            &#34;Warp&#34;
-                            if feat in WARP
-                            else &#34;Computed&#34; if feat.startswith(&#34;__&#34;) else &#34;Data&#34;
-                        ),
-                        feat,
-                    )
-                )
-                good = False
-            else:
-                fObj = tfFeatures[feat]
-                if not fObj.load(silent=silent):
-                    good = False
-
-        indent(level=0)
-
-        if not good:
-            error(&#34;Export to MQL aborted&#34;)
-        else:
-            info(f&#34;{len(self.featureList)} features to export to MQL ...&#34;)
-
-        self.good = good
-
-    def _writeStartDb(self):
-        self.fm.write(
-            &#34;&#34;&#34;
-CREATE DATABASE &#39;{name}&#39;
-GO
-USE DATABASE &#39;{name}&#39;
-GO
-&#34;&#34;&#34;.format(
-                name=self.mqlDb
-            )
-        )
-
-    def _writeEndDb(self):
-        self.fm.write(
-            &#34;&#34;&#34;
-VACUUM DATABASE ANALYZE
-GO
-&#34;&#34;&#34;
-        )
-        self.fm.close()
-
-    def _writeEnums(self):
-        app = self.app
-        info = app.info
-        indent = app.indent
-
-        indent(level=0)
-        info(&#34;Writing enumerations&#34;)
-        indent(level=1)
-        for ft in self.featureList:
-            ftClean = cleanName(ft)
-            fObj = self.features[ft]
-
-            if fObj.isEdge or fObj.dataType == &#34;int&#34;:
-                continue
-
-            fMap = fObj.data
-            fValues = sorted(set(fMap.values()))
-
-            if len(fValues) &gt; ENUM_LIMIT:
-                continue
-
-            eligible = all(isClean(fVal) for fVal in fValues)
-
-            if not eligible:
-                unclean = [fVal for fVal in fValues if not isClean(fVal)]
-                console(
-                    &#34;\t{:&lt;15}: {:&gt;4} values, {} not a name, e.g. «{}»&#34;.format(
-                        ftClean,
-                        len(fValues),
-                        len(unclean),
-                        unclean[0],
-                    )
-                )
-                continue
-            self.enums[ftClean] = fValues
-
-        if ONE_ENUM_TYPE:
-            self._writeEnumsAsOne()
-        else:
-            for ft in sorted(self.enums):
-                self._writeEnum(ft)
-            indent(level=0)
-            info(f&#34;Written {len(self.enums)} enumerations&#34;)
-
-    def _writeEnumsAsOne(self):
-        app = self.app
-        info = app.info
-
-        fValues = sorted(
-            set(chain.from_iterable((set(fV) for fV in self.enums.values())))
-        )
-        if len(fValues):
-            info(f&#34;Writing an all-in-one enum with {len(fValues):&gt;4} values&#34;)
-            fValuesEnumerated = &#34;,\n\t&#34;.join(
-                &#34;{} = {}&#34;.format(fVal, i) for (i, fVal) in enumerate(fValues)
-            )
-            self.fm.write(
-                f&#34;&#34;&#34;
-CREATE ENUMERATION all_enum = {{
-    {fValuesEnumerated}
-}}
-GO
-&#34;&#34;&#34;
-            )
-
-    def _writeEnum(self, ft):
-        app = self.app
-        info = app.info
-
-        fValues = self.enums[ft]
-        if len(fValues):
-            info(f&#34;enum {ft:&lt;15} with {len(fValues):&gt;4} values&#34;)
-            fValuesEnumerated = &#34;,\n\t&#34;.join(
-                f&#34;{fVal} = {i}&#34; for (i, fVal) in enumerate(fValues)
-            )
-            self.fm.write(
-                f&#34;&#34;&#34;
-CREATE ENUMERATION {ft}_enum = {{
-    {fValuesEnumerated}
-}}
-GO
-&#34;&#34;&#34;
-            )
-
-    def _writeTypes(self):
-        def valInt(n):
-            return str(n)
-
-        def valStr(s):
-            if &#34;&#39;&#34; in s:
-                return &#39;&#34;{}&#34;&#39;.format(s.replace(&#39;&#34;&#39;, &#39;\\&#34;&#39;))
-            else:
-                return &#34;&#39;{}&#39;&#34;.format(s)
-
-        def valIds(ids):
-            return &#34;({})&#34;.format(&#34;,&#34;.join(str(i) for i in ids))
-
-        app = self.app
-        warning = app.warning
-        info = app.info
-        indent = app.indent
-        tfFeatures = app.api.TF.features
-
-        self.levels = tfFeatures[&#34;__levels__&#34;].data[::-1]
-        indent(level=0)
-        info(
-            &#34;Mapping {} features onto {} object types&#34;.format(
-                len(self.featureList),
-                len(self.levels),
-            )
-        )
-        otypeSupport = {}
-
-        for otype, av, start, end in self.levels:
-            cleanOtype = cleanName(otype)
-            if cleanOtype != otype:
-                warning(f&#39;otype &#34;{otype}&#34; =&gt; &#34;{cleanOtype}&#34;&#39;)
-            otypeSupport[cleanOtype] = set(range(start, end + 1))
-
-        self.otypes = {}
-        self.featureTypes = {}
-        self.featureMethods = {}
-
-        for ft in self.featureList:
-            ftClean = cleanName(ft)
-            fObj = self.features[ft]
-            if fObj.isEdge:
-                dataType = &#34;LIST OF id_d&#34;
-                method = valIds
-            else:
-                if fObj.dataType == &#34;str&#34;:
-                    dataType = &#39;string DEFAULT &#34;&#34;&#39;
-                    method = valInt if ft in self.enums else valStr
-                elif fObj.dataType == &#34;int&#34;:
-                    dataType = &#34;integer DEFAULT 0&#34;
-                    method = valInt
-                else:
-                    dataType = &#39;string DEFAULT &#34;&#34;&#39;
-                    method = valStr
-            self.featureTypes[ft] = dataType
-            self.featureMethods[ft] = method
-
-            support = set(fObj.data.keys())
-            for otype in otypeSupport:
-                if len(support &amp; otypeSupport[otype]):
-                    self.otypes.setdefault(otype, []).append(ftClean)
-
-        for otype in (cleanName(x[0]) for x in self.levels):
-            self._writeType(otype)
-
-    def _writeType(self, otype):
-        self.fm.write(
-            f&#34;&#34;&#34;
-CREATE OBJECT TYPE
-[{otype}
-&#34;&#34;&#34;
-        )
-        for ft in self.otypes.get(otype, []):
-            fType = (
-                &#34;{}_enum&#34;.format(&#34;all&#34; if ONE_ENUM_TYPE else ft)
-                if ft in self.enums
-                else self.featureTypes[ft]
-            )
-            self.fm.write(f&#34;  {ft}:{fType};\n&#34;)
-        self.fm.write(
-            &#34;&#34;&#34;
-]
-GO
-&#34;&#34;&#34;
-        )
-
-    def _writeDataAll(self):
-        app = self.app
-        info = app.info
-        tfFeatures = app.api.TF.features
-
-        info(
-            &#34;Writing {} features as data in {} object types&#34;.format(
-                len(self.featureList),
-                len(self.levels),
-            )
-        )
-        oslotsData = tfFeatures[OSLOTS].data
-        self.oslots = oslotsData[0]
-        self.maxSlot = oslotsData[1]
-
-        for otype, av, start, end in self.levels:
-            self._writeData(otype, start, end)
-
-    def _writeData(self, otype, start, end):
-        app = self.app
-        info = app.info
-        indent = app.indent
-
-        fm = self.fm
-
-        indent(level=1, reset=True)
-        info(f&#34;{otype} data ...&#34;)
-        oslots = self.oslots
-        maxSlot = self.maxSlot
-        oFeats = self.otypes.get(otype, [])
-        features = self.features
-        featureMethods = self.featureMethods
-        fm.write(
-            &#34;&#34;&#34;
-DROP INDEXES ON OBJECT TYPE[{o}]
-GO
-CREATE OBJECTS
-WITH OBJECT TYPE[{o}]
-&#34;&#34;&#34;.format(
-                o=otype
-            )
-        )
-        curSize = 0
-        LIMIT = 50000
-        t = 0
-        j = 0
-        indent(level=2, reset=True)
-
-        for n in range(start, end + 1):
-            oMql = &#34;&#34;&#34;
-CREATE OBJECT
-FROM MONADS= {{ {m} }}
-WITH ID_D={i} [
-&#34;&#34;&#34;.format(
-                m=(
-                    n
-                    if n &lt;= maxSlot
-                    else specFromRanges(rangesFromList(oslots[n - maxSlot - 1]))
-                ),
-                i=n,
-            )
-            for ft in oFeats:
-                method = featureMethods[ft]
-                fMap = features[ft].data
-                if n in fMap:
-                    oMql += f&#34;{ft}:={method(fMap[n])};\n&#34;
-            oMql += &#34;&#34;&#34;
-]
-&#34;&#34;&#34;
-            fm.write(oMql)
-            curSize += len(bytes(oMql, encoding=&#34;utf8&#34;))
-            t += 1
-            j += 1
-            if j == LIMIT:
-                fm.write(
-                    &#34;&#34;&#34;
-GO
-CREATE OBJECTS
-WITH OBJECT TYPE[{o}]
-&#34;&#34;&#34;.format(
-                        o=otype
-                    )
-                )
-                info(
-                    f&#34;batch of size {nbytes(curSize):&gt;20} with {j:&gt;7} of {t:&gt;7} {otype}s&#34;
-                )
-                j = 0
-                curSize = 0
-
-        info(f&#34;batch of size {nbytes(curSize):&gt;20} with {j:&gt;7} of {t:&gt;7} {otype}s&#34;)
-        fm.write(
-            &#34;&#34;&#34;
-GO
-CREATE INDEXES ON OBJECT TYPE[{o}]
-GO
-&#34;&#34;&#34;.format(
-                o=otype
-            )
-        )
-
-        indent(level=1)
-        info(&#34;{} data: {} objects&#34;.format(otype, t))
-
-
-# MQL IMPORT
-
-uniscan = re.compile(r&#34;(?:\\x..)+&#34;)
-
-
-def makeuni(match):
-    &#34;&#34;&#34;Make proper UNICODE of a text that contains byte escape codes
-    such as backslash `xb6`
-    &#34;&#34;&#34;
-    byts = eval(&#39;&#34;&#39; + match.group(0) + &#39;&#34;&#39;)
-    return byts.encode(&#34;latin1&#34;).decode(&#34;utf-8&#34;)
-
-
-def uni(line):
-    return uniscan.sub(makeuni, line)
-
-
-def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
-    &#34;&#34;&#34;Generate TF from MQL
-
-    Parameters
-    ----------
-    tmObj: object
-        A `tf.core.timestamp.Timestamp` object
-    mqlFile, slotType, otype, meta: mixed
-        See `tf.convert.mql.importMQL`
-    &#34;&#34;&#34;
-    mqlFile = ex(mqlFile)
-    error = tmObj.error
-
-    if slotType is None:
-        error(&#34;ERROR: no slotType specified&#34;)
-        return (False, {}, {}, {})
-    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlFile, tmObj)
-    if not good:
-        return (False, {}, {}, {})
-    return tfFromData(tmObj, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)
-
-
-def parseMql(mqlFile, tmObj):
-    info = tmObj.info
-    error = tmObj.error
-
-    info(&#34;Parsing MQL source ...&#34;)
-    fh = fileOpen(mqlFile)
-
-    objectTypes = dict()
-    tables = dict()
-
-    edgeF = dict()
-    nodeF = dict()
-
-    curId = None
-    curEnum = None
-    curObjectType = None
-    curTable = None
-    curObject = None
-    curValue = None
-    curFeature = None
-    seeObjects = False
-
-    inObjectTypeFeatures = False
-
-    STRING_TYPES = {&#34;ascii&#34;, &#34;string&#34;}
-
-    enums = dict()
-
-    chunkSize = 1000000
-    inThisChunk = 0
-
-    good = True
-
-    for ln, line in enumerate(fh):
-        inThisChunk += 1
-        if inThisChunk == chunkSize:
-            info(f&#34;\tline {ln + 1:&gt;9}&#34;)
-            inThisChunk = 0
-        if line.startswith(&#34;CREATE OBJECTS WITH OBJECT TYPE&#34;) or line.startswith(
-            &#34;WITH OBJECT TYPE&#34;
-        ):
-            comps = line.rstrip().rstrip(&#34;]&#34;).split(&#34;[&#34;, 1)
-            curTable = comps[1]
-            info(f&#34;\t\tobjects in {curTable}&#34;)
-            curObject = None
-            if curTable not in tables:
-                tables[curTable] = dict()
-            seeObjects = True
-        elif line == &#34;CREATE OBJECT\n&#34;:
-            curObject = None
-            curObject = dict(feats=dict(), monads=None)
-            curId = None
-            seeObjects = True
-        elif curEnum is not None:
-            if line.startswith(&#34;}&#34;):
-                curEnum = None
-                continue
-            comps = line.strip().rstrip(&#34;,&#34;).split(&#34;=&#34;, 1)
-            comp = comps[0].strip()
-            words = comp.split()
-            if words[0] == &#34;DEFAULT&#34;:
-                enums[curEnum][&#34;default&#34;] = uni(words[1])
-                value = words[1]
-            else:
-                value = words[0]
-            enums[curEnum][&#34;values&#34;].append(value)
-        elif curObjectType is not None:
-            if line.startswith(&#34;]&#34;):
-                curObjectType = None
-                inObjectTypeFeatures = False
-                continue
-            if curObjectType is True:
-                if line.startswith(&#34;[&#34;):
-                    curObjectType = line.rstrip()[1:]
-                    objectTypes[curObjectType] = dict()
-                    info(f&#34;\t\totype {curObjectType}&#34;)
-                    inObjectTypeFeatures = True
-                    continue
-            if inObjectTypeFeatures:
-                comps = line.strip().rstrip(&#34;;&#34;).split(&#34;:&#34;, 1)
-                feature = comps[0].strip()
-                fInfo = comps[1].strip()
-                fCleanInfo = fInfo.replace(&#34;FROM SET&#34;, &#34;&#34;)
-                fInfoComps = fCleanInfo.split(&#34; &#34;, 1)
-                fMQLType = fInfoComps[0]
-                if len(fInfoComps) == 2:
-                    fDefaultComps = fInfoComps[1].strip().split(&#34; &#34;, 1)
-                    fDefault = fDefaultComps[1] if len(fDefaultComps) &gt; 1 else None
-                else:
-                    fDefault = None
-                if fDefault is not None and fMQLType in STRING_TYPES:
-                    fDefault = uni(fDefault[1:-1])
-                default = enums.get(fMQLType, {}).get(&#34;default&#34;, fDefault)
-                ftype = (
-                    &#34;str&#34;
-                    if fMQLType in enums
-                    else (
-                        &#34;int&#34;
-                        if fMQLType == &#34;integer&#34;
-                        else (
-                            &#34;str&#34;
-                            if fMQLType in STRING_TYPES
-                            else &#34;int&#34; if fInfo == &#34;id_d&#34; else &#34;str&#34;
-                        )
-                    )
-                )
-                isEdge = fMQLType == &#34;id_d&#34;
-                if isEdge:
-                    edgeF.setdefault(curObjectType, set()).add(feature)
-                else:
-                    nodeF.setdefault(curObjectType, set()).add(feature)
-
-                objectTypes[curObjectType][feature] = (ftype, default)
-                info(
-                    &#34;\t\t\tfeature {} ({}) =def= {} : {}&#34;.format(
-                        feature, ftype, default, &#34;edge&#34; if isEdge else &#34;node&#34;
-                    )
-                )
-        elif seeObjects:
-            if curObject is not None:
-                if line.startswith(&#34;]&#34;):
-                    objectType = objectTypes[curTable]
-                    for feature, (ftype, default) in objectType.items():
-                        if feature not in curObject[&#34;feats&#34;] and default is not None:
-                            curObject[&#34;feats&#34;][feature] = default
-                    tables[curTable][curId] = curObject
-                    curObject = None
-                    continue
-                elif line.startswith(&#34;[&#34;):
-                    name = line.rstrip()[1:]
-                    if len(name):
-                        curTable = name
-                        if curTable not in tables:
-                            tables[curTable] = dict()
-                elif line.startswith(&#34;FROM MONADS&#34;):
-                    monads = (
-                        line.split(&#34;=&#34;, 1)[1]
-                        .replace(&#34;{&#34;, &#34;&#34;)
-                        .replace(&#34;}&#34;, &#34;&#34;)
-                        .replace(&#34; &#34;, &#34;&#34;)
-                        .strip()
-                    )
-                    curObject[&#34;monads&#34;] = setFromSpec(monads)
-                elif line.startswith(&#34;WITH ID_D&#34;):
-                    comps = line.replace(&#34;[&#34;, &#34;&#34;).rstrip().split(&#34;=&#34;, 1)
-                    curId = int(comps[1])
-                elif line.startswith(&#34;GO&#34;):
-                    pass
-                elif line.strip() == &#34;&#34;:
-                    pass
-                else:
-                    if curValue is not None:
-                        toBeContinued = not line.rstrip().endswith(&#39;&#34;;&#39;)
-                        if toBeContinued:
-                            curValue += line
-                        else:
-                            curValue += line.rstrip().rstrip(&#34;;&#34;).rstrip(&#39;&#34;&#39;)
-                            curObject[&#34;feats&#34;][curFeature] = uni(curValue)
-                            curValue = None
-                            curFeature = None
-                        continue
-                    if &#34;:=&#34; in line:
-                        (featurePart, valuePart) = line.split(&#34;=&#34;, 1)
-                        feature = featurePart[0:-1].strip()
-                        valuePart = valuePart.lstrip()
-                        isText = &#39;:=&#34;&#39; in line
-                        toBeContinued = isText and not line.rstrip().endswith(&#39;&#34;;&#39;)
-                        if toBeContinued:
-                            # this happens if a feature value
-                            # contains a new line
-                            # we must continue scanning lines
-                            # until we meet the end of the value
-                            curFeature = feature
-                            curValue = valuePart.lstrip(&#39;&#34;&#39;)
-                        else:
-                            value = valuePart.rstrip().rstrip(&#34;;&#34;).strip(&#39;&#34;&#39;)
-                            curObject[&#34;feats&#34;][feature] = (
-                                uni(value) if isText else value
-                            )
-                    else:
-                        error(f&#34;ERROR: line {ln}: unrecognized line --&gt;{line}&lt;--&#34;)
-                        good = False
-                        break
-            else:
-                if line.startswith(&#34;CREATE OBJECT&#34;):
-                    curObject = dict(feats=dict(), monads=None)
-                    curId = None
-        else:
-            if line.startswith(&#34;CREATE ENUMERATION&#34;):
-                words = line.split()
-                curEnum = words[2]
-                enums[curEnum] = dict(default=None, values=[])
-                info(f&#34;\t\tenum {curEnum}&#34;)
-            elif line.startswith(&#34;CREATE OBJECT TYPE&#34;):
-                curObjectType = True
-                inObjectTypeFeatures = False
-    info(f&#34;{ln + 1} lines parsed&#34;)
-    fh.close()
-    for table in tables:
-        info(f&#34;{len(tables[table])} objects of type {table}&#34;)
-
-    if len(tables) == 0:
-        info(&#34;No objects found&#34;)
-    return (good, objectTypes, tables, nodeF, edgeF)
-
-
-def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
-    info = tmObj.info
-
-    info(&#34;Making TF data ...&#34;)
-
-    NIL = {&#34;nil&#34;, &#34;NIL&#34;, &#34;Nil&#34;}
-
-    tableOrder = [slotType] + [t for t in sorted(tables) if t != slotType]
-
-    iddFromMonad = dict()
-    slotFromMonad = dict()
-
-    nodeFromIdd = dict()
-    iddFromNode = dict()
-
-    nodeFeatures = dict()
-    edgeFeatures = dict()
-    metaData = dict()
-
-    # metadata that ends up in every feature
-    metaData[&#34;&#34;] = meta.get(&#34;&#34;, {})
-    distinctFeatures = chain(
-        chain.from_iterable(nodeF.values()), chain.from_iterable(edgeF.values())
-    )
-    for f in distinctFeatures:
-        metaInfo = meta.get(f, None)
-        if metaInfo is not None:
-            metaData[f] = metaInfo
-
-    # the config feature otext
-    metaData[&#34;otext&#34;] = otext
-
-    good = True
-
-    info(&#34;Monad - idd mapping ...&#34;)
-    for idd in tables.get(slotType, {}):
-        monad = list(tables[slotType][idd][&#34;monads&#34;])[0]
-        iddFromMonad[monad] = idd
-
-    info(&#34;Removing holes in the monad sequence&#34;)
-    # we set up a monad - slot mapping
-    curSlot = 0
-    otype = dict()
-    for monad in sorted(iddFromMonad):
-        curSlot += 1
-        slotFromMonad[monad] = curSlot
-        idd = iddFromMonad[monad]
-        nodeFromIdd[idd] = curSlot
-        iddFromNode[curSlot] = idd
-        otype[curSlot] = slotType
-
-    maxSlot = curSlot
-    info(f&#34;maxSlot={maxSlot}&#34;)
-
-    info(&#34;Node mapping and otype ...&#34;)
-    node = maxSlot
-    for t in tableOrder[1:]:
-        for idd in sorted(tables[t]):
-            node += 1
-            nodeFromIdd[idd] = node
-            iddFromNode[node] = idd
-            otype[node] = t
-
-    nodeFeatures[&#34;otype&#34;] = otype
-    metaData[&#34;otype&#34;] = dict(valueType=&#34;str&#34;)
-
-    info(&#34;oslots ...&#34;)
-    oslots = dict()
-    for t in tableOrder[1:]:
-        for idd in tables.get(t, {}):
-            node = nodeFromIdd[idd]
-            monads = tables[t][idd][&#34;monads&#34;]
-            oslots[node] = {slotFromMonad[m] for m in monads}
-    edgeFeatures[&#34;oslots&#34;] = oslots
-    metaData[&#34;oslots&#34;] = dict(valueType=&#34;str&#34;)
-
-    info(&#34;metadata ...&#34;)
-    for t in nodeF:
-        for f in nodeF[t]:
-            ftype = objectTypes[t][f][0]
-            metaData.setdefault(f, {})[&#34;valueType&#34;] = ftype
-    for t in edgeF:
-        for f in edgeF[t]:
-            metaData.setdefault(f, {})[&#34;valueType&#34;] = &#34;str&#34;
-
-    info(&#34;features ...&#34;)
-    chunkSize = 100000
-    for t in tableOrder:
-        info(f&#34;\tfeatures from {t}s&#34;)
-        inThisChunk = 0
-        thisTable = tables.get(t, {})
-        for i, idd in enumerate(thisTable):
-            inThisChunk += 1
-            if inThisChunk == chunkSize:
-                info(f&#34;\t{i + 1:&gt;9} {t}s&#34;)
-                inThisChunk = 0
-            node = nodeFromIdd[idd]
-            features = tables[t][idd][&#34;feats&#34;]
-            for f, v in features.items():
-                isEdge = f in edgeF.get(t, set())
-                if isEdge:
-                    if v not in NIL:
-                        edgeFeatures.setdefault(f, {}).setdefault(node, set()).add(
-                            nodeFromIdd[int(v)]
-                        )
-                else:
-                    nodeFeatures.setdefault(f, {})[node] = v
-        info(f&#34;\t{len(thisTable):&gt;9} {t}s&#34;)
-
-    return (good, nodeFeatures, edgeFeatures, metaData)</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -1244,35 +164,10 @@ def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
 <span>def <span class="ident">exportMQL</span></span>(<span>app, mqlDb, exportDir=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Exports the complete TF dataset into single MQL database.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
-<dd>A <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code> object, which holds the corpus data
-that will be exported to MQL.</dd>
-<dt><strong><code>mqlDb</code></strong> :&ensp;<code>string</code></dt>
-<dd>Name of the MQL database</dd>
-<dt><strong><code>exportDir</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
-<dd>Directory where the MQL data will be saved.
-If None is given, it will end up in the same repo as the dataset, in a new
-top-level subdirectory called <code>mql</code>.
-The exported data will be written to file <code>exportDir/mqlDb.mql</code>.
-If <code>exportDir</code> starts with <code>~</code>, the <code>~</code> will be expanded to your
-home directory.
-Likewise, <code>..</code> will be expanded to the parent of the current directory,
-and <code>.</code> to the current directory, both only at the start of <code>exportDir</code>.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>None</code></dt>
-<dd>&nbsp;</dd>
-</dl>
-<h2 id="see-also">See Also</h2>
-<p><code><a title="tf.convert.mql" href="#tf.convert.mql">tf.convert.mql</a></code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L183-L230" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L183-L230" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(app, mqlDb, exportDir=None):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -1323,73 +218,40 @@ and <code>.</code> to the current directory, both only at the start of <code>exp
     mql = MQL(app, mqlNameClean, exportDir)
     mql.write()</code></pre>
 </details>
+<div class="desc"><p>Exports the complete TF dataset into single MQL database.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dd>A <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code> object, which holds the corpus data
+that will be exported to MQL.</dd>
+<dt><strong><code>mqlDb</code></strong> :&ensp;<code>string</code></dt>
+<dd>Name of the MQL database</dd>
+<dt><strong><code>exportDir</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>Directory where the MQL data will be saved.
+If None is given, it will end up in the same repo as the dataset, in a new
+top-level subdirectory called <code>mql</code>.
+The exported data will be written to file <code>exportDir/mqlDb.mql</code>.
+If <code>exportDir</code> starts with <code>~</code>, the <code>~</code> will be expanded to your
+home directory.
+Likewise, <code>..</code> will be expanded to the parent of the current directory,
+and <code>.</code> to the current directory, both only at the start of <code>exportDir</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="see-also">See Also</h2>
+<p><code><a title="tf.convert.mql" href="#tf.convert.mql">tf.convert.mql</a></code></p></div>
 </dd>
 <dt id="tf.convert.mql.importMQL"><code class="name flex">
 <span>def <span class="ident">importMQL</span></span>(<span>mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Converts an MQL database dump to a TF dataset.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>mqlFile</code></strong> :&ensp;<code>string</code></dt>
-<dd>Path to the file which contains the MQL code.</dd>
-<dt><strong><code>saveDir</code></strong> :&ensp;<code>string</code></dt>
-<dd>Path to where a new TF app will be created.</dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>string</code></dt>
-<dd>How silent the newly created TF object must be.</dd>
-<dt><strong><code>slotType</code></strong> :&ensp;<code>string</code></dt>
-<dd>You have to tell which object type in the MQL file acts as the slot type,
-because TF cannot see that on its own.</dd>
-<dt><strong><code>otext</code></strong> :&ensp;<code>dict</code></dt>
-<dd>You can pass the information about sections and text formats as
-the parameter <code>otext</code>. This info will end up in the <code>otext.tf</code> feature.
-Pass it as a dictionary of keys and values, like so:<pre><code>otext = {
-    'fmt:text-trans-plain': '{glyphs}{trailer}',
-    'sectionFeatures': 'book,chapter,verse',
-}
-</code></pre>
-</dd>
-<dt><strong><code>meta</code></strong> :&ensp;<code>dict</code></dt>
-<dd>
-<p>Likewise, you can add a dictionary keyed by features
-that will added to the metadata of the corresponding features.</p>
-<p>You may also add metadata for the empty feature <code>""</code>,
-this will be added to the metadata of all features.
-Handy to add provenance data there.</p>
-<p>Example:</p>
-<pre><code>meta = {
-    "": dict(
-        dataset='DLC',
-        datasetName='Digital Language Corpus',
-        author="That 's me",
-    ),
-    "sp": dict(
-        description: "part-of-speech",
-    ),
-}
-</code></pre>
-<div class="admonition note">
-<p class="admonition-title">description</p>
-<p>TF will display all metadata information under the
-key <code>description</code> in a more prominent place than the other
-metadata.</p>
-</div>
-<div class="admonition caution">
-<p class="admonition-title"><code>value type</code></p>
-<p>Do not pass the value types of the features here.</p>
-</div>
-</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>object</code></dt>
-<dd>A <code><a title="tf.core.fabric.FabricCore" href="../core/fabric.html#tf.core.fabric.FabricCore">FabricCore</a></code> object holding the conversion result of the
-MQL data into TF.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L233-L305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L233-L305" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a TF dataset.
@@ -1465,17 +327,73 @@ MQL data into TF.</dd>
         TF.save(nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures, metaData=metaData)
     return TF</code></pre>
 </details>
+<div class="desc"><p>Converts an MQL database dump to a TF dataset.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>mqlFile</code></strong> :&ensp;<code>string</code></dt>
+<dd>Path to the file which contains the MQL code.</dd>
+<dt><strong><code>saveDir</code></strong> :&ensp;<code>string</code></dt>
+<dd>Path to where a new TF app will be created.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code></dt>
+<dd>How silent the newly created TF object must be.</dd>
+<dt><strong><code>slotType</code></strong> :&ensp;<code>string</code></dt>
+<dd>You have to tell which object type in the MQL file acts as the slot type,
+because TF cannot see that on its own.</dd>
+<dt><strong><code>otext</code></strong> :&ensp;<code>dict</code></dt>
+<dd>You can pass the information about sections and text formats as
+the parameter <code>otext</code>. This info will end up in the <code>otext.tf</code> feature.
+Pass it as a dictionary of keys and values, like so:<pre><code>otext = {
+    'fmt:text-trans-plain': '{glyphs}{trailer}',
+    'sectionFeatures': 'book,chapter,verse',
+}
+</code></pre>
+</dd>
+<dt><strong><code>meta</code></strong> :&ensp;<code>dict</code></dt>
+<dd>
+<p>Likewise, you can add a dictionary keyed by features
+that will added to the metadata of the corresponding features.</p>
+<p>You may also add metadata for the empty feature <code>""</code>,
+this will be added to the metadata of all features.
+Handy to add provenance data there.</p>
+<p>Example:</p>
+<pre><code>meta = {
+    "": dict(
+        dataset='DLC',
+        datasetName='Digital Language Corpus',
+        author="That 's me",
+    ),
+    "sp": dict(
+        description: "part-of-speech",
+    ),
+}
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">description</p>
+<p>TF will display all metadata information under the
+key <code>description</code> in a more prominent place than the other
+metadata.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title"><code>value type</code></p>
+<p>Do not pass the value types of the features here.</p>
+</div>
+</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>object</code></dt>
+<dd>A <code><a title="tf.core.fabric.FabricCore" href="../core/fabric.html#tf.core.fabric.FabricCore">FabricCore</a></code> object holding the conversion result of the
+MQL data into TF.</dd>
+</dl></div>
 </dd>
 <dt id="tf.convert.mql.makeuni"><code class="name flex">
 <span>def <span class="ident">makeuni</span></span>(<span>match)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Make proper UNICODE of a text that contains byte escape codes
-such as backslash <code>xb6</code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L735-L740" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L735-L740" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def makeuni(match):
     &#34;&#34;&#34;Make proper UNICODE of a text that contains byte escape codes
@@ -1484,16 +402,17 @@ such as backslash <code>xb6</code></p></div>
     byts = eval(&#39;&#34;&#39; + match.group(0) + &#39;&#34;&#39;)
     return byts.encode(&#34;latin1&#34;).decode(&#34;utf-8&#34;)</code></pre>
 </details>
+<div class="desc"><p>Make proper UNICODE of a text that contains byte escape codes
+such as backslash <code>xb6</code></p></div>
 </dd>
 <dt id="tf.convert.mql.parseMql"><code class="name flex">
 <span>def <span class="ident">parseMql</span></span>(<span>mqlFile, tmObj)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L769-L972" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L769-L972" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def parseMql(mqlFile, tmObj):
     info = tmObj.info
@@ -1700,16 +619,16 @@ such as backslash <code>xb6</code></p></div>
         info(&#34;No objects found&#34;)
     return (good, objectTypes, tables, nodeF, edgeF)</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.convert.mql.tfFromData"><code class="name flex">
 <span>def <span class="ident">tfFromData</span></span>(<span>tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L975-L1084" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L975-L1084" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     info = tmObj.info
@@ -1822,23 +741,16 @@ such as backslash <code>xb6</code></p></div>
 
     return (good, nodeFeatures, edgeFeatures, metaData)</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 <dt id="tf.convert.mql.tfFromMql"><code class="name flex">
 <span>def <span class="ident">tfFromMql</span></span>(<span>mqlFile, tmObj, slotType=None, otext=None, meta=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Generate TF from MQL</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>tmObj</code></strong> :&ensp;<code>object</code></dt>
-<dd>A <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code> object</dd>
-<dt><strong><code>mqlFile</code></strong>, <strong><code>slotType</code></strong>, <strong><code>otype</code></strong>, <strong><code>meta</code></strong> :&ensp;<code>mixed</code></dt>
-<dd>See <code><a title="tf.convert.mql.importMQL" href="#tf.convert.mql.importMQL">importMQL()</a></code></dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L747-L766" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L747-L766" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Generate TF from MQL
@@ -1861,20 +773,28 @@ such as backslash <code>xb6</code></p></div>
         return (False, {}, {}, {})
     return tfFromData(tmObj, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)</code></pre>
 </details>
+<div class="desc"><p>Generate TF from MQL</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tmObj</code></strong> :&ensp;<code>object</code></dt>
+<dd>A <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code> object</dd>
+<dt><strong><code>mqlFile</code></strong>, <strong><code>slotType</code></strong>, <strong><code>otype</code></strong>, <strong><code>meta</code></strong> :&ensp;<code>mixed</code></dt>
+<dd>See <code><a title="tf.convert.mql.importMQL" href="#tf.convert.mql.importMQL">importMQL()</a></code></dd>
+</dl></div>
 </dd>
 <dt id="tf.convert.mql.uni"><code class="name flex">
 <span>def <span class="ident">uni</span></span>(<span>line)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L743-L744" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L743-L744" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def uni(line):
     return uniscan.sub(makeuni, line)</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 </dl>
 </section>
@@ -1886,11 +806,10 @@ such as backslash <code>xb6</code></p></div>
 <span>(</span><span>app, mqlDb, exportDir, silent='auto')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L308-L727" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L308-L727" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class MQL:
     def __init__(self, app, mqlDb, exportDir, silent=SILENT_D):
@@ -2313,17 +1232,17 @@ GO
         indent(level=1)
         info(&#34;{} data: {} objects&#34;.format(otype, t))</code></pre>
 </details>
+<div class="desc"></div>
 <h3>Methods</h3>
 <dl>
 <dt id="tf.convert.mql.MQL.write"><code class="name flex">
 <span>def <span class="ident">write</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L327-L361" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3fbd589957f5b3364f2e9ec4fa03bd61f3a68e34/tf/convert/mql.py#L327-L361" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def write(self):
     silent = self.silent
@@ -2361,6 +1280,7 @@ GO
     info(f&#34;MQL in {ux(exportDir)}&#34;)
     info(&#34;Done&#34;)</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 </dl>
 </dd>
@@ -2377,8 +1297,8 @@ GO
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
 disabled minlength="2">
 </form>
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.css" integrity="sha512-b+T2i3P45i1LZM7I00Ci5QquB9szqaxu+uuk5TUSGjZQ4w4n+qujQiIuvTv2BxE7WCGQCifNMksyKILDiHzsOg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.js" integrity="sha512-2B9/byNV1KKRm5nQ2RLViPFD6U4dUjDGwuW1GU+ImJh8YinPU9Zlq1GzdTMO+G2ROrB5o1qasJBy1ttYz0wCug==" crossorigin></script>
 <style>
 .modal-dialog iframe {
 width: 100vw;
@@ -2419,7 +1339,6 @@ setTimeout(() => input.focus(), 100);
 }).setContent('<iframe src="' + url + '"></iframe>').open();
 }
 </script>
-<h1>Index</h1>
 <div class="toc">
 <ul>
 <li><a href="#mql">MQL</a><ul>
@@ -2466,7 +1385,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.11.6</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>
