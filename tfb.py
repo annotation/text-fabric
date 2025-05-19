@@ -69,7 +69,7 @@ db    : local develop build
 i     : install local non-develop build
 ti    : install from testpypi (uninstall first)
 g     : push to github, code and docs
-pb    : local non-develop buil
+pb    : local non-develop build
 v     : show current version
 r1    : version becomes r1+1.0.0
 r2    : version becomes r1.r2+1.0

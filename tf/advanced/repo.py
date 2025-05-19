@@ -1254,7 +1254,6 @@ class Checkout:
 
             person = var(GLPERS(bMachine))
             if person:
-                console(f"{bUrl=}")
                 conn = Gitlab(bUrl, private_token=person, keep_base_url=True)
             else:
                 conn = Gitlab(bUrl)

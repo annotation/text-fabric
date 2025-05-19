@@ -30,7 +30,7 @@
     # No prefix results in all links being relative.
     link_prefix = ''
 
-    # Enable syntax highlighting for code / source blocks by including Highlight.js
+    # Enable syntax highlighting for code/source blocks by including Highlight.js
     syntax_highlighting = True
 
     # Set the style keyword such as 'atom-one-light' or 'github-gist'
@@ -38,12 +38,12 @@
     #     Demo: https://highlightjs.org/static/demo/
     hljs_style = 'github'
 
-    # If set, insert Google Analytics tracking code. Value is GA
-    # tracking id (UA-XXXXXX-Y).
-    # google_analytics = ''
+    # If set, insert Google Analytics 4 tracking code. Value is GA
+    # tracking id (G-XXXXXXXXXX).
+    google_analytics = ''
 
     # If set, insert Google Custom Search search bar widget above the sidebar index.
-    # The white-space-separated tokens represent arbitrary extra queries (at least one
+    # The whitespace-separated tokens represent arbitrary extra queries (at least one
     # must match) passed to regular Google search. Example:
     # search_query = 'inurl:github.com/annotation  site:annotation.github.io'
     # google_search_query = 'inurl:github.com/annotation  site:annotation.github.io'
@@ -62,4 +62,10 @@
     # Note: in Python docstrings, either all backslashes need to be escaped (\\)
     # or you need to use raw r-strings.
     latex_math = True
+
+    # Additional markdown extensions to enable. See:
+    # https://python-markdown.github.io/extensions/
+    # https://python-markdown.github.io/reference/#extensions
+    # https://github.com/Python-Markdown/markdown/wiki/Third-Party-Extensions
+    md_extensions = {'extensions': [], 'configs': {}}
 %>
