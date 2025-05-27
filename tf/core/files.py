@@ -25,10 +25,10 @@ def str_presenter(dumper, data):
     """configures yaml for dumping multiline strings
     Ref: https://stackoverflow.com/questions/8640959
     """
-    if data.count('\n') > 0:  # check for multiline string
-        return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+    if data.count("\n") > 0:  # check for multiline string
+        return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
 
-    return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+    return dumper.represent_scalar("tag:yaml.org,2002:str", data)
 
 
 yaml.add_representer(str, str_presenter)
@@ -141,9 +141,7 @@ def getLocation(targetDir=None):
     destDir = (
         curDir
         if targetDir is None
-        else targetDir
-        if targetDir.startswith("/")
-        else f"{curDir}/{targetDir}"
+        else targetDir if targetDir.startswith("/") else f"{curDir}/{targetDir}"
     )
     destDir = unexpanduser(destDir)
 
@@ -217,9 +215,7 @@ def backendRep(be, kind, default=None):
     be = (
         GH
         if be in {None, "", GH, f"{GH}.com"}
-        else GL
-        if be in {GL, f"{GL}.com"}
-        else be
+        else GL if be in {GL, f"{GL}.com"} else be
     )
     beTail = ".".join(be.split(".")[1:])
 
@@ -260,9 +256,7 @@ def backendRep(be, kind, default=None):
         return (
             URL_GH_UPLOAD
             if be == GH
-            else URL_GL_UPLOAD
-            if be == GL
-            else f"https://api.{be}"
+            else URL_GL_UPLOAD if be == GL else f"https://api.{be}"
         )
 
     if kind == "urlnb":
@@ -425,7 +419,7 @@ def clearTree(path):
     path = expanduser(path)
 
     with os.scandir(path) as dh:
-        for (i, entry) in enumerate(dh):
+        for i, entry in enumerate(dh):
             name = entry.name
             if name.startswith("."):
                 continue
@@ -518,6 +512,29 @@ def isDir(path):
     return os.path.isdir(path)
 
 
+def fileMake(path, force=False):
+    """Create a new empty file.
+
+    If necessary, create intermediate subdirectories.
+    If the file already exists, do nothing, unless `force` is True.
+    If the file exists as a directory, do nothing
+
+    Parameters
+    ----------
+    path: string
+        The path to the new file
+    force: boolean, optional False
+        If `False`, nothing is done if the file already exists.
+        Otherwise, an existing file is truncated.
+    """
+    if not dirExists(path) and (force or not fileExists(path)):
+        parentDir = dirNm(path)
+        dirMake(parentDir)
+
+        with fileOpen(path, "w"):
+            pass
+
+
 def fileExists(path):
     """Whether a path exists as file on the file system."""
     return os.path.isfile(path)
@@ -573,11 +590,7 @@ def dirExists(path):
     return (
         False
         if path is None
-        else True
-        if path == ""
-        else os.path.isdir(path)
-        if path
-        else True
+        else True if path == "" else os.path.isdir(path) if path else True
     )
 
 

@@ -109,7 +109,7 @@ class Detect:
             self.SearchParameters = an.SearchParameters
         else:
             self.properlySetup = False
-            return None
+            return
 
         self.properlySetup = True
 
