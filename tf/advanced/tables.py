@@ -60,9 +60,7 @@ def compose(
                 app,
                 tup,
                 seq=getx,
-                # extraFeatures=(features, {}),
                 tupleFeatures=features,
-                # **display.consume(options, "extraFeatures"),
                 **display.consume(options, "tupleFeatures"),
             )
             if tup is not None
@@ -94,9 +92,7 @@ def compose(
                 position=position,
                 opened=i in opened,
                 _asString=True,
-                # extraFeatures=(features, {}),
                 tupleFeatures=features,
-                # **display.consume(options, "extraFeatures"),
                 **display.consume(options, "tupleFeatures"),
             )
         )
@@ -248,10 +244,6 @@ def composeP(
                 seq=getx,
                 condensed=False,
                 condenseType=finalSecType,
-                # extraFeatures=(features, {}),
-                # **display.consume(
-                #     options, "condensed", "condenseType", "extraFeatures"
-                # ),
                 tupleFeatures=features,
                 **display.consume(
                     options, "condensed", "condenseType", "tupleFeatures"
@@ -272,8 +264,6 @@ def composeP(
                 item,
                 opened,
                 secFinal,
-                # extraFeatures=(features, {}),
-                # **display.consume(options, "extraFeatures"),
                 tupleFeatures=features,
                 **display.consume(options, "tupleFeatures"),
             )

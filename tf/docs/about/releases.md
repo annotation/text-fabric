@@ -18,6 +18,19 @@ which kan be pip installed separately.
 
 ### 13.0
 
+#### 13.0.7
+
+2025-07-06
+
+A fix in pretty displays: if you passed the parameter `extraFeatures`, those
+extra features did not show up in all cases, and one of the ways to let them show
+up was to set `standardFeatures=True`. But that should not be necessary, and in fact
+this was a bug. It has been fixed.
+
+Thanks to Tony Jurg for
+[reporting](https://github.com/tonyjurg/test/blob/main/test.ipynb)
+this.
+
 #### 13.0.1-6
 
 2025-03-18

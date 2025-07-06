@@ -319,9 +319,7 @@ def _plainTree(
                     if contribB == ""
                     else f"{contribE}{joinerBase}{contribB}"
                 )
-                material = joiner.join(
-                    f"{cb}{start}{part}{end}{ce}" for part in parts
-                )
+                material = joiner.join(f"{cb}{start}{part}{end}{ce}" for part in parts)
                 contrib = material
             else:
                 contrib = f"{cb}{material}{ce}"
@@ -635,7 +633,14 @@ def _getFeatures(info, n, nType):
     featurePart = ""
 
     # if standardFeatures or queryFeatures or multiFeatures or forceEdges:
-    if standardFeatures or tupleFeatures or multiFeatures or forceEdges:
+    if (
+        standardFeatures
+        or tupleFeatures
+        or multiFeatures
+        or forceEdges
+        or dFeatures
+        or dFeaturesIndirect
+    ):
         seen = set()
 
         for i, name in enumerate(featureList):
@@ -650,9 +655,11 @@ def _getFeatures(info, n, nType):
                     refType = (
                         dFeaturesIndirect[name]
                         if name in dFeaturesIndirect
-                        else indirectBare[name]
-                        if name in indirectBare
-                        else indirect[name]
+                        else (
+                            indirectBare[name]
+                            if name in indirectBare
+                            else indirect[name]
+                        )
                     )
                     refNode = upMethod(n, otype=refType)
                     refNode = refNode[0] if refNode else None

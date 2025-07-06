@@ -295,7 +295,7 @@ skipCols: set, optional set()
     The value may be a space-separated string of numbers, or an iterable of integers.
     Columns start at 1.
 
-standardFeatures: boolean, optional True
+standardFeatures: boolean, optional False
     **interface option**
     indicates whether pretty displays should show standard features and their values.
     If a feature is both a standard feature and it is mentioned in the last query,

@@ -1,10 +1,11 @@
 Metadata-Version: 2.4
 Name: text-fabric
-Version: 13.0.6
+Version: 13.0.7
 Summary: Processor and browser for annotated text corpora
 Home-page: https://github.com/annotation/text-fabric
 Author: Dirk Roorda
 Author-email: dirk.roorda@di.huc.knaw.nl
+License: MIT
 Keywords: text,linguistics,database,graph,hebrew,bible,peshitta,quran,cuneiform,uruk,greek,syriac,akkadian,babylonian
 Classifier: Development Status :: 4 - Beta
 Classifier: Environment :: Other Environment
@@ -13,7 +14,6 @@ Classifier: Intended Audience :: Developers
 Classifier: Intended Audience :: Education
 Classifier: Intended Audience :: Religion
 Classifier: Intended Audience :: Science/Research
-Classifier: License :: OSI Approved :: MIT License
 Classifier: Natural Language :: English
 Classifier: Natural Language :: Hebrew
 Classifier: Natural Language :: Greek
