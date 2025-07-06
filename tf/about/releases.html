@@ -53,6 +53,15 @@ into a new package,
 <a href="https://github.com/annotation/text-fabric">Text-Fabric-Factory</a>,
 which kan be pip installed separately.</p>
 <h3 id="130">13.0</h3>
+<h4 id="1307">13.0.7</h4>
+<p>2025-07-06</p>
+<p>A fix in pretty displays: if you passed the parameter <code>extraFeatures</code>, those
+extra features did not show up in all cases, and one of the ways to let them show
+up was to set <code>standardFeatures=True</code>. But that should not be necessary, and in fact
+this was a bug. It has been fixed.</p>
+<p>Thanks to Tony Jurg for
+<a href="https://github.com/tonyjurg/test/blob/main/test.ipynb">reporting</a>
+this.</p>
 <h4 id="1301-6">13.0.1-6</h4>
 <p>2025-03-18</p>
 <p>GitLab backends: downloading deeper-than-toplevel subfolders from a repo led to
@@ -132,6 +141,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#13">13</a><ul>
 <li><a href="#130">13.0</a><ul>
+<li><a href="#1307">13.0.7</a></li>
 <li><a href="#1301-6">13.0.1-6</a></li>
 <li><a href="#1300">13.0.0</a></li>
 </ul>
