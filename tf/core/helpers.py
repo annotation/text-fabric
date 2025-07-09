@@ -5,7 +5,7 @@ import re
 from itertools import chain
 from collections import deque
 from subprocess import run as run_cmd, CalledProcessError
-from datetime import datetime as dt, UTC
+from datetime import datetime as dt, timezone
 
 
 from ..parameters import OMAP
@@ -53,7 +53,7 @@ QUAD = "    "
 
 
 def utcnow():
-    return dt.now(UTC)
+    return dt.now(timezone.utc)
 
 
 def versionSort(x):
