@@ -357,11 +357,12 @@ class AppData:
         relative = prefixSlash(normpath(relative))
 
         moduleRef = f"{bRep}{org}/{repo}{relative}"
+
         if moduleRef in self.seen:
             return True
 
         if org is None or repo is None:
-            relativeBare = relative.removeprefix("/")
+            relativeBare = relative if isBase else relative.removeprefix("/")
             repoLocation = relativeBare
             if not isExtra:
                 mLocations.append(relativeBare)

@@ -18,6 +18,15 @@ which kan be pip installed separately.
 
 ### 13.0
 
+#### 13.0.8
+
+2025-07-16
+
+When using `tf.app.use()` and specifying the corpus with `app:` + path to the
+`app` directory of the corpus, loading failed because a leading `/` got removed
+somewhere. This removal is functional when loading most modules, but not when
+loading the main module. A condition to that effect was added.
+
 #### 13.0.7
 
 2025-07-06

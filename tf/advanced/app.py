@@ -686,6 +686,7 @@ def findApp(
     )
     version = cfg["provenanceSpec"].get("version", None)
     isCompatible = cfg["isCompatible"]
+
     if isCompatible is None:
         appClass = App
     elif not isCompatible:
@@ -704,6 +705,7 @@ def findApp(
         else:
             mod = [extraMod]
     kwargs["mod"] = mod
+
     try:
         app = appClass(
             cfg,
@@ -781,7 +783,6 @@ def useApp(appName, backend):
         (appName, checkoutApp) = parts
 
     backend = backendRep(backend, "norm")
-
     return (appName, checkoutApp, dataLoc, backend)
 
 
