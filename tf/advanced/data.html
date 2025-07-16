@@ -53,7 +53,7 @@ el.replaceWith(d);
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L439-L455" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a315d645ad14fd3cd0878c3c3a2698da6b1f9a39/tf/advanced/data.py#L448-L464" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getModulesData(*args, dest=None):
     &#34;&#34;&#34;Retrieve all data for a corpus.
@@ -94,7 +94,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L11-L436" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a315d645ad14fd3cd0878c3c3a2698da6b1f9a39/tf/advanced/data.py#L11-L445" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class AppData:
     def __init__(
@@ -181,6 +181,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
             relative = f&#34;{appParent}{relative}&#34;
         elif org is None or repo is None:
             appPathRep = f&#34;{appPath}/&#34; if appPath else &#34;&#34;
+            appParent = None
             relative = f&#34;{appPathRep}{appName}&#34;
             self.checkout = &#34;local&#34;
 
@@ -190,6 +191,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
             prefixSlash(relative),
             checkout,
             isBase=True,
+            appParent=appParent,
             versionOverride=app.versionOverride,
             allowExpress=True,
         ):
@@ -391,6 +393,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
         checkout,
         backend=None,
         isBase=False,
+        appParent=None,
         isExtra=False,
         specs=None,
         versionOverride=False,
@@ -421,6 +424,11 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
             The data must be obtained, but not loaded.
         isBase: boolean, optional False
             Whether this module is the main data of the corpus.
+        appParent: string, optional None
+            Only relevant if `isBase` is `True`. Normally, the repoLocation attribute
+            of the app will be set to the `relative` of the main module.
+            But if the app has been specified with `app:`, the repoLocation is
+            slightly different, and it will be taken from this parameter.
         specs: dict, optional False
             Additional informational attributes of the module, e.g. a DOI
         versionOverride: boolean, optional False
@@ -480,7 +488,8 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 
         seen.add(moduleRef)
         if isBase:
-            app.repoLocation = repoLocation
+            app.repoLocation = repoLocation if appParent is None else appParent
+            print(f&#34;{app.repoLocation=}&#34;)
 
         if isExtra:
             return True
@@ -560,7 +569,7 @@ level just below the search locations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L162-L205" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a315d645ad14fd3cd0878c3c3a2698da6b1f9a39/tf/advanced/data.py#L164-L207" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getExtra(self):
     &#34;&#34;&#34;Get the extra data specified by the settings of the corpus.
@@ -625,7 +634,7 @@ It probably is not even TF data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L71-L108" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a315d645ad14fd3cd0878c3c3a2698da6b1f9a39/tf/advanced/data.py#L71-L110" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getMain(self):
     &#34;&#34;&#34;Get the main data of the corpus.
@@ -652,6 +661,7 @@ It probably is not even TF data.</p>
         relative = f&#34;{appParent}{relative}&#34;
     elif org is None or repo is None:
         appPathRep = f&#34;{appPath}/&#34; if appPath else &#34;&#34;
+        appParent = None
         relative = f&#34;{appPathRep}{appName}&#34;
         self.checkout = &#34;local&#34;
 
@@ -661,6 +671,7 @@ It probably is not even TF data.</p>
         prefixSlash(relative),
         checkout,
         isBase=True,
+        appParent=appParent,
         versionOverride=app.versionOverride,
         allowExpress=True,
     ):
@@ -676,13 +687,13 @@ It probably is not even TF data.</p>
 </dl></div>
 </dd>
 <dt id="tf.advanced.data.AppData.getModule"><code class="name flex">
-<span>def <span class="ident">getModule</span></span>(<span>self,<br>org,<br>repo,<br>relative,<br>checkout,<br>backend=None,<br>isBase=False,<br>isExtra=False,<br>specs=None,<br>versionOverride=False,<br>allowExpress=True)</span>
+<span>def <span class="ident">getModule</span></span>(<span>self,<br>org,<br>repo,<br>relative,<br>checkout,<br>backend=None,<br>isBase=False,<br>appParent=None,<br>isExtra=False,<br>specs=None,<br>versionOverride=False,<br>allowExpress=True)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L298-L436" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a315d645ad14fd3cd0878c3c3a2698da6b1f9a39/tf/advanced/data.py#L300-L445" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getModule(
     self,
@@ -692,6 +703,7 @@ It probably is not even TF data.</p>
     checkout,
     backend=None,
     isBase=False,
+    appParent=None,
     isExtra=False,
     specs=None,
     versionOverride=False,
@@ -722,6 +734,11 @@ It probably is not even TF data.</p>
         The data must be obtained, but not loaded.
     isBase: boolean, optional False
         Whether this module is the main data of the corpus.
+    appParent: string, optional None
+        Only relevant if `isBase` is `True`. Normally, the repoLocation attribute
+        of the app will be set to the `relative` of the main module.
+        But if the app has been specified with `app:`, the repoLocation is
+        slightly different, and it will be taken from this parameter.
     specs: dict, optional False
         Additional informational attributes of the module, e.g. a DOI
     versionOverride: boolean, optional False
@@ -781,7 +798,8 @@ It probably is not even TF data.</p>
 
     seen.add(moduleRef)
     if isBase:
-        app.repoLocation = repoLocation
+        app.repoLocation = repoLocation if appParent is None else appParent
+        print(f&#34;{app.repoLocation=}&#34;)
 
     if isExtra:
         return True
@@ -846,6 +864,11 @@ location paths and the module paths.</p>
 The data must be obtained, but not loaded.</dd>
 <dt><strong><code>isBase</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether this module is the main data of the corpus.</dd>
+<dt><strong><code>appParent</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>Only relevant if <code>isBase</code> is <code>True</code>. Normally, the repoLocation attribute
+of the app will be set to the <code>relative</code> of the main module.
+But if the app has been specified with <code>app:</code>, the repoLocation is
+slightly different, and it will be taken from this parameter.</dd>
 <dt><strong><code>specs</code></strong> :&ensp;<code>dict</code>, optional <code>False</code></dt>
 <dd>Additional informational attributes of the module, e.g. a DOI</dd>
 <dt><strong><code>versionOverride</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
@@ -861,7 +884,7 @@ The data must be obtained, but not loaded.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L241-L296" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a315d645ad14fd3cd0878c3c3a2698da6b1f9a39/tf/advanced/data.py#L243-L298" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getModules(self):
     &#34;&#34;&#34;Get data from additional local directories.
@@ -930,7 +953,7 @@ The data must be obtained, but not loaded.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L207-L239" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a315d645ad14fd3cd0878c3c3a2698da6b1f9a39/tf/advanced/data.py#L209-L241" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(self):
     &#34;&#34;&#34;Get data from additional modules.
@@ -978,7 +1001,7 @@ later when we are loading the standard modules.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L110-L160" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a315d645ad14fd3cd0878c3c3a2698da6b1f9a39/tf/advanced/data.py#L112-L162" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getStandard(self):
     &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.
