@@ -93,6 +93,7 @@ class AppData:
             relative = f"{appParent}{relative}"
         elif org is None or repo is None:
             appPathRep = f"{appPath}/" if appPath else ""
+            appParent = None
             relative = f"{appPathRep}{appName}"
             self.checkout = "local"
 
@@ -102,6 +103,7 @@ class AppData:
             prefixSlash(relative),
             checkout,
             isBase=True,
+            appParent=appParent,
             versionOverride=app.versionOverride,
             allowExpress=True,
         ):
@@ -303,6 +305,7 @@ class AppData:
         checkout,
         backend=None,
         isBase=False,
+        appParent=None,
         isExtra=False,
         specs=None,
         versionOverride=False,
@@ -333,6 +336,11 @@ class AppData:
             The data must be obtained, but not loaded.
         isBase: boolean, optional False
             Whether this module is the main data of the corpus.
+        appParent: string, optional None
+            Only relevant if `isBase` is `True`. Normally, the repoLocation attribute
+            of the app will be set to the `relative` of the main module.
+            But if the app has been specified with `app:`, the repoLocation is
+            slightly different, and it will be taken from this parameter.
         specs: dict, optional False
             Additional informational attributes of the module, e.g. a DOI
         versionOverride: boolean, optional False
@@ -392,7 +400,8 @@ class AppData:
 
         seen.add(moduleRef)
         if isBase:
-            app.repoLocation = repoLocation
+            app.repoLocation = repoLocation if appParent is None else appParent
+            print(f"{app.repoLocation=}")
 
         if isExtra:
             return True
