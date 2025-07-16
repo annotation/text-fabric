@@ -53,7 +53,7 @@ el.replaceWith(d);
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4ee5a44b2ea9776717594ffdf6a2aacc019a533f/tf/advanced/data.py#L438-L454" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L439-L455" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getModulesData(*args, dest=None):
     &#34;&#34;&#34;Retrieve all data for a corpus.
@@ -94,7 +94,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4ee5a44b2ea9776717594ffdf6a2aacc019a533f/tf/advanced/data.py#L11-L435" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L11-L436" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class AppData:
     def __init__(
@@ -445,11 +445,12 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
         relative = prefixSlash(normpath(relative))
 
         moduleRef = f&#34;{bRep}{org}/{repo}{relative}&#34;
+
         if moduleRef in self.seen:
             return True
 
         if org is None or repo is None:
-            relativeBare = relative.removeprefix(&#34;/&#34;)
+            relativeBare = relative if isBase else relative.removeprefix(&#34;/&#34;)
             repoLocation = relativeBare
             if not isExtra:
                 mLocations.append(relativeBare)
@@ -559,7 +560,7 @@ level just below the search locations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4ee5a44b2ea9776717594ffdf6a2aacc019a533f/tf/advanced/data.py#L162-L205" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L162-L205" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getExtra(self):
     &#34;&#34;&#34;Get the extra data specified by the settings of the corpus.
@@ -624,7 +625,7 @@ It probably is not even TF data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4ee5a44b2ea9776717594ffdf6a2aacc019a533f/tf/advanced/data.py#L71-L108" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L71-L108" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getMain(self):
     &#34;&#34;&#34;Get the main data of the corpus.
@@ -681,7 +682,7 @@ It probably is not even TF data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4ee5a44b2ea9776717594ffdf6a2aacc019a533f/tf/advanced/data.py#L298-L435" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L298-L436" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getModule(
     self,
@@ -745,11 +746,12 @@ It probably is not even TF data.</p>
     relative = prefixSlash(normpath(relative))
 
     moduleRef = f&#34;{bRep}{org}/{repo}{relative}&#34;
+
     if moduleRef in self.seen:
         return True
 
     if org is None or repo is None:
-        relativeBare = relative.removeprefix(&#34;/&#34;)
+        relativeBare = relative if isBase else relative.removeprefix(&#34;/&#34;)
         repoLocation = relativeBare
         if not isExtra:
             mLocations.append(relativeBare)
@@ -859,7 +861,7 @@ The data must be obtained, but not loaded.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4ee5a44b2ea9776717594ffdf6a2aacc019a533f/tf/advanced/data.py#L241-L296" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L241-L296" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getModules(self):
     &#34;&#34;&#34;Get data from additional local directories.
@@ -928,7 +930,7 @@ The data must be obtained, but not loaded.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4ee5a44b2ea9776717594ffdf6a2aacc019a533f/tf/advanced/data.py#L207-L239" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L207-L239" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(self):
     &#34;&#34;&#34;Get data from additional modules.
@@ -976,7 +978,7 @@ later when we are loading the standard modules.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4ee5a44b2ea9776717594ffdf6a2aacc019a533f/tf/advanced/data.py#L110-L160" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83d1512535e43162a7288930a475e2f8e1c9f7d0/tf/advanced/data.py#L110-L160" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def getStandard(self):
     &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.
