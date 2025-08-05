@@ -18,6 +18,12 @@ which kan be pip installed separately.
 
 ### 13.0
 
+#### 13.0.11
+
+2025-08-05
+
+Fixed a bug introduced by the previous release.
+
 #### 13.0.8-10
 
 2025-07-16

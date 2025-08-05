@@ -96,6 +96,8 @@ class AppData:
             appParent = None
             relative = f"{appPathRep}{appName}"
             self.checkout = "local"
+        else:
+            appParent = None
 
         if not self.getModule(
             org,
@@ -401,7 +403,6 @@ class AppData:
         seen.add(moduleRef)
         if isBase:
             app.repoLocation = repoLocation if appParent is None else appParent
-            print(f"{app.repoLocation=}")
 
         if isExtra:
             return True
