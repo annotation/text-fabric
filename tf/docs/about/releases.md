@@ -18,6 +18,19 @@ which kan be pip installed separately.
 
 ### 13.0
 
+#### 13.0.13
+
+2025-09-04
+
+Moved text-fabric back to github.com/annotation
+
+#### 13.0.12
+
+2025-09-01
+
+Moved the text-fabric repo to gitlab.huc.knaw.nl, but that was unwise.
+This release has been yanked, you should not install this one.
+
 #### 13.0.11
 
 2025-08-05
