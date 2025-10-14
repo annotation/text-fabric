@@ -58,7 +58,7 @@ so that the user gets the proper feedback on for improving the sheet.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/84d1a8d4a89d011d0121be06cf7cfc9fb376b469/tf/ner/triggers.py#L21-L145" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/ner/triggers.py#L21-L145" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def hasCommon(tokensA, tokensB):
     &#34;&#34;&#34;Whether one sequence of tokens interferes with another.
@@ -277,7 +277,7 @@ in the first one; -1 otherwise.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/84d1a8d4a89d011d0121be06cf7cfc9fb376b469/tf/ner/triggers.py#L191-L262" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/ner/triggers.py#L191-L262" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def makePartition(triggers, myToTokens):
     &#34;&#34;&#34;Partition a set of triggers into groups of pairwise non-interfering triggers.
@@ -388,7 +388,7 @@ part is a list of triggers that do not have conflicting pairs of triggers.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/84d1a8d4a89d011d0121be06cf7cfc9fb376b469/tf/ner/triggers.py#L148-L188" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/ner/triggers.py#L148-L188" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def testCommon():
     &#34;&#34;&#34;Test suite for testing the `hasCommon()` function.&#34;&#34;&#34;
@@ -446,7 +446,7 @@ part is a list of triggers that do not have conflicting pairs of triggers.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/84d1a8d4a89d011d0121be06cf7cfc9fb376b469/tf/ner/triggers.py#L265-L1200" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/ner/triggers.py#L265-L1200" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class Triggers:
     def partitionTriggers(self, triggers):
@@ -1399,7 +1399,7 @@ part is a list of triggers that do not have conflicting pairs of triggers.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/84d1a8d4a89d011d0121be06cf7cfc9fb376b469/tf/ner/triggers.py#L746-L901" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/ner/triggers.py#L746-L901" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def diagnoseTrigger(self, trigger, occs, detail=False):
     &#34;&#34;&#34;Diagnoses an individual trigger.
@@ -1602,7 +1602,7 @@ Otherwise, only produces output if there are missed hits.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/84d1a8d4a89d011d0121be06cf7cfc9fb376b469/tf/ner/triggers.py#L682-L744" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/ner/triggers.py#L682-L744" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def diagnoseTriggers(self, triggers, detail=False):
     &#34;&#34;&#34;Diagnose triggers individually.
@@ -1699,7 +1699,7 @@ up in a separate pass over the corpus.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/84d1a8d4a89d011d0121be06cf7cfc9fb376b469/tf/ner/triggers.py#L284-L326" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/ner/triggers.py#L284-L326" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def findOccs(self):
     &#34;&#34;&#34;Finds the occurrences of multiple triggers.
@@ -1765,7 +1765,7 @@ the value is the name of that entity in the context indicated by path.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/84d1a8d4a89d011d0121be06cf7cfc9fb376b469/tf/ner/triggers.py#L1114-L1200" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/ner/triggers.py#L1114-L1200" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def findTrigger(self, trigger, show=True):
     &#34;&#34;&#34;Looks up occurrences of a single triggers.
@@ -1885,7 +1885,7 @@ else there is no function result.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/84d1a8d4a89d011d0121be06cf7cfc9fb376b469/tf/ner/triggers.py#L1047-L1112" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/ner/triggers.py#L1047-L1112" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def findTriggers(self, triggers):
     &#34;&#34;&#34;Looks up occurrences of multiple triggers efficiently.
@@ -1983,7 +1983,7 @@ part of a partition of triggers, but not necessarily so.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/84d1a8d4a89d011d0121be06cf7cfc9fb376b469/tf/ner/triggers.py#L903-L1045" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/ner/triggers.py#L903-L1045" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def interference(
     self,
@@ -2186,7 +2186,7 @@ within each part none of these interfere.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/84d1a8d4a89d011d0121be06cf7cfc9fb376b469/tf/ner/triggers.py#L266-L282" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/ner/triggers.py#L266-L282" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def partitionTriggers(self, triggers):
     &#34;&#34;&#34;Wrapper around the partitioning function.
@@ -2227,7 +2227,7 @@ dependent parameter for turning strings into tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/84d1a8d4a89d011d0121be06cf7cfc9fb376b469/tf/ner/triggers.py#L328-L473" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/ner/triggers.py#L328-L473" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def reportHits(self, silent=None, showNoHits=False):
     &#34;&#34;&#34;Reports the inventory.
@@ -2394,7 +2394,7 @@ of the instance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/84d1a8d4a89d011d0121be06cf7cfc9fb376b469/tf/ner/triggers.py#L475-L680" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/ner/triggers.py#L475-L680" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def triggerInterference(self, alsoInternal=False, alsoExpected=False):
     &#34;&#34;&#34;Produce a report of interferences between triggers.
