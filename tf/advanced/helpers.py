@@ -40,8 +40,19 @@ def runsInNotebook():
     From
     [stackoverflow](https://stackoverflow.com/questions/15411967/how-can-i-check-if-code-is-executed-in-the-ipython-notebook/24937408)
     """
-    if marimo is not None and marimo.running_in_notebook():
-        return "marimo"
+    try:
+        # if marimo has been uninstalled, a relic may remain
+        # which causes 'import marimo' to succeed, but this marimo
+        # lacks the appropriate methods, which raises an error
+        result = None
+
+        if marimo is not None and marimo.running_in_notebook():
+            result = "marimo"
+    except Exception:
+        result = None
+
+    if result is not None:
+        return result
     try:
         runcontext = get_ipython()
         shell = runcontext.__class__.__name__

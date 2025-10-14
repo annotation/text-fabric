@@ -18,6 +18,13 @@ which kan be pip installed separately.
 
 ### 13.0
 
+#### 13.0.14
+
+2025-10-14
+
+Fixed an exception when starting TF if the library marimo has been uninstalled.
+(It seems that the removal of marimo by pip is not complete).
+
 #### 13.0.13
 
 2025-09-04
