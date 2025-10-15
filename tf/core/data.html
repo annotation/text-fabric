@@ -56,7 +56,7 @@ el.replaceWith(d);
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/core/data.py#L45-L720" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e889adc12f098a28650ee36d38f93d1efbbbe95b/tf/core/data.py#L45-L720" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class Data:
     def __init__(
@@ -700,8 +700,8 @@ el.replaceWith(d);
 
         try:
             with gzip.open(self.binPath, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
-                # pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
-                f.write(optimize(pickle.dumps(self.data, protocol=PICKLE_PROTOCOL)))
+                # f.write(optimize(pickle.dumps(self.data, protocol=PICKLE_PROTOCOL)))
+                f.write(pickle.dumps(self.data, protocol=PICKLE_PROTOCOL))
         except Exception as e:
             error(f&#39;Cannot write to file &#34;{self.binPath}&#34; because: {str(e)}&#39;)
             self.cleanDataBin()
@@ -745,7 +745,7 @@ el.replaceWith(d);
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/core/data.py#L675-L676" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e889adc12f098a28650ee36d38f93d1efbbbe95b/tf/core/data.py#L675-L676" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def cleanDataBin(self):
     fileRemove(self.binPath)</code></pre>
@@ -759,7 +759,7 @@ el.replaceWith(d);
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/core/data.py#L78-L186" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e889adc12f098a28650ee36d38f93d1efbbbe95b/tf/core/data.py#L78-L186" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, metaOnly=False, silent=SILENT_D, _withGc=True):
     &#34;&#34;&#34;Load a feature.
@@ -883,7 +883,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/core/data.py#L192-L202" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e889adc12f098a28650ee36d38f93d1efbbbe95b/tf/core/data.py#L192-L202" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def save(self, overwrite=False, nodeRanges=False, silent=SILENT_D):
     silent = silentConvert(silent)
@@ -906,7 +906,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/core/data.py#L188-L190" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e889adc12f098a28650ee36d38f93d1efbbbe95b/tf/core/data.py#L188-L190" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def unload(self):
     self.data = None

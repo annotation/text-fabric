@@ -53,6 +53,15 @@ into a new package,
 <a href="https://github.com/annotation/text-fabric">Text-Fabric-Factory</a>,
 which kan be pip installed separately.</p>
 <h3 id="130">13.0</h3>
+<h4 id="13015">13.0.15</h4>
+<p>2025-10-15</p>
+<p>Performance of writing precomputed TF data to disk in suddenly decreased with a
+factor 3.
+The culprit turned out to be the pickletools.optimize function in the standard library.
+It turns out that this optimization does not help much, so I left it out.
+Also in 3.13 this optimize function had a significant performance penalty.
+Without it, expect much shorter load times for data that is loaded into TF
+for the first time.</p>
 <h4 id="13014">13.0.14</h4>
 <p>2025-10-14</p>
 <p>Fixed an exception when starting TF if the library marimo has been uninstalled.
@@ -161,6 +170,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#13">13</a><ul>
 <li><a href="#130">13.0</a><ul>
+<li><a href="#13015">13.0.15</a></li>
 <li><a href="#13014">13.0.14</a></li>
 <li><a href="#13013">13.0.13</a></li>
 <li><a href="#13012">13.0.12</a></li>

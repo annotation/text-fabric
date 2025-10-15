@@ -53,7 +53,8 @@ When it has loaded the data, it hands the TF API over to the web server.</dd>
 <dd>After a short while, the default web browser will be started
 with a URL and port at which the
 web server will listen. You see your browser being started up
-and the TF page being loaded.</dd>
+and the TF page being loaded.
+This can be prevented by passing <code>-noweb</code></dd>
 <dt>Wait</dt>
 <dd>The script now waits till the web server is finished.
 You finish it by pressing Ctrl-C, and if you have used the <code>-d</code> flag,
@@ -68,7 +69,12 @@ first argument of the <code>use()</code> function:</p>
 <li><code>org/repo</code></li>
 <li><code>org/repo:specifier</code></li>
 <li><code>app:path/to/app</code></li>
-<li><code>data:path/to/data</code></li>
+<li>
+<p><code>data:path/to/data</code></p>
+</li>
+<li>
+<p><code>-noweb</code> prevents starting the browser</p>
+</li>
 </ul>
 <p>The following arguments of the <code>use()</code> function can be used on the command-line,
 prepended with <code>--</code>:</p>
@@ -111,7 +117,7 @@ provided the previous invocation has been terminated.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/browser/start.py#L162-L163" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e889adc12f098a28650ee36d38f93d1efbbbe95b/tf/browser/start.py#L165-L166" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def bMsg(url):
     return f&#34;\n\tOpen a webbrowser and navigate to url {url}\n&#34;</code></pre>
@@ -125,7 +131,7 @@ provided the previous invocation has been terminated.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/browser/start.py#L210-L256" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e889adc12f098a28650ee36d38f93d1efbbbe95b/tf/browser/start.py#L213-L259" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     console(BANNER)
@@ -184,7 +190,7 @@ provided the previous invocation has been terminated.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/862eb12f5990dd2f817f0e4d2309d4527a8d45d8/tf/browser/start.py#L166-L207" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e889adc12f098a28650ee36d38f93d1efbbbe95b/tf/browser/start.py#L169-L210" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def startBrowser(url, forceChrome, debug):
     opened = False
