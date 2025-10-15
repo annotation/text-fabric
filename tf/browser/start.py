@@ -21,6 +21,7 @@ Load web page
     with a URL and port at which the
     web server will listen. You see your browser being started up
     and the TF page being loaded.
+    This can be prevented by passing `-noweb`
 
 Wait
 :   The script now waits till the web server is finished.
@@ -39,6 +40,8 @@ first argument of the `use()` function:
 *   `org/repo:specifier`
 *   `app:path/to/app`
 *   `data:path/to/data`
+
+*   `-noweb` prevents starting the browser
 
 The following arguments of the `use()` function can be used on the command-line,
 prepended with `--`:

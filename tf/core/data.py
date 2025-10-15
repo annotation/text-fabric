@@ -1,7 +1,7 @@
 import array
 import gc
 import pickle
-from pickletools import optimize
+# from pickletools import optimize
 import gzip
 import collections
 import time
@@ -684,8 +684,8 @@ class Data:
 
         try:
             with gzip.open(self.binPath, mode="wb", compresslevel=GZIP_LEVEL) as f:
-                # pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
-                f.write(optimize(pickle.dumps(self.data, protocol=PICKLE_PROTOCOL)))
+                # f.write(optimize(pickle.dumps(self.data, protocol=PICKLE_PROTOCOL)))
+                f.write(pickle.dumps(self.data, protocol=PICKLE_PROTOCOL))
         except Exception as e:
             error(f'Cannot write to file "{self.binPath}" because: {str(e)}')
             self.cleanDataBin()

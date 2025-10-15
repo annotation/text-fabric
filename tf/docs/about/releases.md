@@ -18,6 +18,18 @@ which kan be pip installed separately.
 
 ### 13.0
 
+#### 13.0.15
+
+2025-10-15
+
+Performance of writing precomputed TF data to disk in suddenly decreased with a
+factor 3.
+The culprit turned out to be the pickletools.optimize function in the standard library.
+It turns out that this optimization does not help much, so I left it out.
+Also in 3.13 this optimize function had a significant performance penalty.
+Without it, expect much shorter load times for data that is loaded into TF
+for the first time.
+
 #### 13.0.14
 
 2025-10-14
