@@ -1681,8 +1681,8 @@ class Checkout:
                 dirMake(destZip)
             chDir(destZip)
             extractPrecise(z)
-            chDir(cwd)
             dirRemove("__MACOSX")
+            chDir(cwd)
         except Exception as e:
             msg = f"\tcould not save corpus data to {destZip} "
             console(str(e), error=True)
