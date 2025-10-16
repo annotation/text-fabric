@@ -18,9 +18,9 @@ which kan be pip installed separately.
 
 ### 13.0
 
-#### 13.0.15
+#### 13.0.15-16
 
-2025-10-15
+2025-10-16
 
 Performance of writing precomputed TF data to disk in suddenly decreased with a
 factor 3.
@@ -29,6 +29,14 @@ It turns out that this optimization does not help much, so I left it out.
 Also in 3.13 this optimize function had a significant performance penalty.
 Without it, expect much shorter load times for data that is loaded into TF
 for the first time.
+
+Update: although the performance drop manifested itself in the optimize function
+of pickletools, the real culprit is the garbage collector. If we switch it off
+during feature computation and loading, there is no performance drop at all, and
+it appears that Python 3.14 is just a bit faster than Python 3.13.
+
+So we keep the garbage collector swithced off during loading and dumping features,
+but we still do not use the optimize function.
 
 #### 13.0.14
 

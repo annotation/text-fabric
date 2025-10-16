@@ -182,7 +182,7 @@ class FabricCore:
     silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
 
-    _withGc: boolean, optional True
+    _withGc: boolean, optional False
         If False, it disables the Python garbage collector before
         loading features. Used to experiment with performance.
 
@@ -200,7 +200,7 @@ class FabricCore:
         An object from which you can call up all the of methods of the core API.
     """
 
-    def __init__(self, locations=None, modules=None, silent=SILENT_D, _withGc=True):
+    def __init__(self, locations=None, modules=None, silent=SILENT_D, _withGc=False):
         silent = silentConvert(silent)
         self._withGc = _withGc
         self.silent = silent

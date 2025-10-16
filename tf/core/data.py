@@ -75,10 +75,10 @@ class Data:
         self.dataError = False
         self.dataType = "str"
 
-    def load(self, metaOnly=False, silent=SILENT_D, _withGc=True):
+    def load(self, metaOnly=False, silent=SILENT_D, _withGc=False):
         """Load a feature.
 
-        _withGc: boolean, optional True
+        _withGc: boolean, optional False
             If False, it disables the Python garbage collector before
             loading features. Used to experiment with performance.
         """
@@ -142,7 +142,7 @@ class Data:
                         if self.isConfig or metaOnly:
                             actionRep = "M"
                         else:
-                            self._writeDataBin()
+                            self._writeDataBin(_withGc=_withGc)
                 else:
                     actionRep = "B"
                     good = True if self.method else self._readTf(metaOnly=True)
@@ -159,7 +159,7 @@ class Data:
                                     else self._readTf(metaOnly=metaOnly)
                                 )
                                 if good:
-                                    self._writeDataBin()
+                                    self._writeDataBin(_withGc=_withGc)
             except MemoryError:
                 console(MEM_MSG)
                 good = False
@@ -642,19 +642,22 @@ class Data:
                         )
         return True
 
-    def _readDataBin(self, _withGc=True):
+    def _readDataBin(self, _withGc=False):
         """Read binary feature data.
-        _withGc: boolean, optional True
+
+        Parameters
+        ----------
+        _withGc: boolean, optional False
             If False, it disables the Python garbage collector before
             loading features. Used to experiment with performance.
         """
-
         tmObj = self.tmObj
         error = tmObj.error
 
         if not fileExists(self.binPath):
             error(f'TF reading: feature file "{self.binPath}" does not exist')
             return False
+
         if not _withGc:
             gc.disable()
 
@@ -675,9 +678,20 @@ class Data:
     def cleanDataBin(self):
         fileRemove(self.binPath)
 
-    def _writeDataBin(self):
+    def _writeDataBin(self, _withGc=False):
+        """Write binary feature data.
+
+        Parameters
+        ----------
+        _withGc: boolean, optional False
+            If False, it disables the Python garbage collector before
+            loading features. Used to experiment with performance.
+        """
         tmObj = self.tmObj
         error = tmObj.error
+
+        if not _withGc:
+            gc.disable()
 
         good = True
         dirMake(self.binDir)
@@ -690,6 +704,9 @@ class Data:
             error(f'Cannot write to file "{self.binPath}" because: {str(e)}')
             self.cleanDataBin()
             good = False
+        finally:
+            if not _withGc:
+                gc.enable()
         self.dataLoaded = time.time()
         return good
 

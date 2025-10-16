@@ -24,13 +24,12 @@ def measure(gcEnabled=True):
     else:
         gc.disable()
 
+    gcRep = "yes" if gcEnabled else "no"
+    print(f"Python 3.{pVersion}, {jitRep} JIT, {gcRep} GC")
+
     tStart = time.perf_counter(), time.process_time()
     opt()
     tEnd = time.perf_counter(), time.process_time()
-
-    gcRep = "yes" if gcEnabled else "no"
-
-    print(f"Python 3.{pVersion}, {jitRep} JIT, {gcRep} GC")
 
     fh.write(
         f"{pVersion} | {jitRep} | {gcRep} | "

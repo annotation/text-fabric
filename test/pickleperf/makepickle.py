@@ -1,7 +1,7 @@
 import os
 import pickle
 
-x = {i: f"ii{i:>07}" for i in range(1, 1000000)}
+x = {i: f"ii{i:>07}" for i in range(1, 10000000)}
 
 if not os.path.exists("_temp"):
     os.makedirs("_temp")

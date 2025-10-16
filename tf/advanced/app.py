@@ -80,7 +80,7 @@ class App:
         setFile="",
         silent=SILENT_D,
         loadData=True,
-        _withGc=True,
+        _withGc=False,
         **configOverrides,
     ):
         """Set up the advanced TF API.
@@ -105,7 +105,7 @@ class App:
         hoist: dict, optional False
         configOverrides: list of tuple
 
-        _withGc: boolean, optional True
+        _withGc: boolean, optional False
             If False, it disables the Python garbage collector before
             loading features. Used to experiment with performance.
         """
