@@ -4,7 +4,7 @@ import gc
 import pickletools
 
 pVersion = sys.version_info[1]
-jitRep = "+" if pVersion == "14" and sys._jit.is_enabled() else "-"
+jitRep = "yes" if pVersion == 14 and sys._jit.is_enabled() else "no"
 
 with open("_temp/pickled", "rb") as fh:
     p = fh.read()
@@ -13,6 +13,9 @@ with open("_temp/pickled", "rb") as fh:
 def opt():
     s = pickletools.optimize(p)
     len(s)
+
+
+fh = open("results.md", "a")
 
 
 def measure(gcEnabled=True):
@@ -25,14 +28,16 @@ def measure(gcEnabled=True):
     opt()
     tEnd = time.perf_counter(), time.process_time()
 
-    gcRep = "+" if gcEnabled else "-"
+    gcRep = "yes" if gcEnabled else "no"
 
-    print(f"{pVersion} | {jitRep} | {gcRep} | {tEnd[0] - tStart[0]:.3f} | {tEnd[1] - tStart[1]:.3f}")
+    print(f"Python 3.{pVersion}, {jitRep} JIT, {gcRep} GC")
 
+    fh.write(
+        f"{pVersion} | {jitRep} | {gcRep} | "
+        f"{tEnd[0] - tStart[0]:.3f} | {tEnd[1] - tStart[1]:.3f}\n"
+    )
 
-print(f"{sys.version=}")
-print("""Python version | JIT enabled | GC enabled | Real (s)| CPU (s)""")
-print("""--- | --- | --- | --- | ---""")
 
 measure(gcEnabled=True)
 measure(gcEnabled=False)
+fh.close()
