@@ -1,0 +1,1209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>tf.ner.ner API documentation</title>
+<meta name="description" content="Named Entity Recognition by Triggers …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.ner.ner</code></h1>
+</header>
+<section id="section-intro">
+<p>Named Entity Recognition by Triggers.</p>
+<p>As a preparation, read <code><a title="tf.about.annotate" href="../about/annotate.html">tf.about.annotate</a></code> first, since it explains the concepts, and
+guides you to set up the configuration for your corpus.</p>
+<p>We explain here how to work with entity spreadsheets.</p>
+<p>In a spreadsheet you can assign <em>triggers</em> to entities.
+Triggers are strings to search for in the corpus.
+You can limit the scope of these triggers to specific portions in the corpus.</p>
+<p>The specification of the content and organization of such a entity sheet is in
+<code><a title="tf.ner.sheets.Sheets.readSheetData" href="sheets.html#tf.ner.sheets.Sheets.readSheetData">Sheets.readSheetData()</a></code>.</p>
+<p>You can place entity sheets in the directory <code>ner/specs</code> at the toplevel of the repo,
+or, if you are not working from the repo, you can look up the corpus
+under your <code>text-fabric-data</code> directory, and find a <code>ner</code> directory there.</p>
+<p>The output data of the tool ends up in the <code>_temp</code> directory, which ends up next
+to the <code>ner</code> directory.</p>
+<h2 id="for-corpus-designers">For corpus designers</h2>
+<p>If you are a corpus designer, you can declare this <code>ner</code> directory as an extra
+data module. Then it will packaged with the TF dataset of your corpus, and users
+that use your corpus also get this directory, and can work with the NER tool
+in the TF browser.</p>
+<p>The way to declare this <code>ner</code> data module is by making sure that <code>app/config.yaml</code>
+has this:</p>
+<pre><code>provenanceSpec:
+    ...
+    extraData: ner
+    ...
+</code></pre>
+<p>Additionally, you can create a file <code>ner/config.yaml</code> with some settings for the
+NER process. See <code><a title="tf.ner.settings.Settings" href="settings.html#tf.ner.settings.Settings">Settings</a></code>.</p>
+<p>You can also put a file <code>code.py</code> there in which you implement the function
+<code>normalizeChars(string): string</code></p>
+<p>If you implement it, it will be invoked as a text transformation function upon
+reading string data from spreadsheets.
+The idea is that if the corpus is normalized for certain characters,
+you can normalize the search terms and names in the spreadsheet in the
+same way. For example, in the Suriano corpus, all incarnations of an
+apostrophe, such as <code>’</code> or <code>'</code> or <code>‘</code> have been normalized to <code>’</code>.
+But the spreadsheet might still use the unwanted the variants.
+By providing a suitable function you can prevent that.</p>
+<h2 id="starting-up">Starting up</h2>
+<h3 id="in-the-tf-browser">In the TF browser</h3>
+<p>On the command line say:</p>
+<pre><code>tf org/repo --tool=ner
+</code></pre>
+<p>If you are at the top level of the repo, you can even say</p>
+<pre><code>tf --tool=ner
+</code></pre>
+<p>Then use the chooser at the top right of the interface to select an annotation
+set. There are three kinds of sets:</p>
+<ul>
+<li><strong>=</strong> The (readonly) set of entities that are already baked in into the TF dataset;</li>
+<li><strong>🧾</strong> (readonly) sets of entities defined by a spreadsheet;</li>
+<li><strong>🖍️</strong> (mutable) sets of entities created manually by the user with the NER tool
+in the TF browser.</li>
+</ul>
+<p><img alt="browser" src="../images/Ner/select2.png"></p>
+<h3 id="in-a-program">In a program</h3>
+<p>Import the relevant Python modules:</p>
+<pre><code class="language-python">from tf.app import use
+</code></pre>
+<p>Load your corpus. There are two ways:</p>
+<ul>
+<li>
+<p>Work with a local GitHub clone of the corpus in <code>~/HuygensING/suriano</code>:</p>
+<pre><code>A = use("HuygensING/suriano:clone", checkout="clone")
+</code></pre>
+</li>
+<li>
+<p>Or let TF auto-download the latest version and work with that:</p>
+<pre><code>A = use("HuygensING/suriano")
+</code></pre>
+</li>
+</ul>
+<p>Load the <code>Ner</code> module:</p>
+<pre><code class="language-python">NE = A.makeNer()
+</code></pre>
+<p>You can now load a spreadsheet by</p>
+<pre><code class="language-python">NE.setTask(&quot;.people&quot;)
+</code></pre>
+<p><strong>N.B.:</strong> The leading <code>.</code> in the name signifies that this set is coupled with a
+spreadsheet.</p>
+<h2 id="trigger-investigations">Trigger investigations</h2>
+<p>We now assume that you are working with a program, ideally in a Jupyter notebook.</p>
+<p>There are a few rule in trigger based entity search:</p>
+<ul>
+<li>the corpus is searched from beginning to end;</li>
+<li>if at some place in the corpus multiple triggers match, the longest match
+counts, and the others are discarded;</li>
+<li>if at some place, a trigger has matched, searching continues past the end of
+the match.</li>
+</ul>
+<p>A consequence of these rules is that at no token in the corpus is part of a double
+match.</p>
+<p>The idea behind this is that if you have two triggers, that the more specific trigger
+takes precedence above the lesser specific one.</p>
+<p>However, the rules also have some pitfalls, which can lead to triggers that
+have unexpectedly no results, or less results than expected.</p>
+<p>Here are a few caveats:</p>
+<ul>
+<li>
+<p>Overlapping triggers: if you have the following triggers:</p>
+<ul>
+<li><code>the mayor</code></li>
+<li><code>mayor of London</code></li>
+</ul>
+<p>then the second one looks more specific than the first one. but if you have this
+passage in the corpus:</p>
+<p><code>the mayor of London</code></p>
+<p>then <code>mayor of London</code> will not be found. Because before it can be found,
+<code>the mayor</code> will be found, after which searching continues at <code>of London</code>, and
+this does not match the trigger <code>mayor of London</code>.</p>
+<p>The solution to cases like this is: <code>the mayor</code> is a rather generic trigger, and
+it will only be valid in specific spots in the corpus.</p>
+<p>So add a scope to this trigger, and make sure that <code>the mayor of London</code> is outside
+that scope.</p>
+</li>
+</ul>
+<p>When the entity spreadsheet is big, with over a thousand triggers for hundreds of names,
+it is difficult to keep track of all the tricky interactions between triggers.</p>
+<p>For that reason we have a few diagnostic functions that help you to spot them:</p>
+<ul>
+<li>
+<p><code><a title="tf.ner.triggers.Triggers.triggerInterference" href="triggers.html#tf.ner.triggers.Triggers.triggerInterference">Triggers.triggerInterference()</a></code> will list the triggers belonging to
+different entities that overlap and for which there are occurrences where this
+overlap is problematic;</p>
+</li>
+<li>
+<p><code><a title="tf.ner.triggers.Triggers.reportHits" href="triggers.html#tf.ner.triggers.Triggers.reportHits">Triggers.reportHits()</a></code> will list the triggers without hits
+while they do occur in the corpus; it will give diagnostic info about those
+triggers; it also produces statistics about the inventory of entities that
+has been collected on the basis of the triggers; finally it produces a file
+that lists the number of hits per entity, per trigger, per scope and per
+section where the occurrences have been found.</p>
+</li>
+</ul>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.ner.ner.NER"><code class="flex name class">
+<span>class <span class="ident">NER</span></span>
+<span>(</span><span>app, data=None, browse=False, caseSensitive=False, silent=False)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/ner.py#L187-L564" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">class NER(Sheets, Sets, Show):
+    &#34;&#34;&#34;API for Named Entity marking.
+
+    This class is the central class of the trigger based Named Entity
+    Recognition tool whose main task is to find occurrences of annotations on
+    the basis of criteria.
+
+    This class inherits from a number of other classes:
+
+    *   `tf.ner.sheets`: manage annotation spreadsheets;
+    *   `tf.ner.sets`: manage annotation sets;
+    *   `tf.ner.show`: generate HTML for annotated buckets of the corpus;
+
+    In turn, these classes inherit from yet other classes:
+
+    *   `tf.ner.sets`:
+        *   from `tf.ner.data`: manage the annotation data in various
+            convenient representations;
+    *   `tf.ner.data`:
+        *   from `tf.ner.corpus`: manage the corpus dependent bits; it uses
+            the TF machinery to extract the specifics of the corpus;
+    *   `tf.ner.corpus`:
+        *   from `tf.ner.settings`: additional settings, some of which
+            derive from a config file;
+    *   `tf.ner.sheets`:
+        *   from `tf.ner.scopes`: support the concept of scope in the corpus;
+        *   from `tf.ner.triggers`: support the concept of trigger.
+
+    The NER machinery can be used by
+
+    *   users to manipulate annotations in their own programs, especially in a
+        Jupyter notebook.
+    *   `tf.browser.ner.web`: Flask app that routes URLs to controller functions.
+
+    The browsing experience is supported by:
+
+    *   `tf.browser.ner.web`: map urls to the controllers of the web app
+    *   `tf.browser.ner.serve`: implement the controllers of the web app
+    *   `tf.browser.ner.request`: manage the data of a request;
+    *   `tf.browser.ner.form`: retrieve form values into typed and structured values.
+    *   `tf.browser.ner.fragments`: generate HTML for widgets on the page;
+    *   `tf.browser.ner.websettings`: settings for the browser experience;
+    *   `tf.browser.html`: a generic library to generate HTML using Pythonic syntax.
+
+    See this
+    [example notebook](https://nbviewer.org/urls/gitlab.huc.knaw.nl/suriano/letters/-/raw/main/programs/ner.ipynb/%3Fref_type%3Dheads%26inline%3Dfalse).
+    &#34;&#34;&#34;
+
+    def __init__(
+        self,
+        app,
+        data=None,
+        browse=False,
+        caseSensitive=False,
+        silent=False,
+    ):
+        &#34;&#34;&#34;Top level functions for entity annotation.
+
+        This is a high-level class, building on the lower-level tools provided
+        by the Sheets, Sets and Show classes on which it is based and on the classes
+        that these are based on in turn.
+
+        These methods can be used by code that runs in the TF browser
+        and by code that runs in a Jupyter notebook.
+
+        Entities are collected in sets. There are three kind of sets:
+
+        *   entities that are already part of the TF data as nodes and features; this
+            is a *readonly* set. However, you can duplicate it, and the copy is a
+            modifiable set;
+
+        *   entities that have been looked up on the basis of triggers specified in a
+            spreadsheet; these are also *readonly* sets, and also these can be
+            duplicated in modifiable sets;
+
+        *   entities that have been found by hand; these are *modifiable* sets.
+
+        The concept of entity *task* stands for entity sets, of all three kinds.
+        In shorthand, we say a task is either a set, or a sheet, or the given
+        entity set.
+
+        Underneath, the given entity set looks like a set, but in fact there is
+        no other representation of them than the nodes and features that are already
+        in the TF dataset.
+
+        Sheets have  corresponding sets, but there is a bit of logic around sheets
+        that prevent the set from being modified, among other things.
+
+        Sets are the lowest level of data corresponding to entities.
+
+        This class handles *tasks*, which is an abstraction of the three concepts of
+        entity collections.
+
+        It does not handle HTML generation, but its parent class, `Show`, does that.
+
+        We consider the corpus as a list of buckets (lowest level sectional
+        units; in TEI-derived corpora called `chunk`, being generalizations of
+        `p` (paragraph) elements). We read this type off from the TF dataset,
+        see `tf.ner.corpus.Corpus.bucketType`
+
+        Parameters
+        ----------
+        app: object
+            The object that corresponds to a loaded TF app for a corpus.
+        data: object, optional None
+            Entity data to start with. If this class is initialized by the browser,
+            the browser hands over the in-memory data that the tool needs.
+            That way, it can maintain access to the same data between requests.
+            If None, no data is handed over, and a fresh data store will be
+            created by an ancestor class (Data)
+        browse: boolean, optional False
+            If True, the object is informed that it is run by the TF browser.
+            This will influence how results are reported back.
+        caseSensitive: boolean, optional False
+            Whether the lookup of entities should be case-sensitive. For spreadsheets
+            it specifies whether the triggers should be treated case-sensitively.
+        silent: boolean, optional False
+            Whether to keep most operations silent.
+        &#34;&#34;&#34;
+        if data is None:
+            data = AttrDict()
+
+        if data.sets is None:
+            data.sets = AttrDict()
+
+        if data.sheets is None:
+            data.sheets = AttrDict()
+
+        self.silent = silent
+        self.browse = browse
+        self.app = app
+
+        self.caseSensitive = caseSensitive
+
+        Sets.__init__(self, sets=data.sets)
+        if not self.properlySetup:
+            return
+
+        Sheets.__init__(self, sheets=data.sheets)
+        if not self.properlySetup:
+            return
+
+    def setTask(self, task, force=False, caseSensitive=None):
+        &#34;&#34;&#34;Switch to a named NER task.
+
+        After the switch, the data associated with this task will be looked up
+        from disk if it is not already in memory. If no data can be found, the data will
+        be generated and stored.
+
+        Parameters
+        ----------
+        task: string
+            The name of the NER task to switch to.
+        force: boolean, optional False
+            If True, the data for this task will be generated from scratch, bypassing
+            earlier stored data.
+        caseSenstive: boolean, optional None
+            Whether to use the triggers of sheets in a case-sensitive way.
+            If `None`, the value is taken from the NER instance, otherwise you can
+            override it here.
+
+            **N.B.:** Case sensitivity is only relevant for sheets. When the task is
+            a sheet, it is associated with potentially two *sets*, one for the sheet
+            taken in a case-sensitive way, and one for the sheet taken in a
+            case-insensitive way.
+        &#34;&#34;&#34;
+        if caseSensitive is None:
+            caseSensitive = self.caseSensitive
+
+        (newSetNameRep, newSetRo, newSetSrc, newSetX) = self.setInfo(task)
+        self.setSet(task)
+        self.setSheet(
+            task[1:] if newSetX else None,
+            force=force,
+            caseSensitive=caseSensitive,
+        )
+
+    def getTasks(self):
+        &#34;&#34;&#34;Get a list of task names.
+
+        Sheets will be listed by just their main name, although they are associated
+        with two sets, due to the optional case sensitivity.
+        &#34;&#34;&#34;
+        setNames = self.setNames
+
+        tasks = set()
+
+        for setName in setNames:
+            tasks.add(
+                setName.removesuffix(&#34;-no-case&#34;).removesuffix(&#34;-with-case&#34;)
+                if setName.startswith(&#34;.&#34;)
+                else setName
+            )
+
+        return tasks
+
+    def bakeEntities(self, versionExtension=&#34;e&#34;):
+        &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
+
+        This operation is not allowed if the current set is the read-only set with the
+        empty name, because these entities are already present as nodes in the
+        TF dataset.
+
+        Entities and entity occurrences are stored as nodes of type `entity` and `ent`
+        respectively.
+
+        Nodes of both types will get the features `eid` (entity id) and `kind` (type
+        of entity, e.g. `PER`, `LOC`).
+
+        Additionally, nodes of type `entity` will also get the feature `ename`: the
+        full name of the entity. But this can be done only if the set of entities
+        belongs to a spreadsheet.
+
+        There will also be an edge feature `eoccs` that goes from `entity` nddes to
+        the `ent` nodes that correspond to their occurrences.
+
+        `entity` nodes will also be linked to all slots occupied by their occurrences.
+
+        Parameters
+        ----------
+        versionExtension: string, optional &#34;e&#34;
+            The new dataset gets a version like the original dataset, but extended
+            with this string.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        silent = self.silent
+        setNameRep = self.setNameRep
+        setIsSrc = self.setIsSrc
+        setIsX = self.setIsX
+
+        if setIsSrc:
+            console(f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True)
+            return False
+
+        version = self.version
+        settings = self.settings
+        features = settings.features
+        featureMeta = settings.featureMeta
+        setData = self.getSetData()
+
+        slotLink = {}
+        nodeFeatures = AttrDict({feat: {} for feat in features})
+        edgeFeatures = AttrDict(eoccs={})
+        entities = {}
+
+        if setIsX:
+            sheetData = self.getSheetData()
+            nameMap = sheetData.nameMap
+            eNameFeature = settings.eNameFeature
+            eNameFeat = list(eNameFeature)[0]
+            featureMeta[eNameFeat] = eNameFeature[eNameFeat]
+            nodeFeatures[eNameFeat] = {}
+
+        # Data preparation for the modify function
+
+        entityOccs = sorted(set(setData.entities.values()))
+        self.console(
+            f&#34;Entity consolidation for {len(entityOccs)} entity occurrences &#34;
+            f&#34;into version {version}{versionExtension}&#34;
+        )
+
+        n = 0
+
+        for fVals, slots in entityOccs:
+            n += 1
+            slotLink[n] = slots
+
+            for feat, fVal in zip(features, fVals):
+                nodeFeatures[feat][n] = fVal
+
+            entities.setdefault(fVals, []).append(n)
+
+        nEntityOccs = len(entityOccs)
+        occEdge = edgeFeatures.eoccs
+
+        for fVals, occs in entities.items():
+            n += 1
+            occEdge[n] = set(occs)
+            slotLink[n] = tuple(chain.from_iterable(slotLink[m] for m in occs))
+
+            for feat, fVal in zip(features, fVals):
+                nodeFeatures[feat][n] = fVal
+
+            if setIsX:
+                eName = nameMap[fVals]
+                nodeFeatures[eNameFeat][n] = eName
+
+        nEntities = len(entities)
+
+        self.console(f&#34;{nEntityOccs:&gt;6} entity occurrences&#34;)
+        self.console(f&#34;{nEntities:&gt;6} distinct entities&#34;)
+
+        featureMeta.eoccs = dict(
+            valueType=&#34;str&#34;,
+            description=&#34;from entity nodes to their occurrence nodes&#34;,
+        )
+
+        addTypes = dict(
+            ent=dict(
+                nodeFrom=1,
+                nodeTo=nEntityOccs,
+                nodeSlots=slotLink,
+                nodeFeatures=nodeFeatures,
+            ),
+            entity=dict(
+                nodeFrom=nEntityOccs + 1,
+                nodeTo=nEntityOccs + nEntities,
+                nodeSlots=slotLink,
+                nodeFeatures=nodeFeatures,
+                edgeFeatures=edgeFeatures,
+            ),
+        )
+        self.featureMeta = featureMeta
+
+        # Call the modify function
+
+        app = self.app
+        context = app.context
+        appPath = context.appPath
+        relative = context.relative
+        dataPath = f&#34;{dirNm(appPath)}/{relative}&#34;
+
+        origTf = f&#34;{dataPath}/{app.version}&#34;
+        newTf = f&#34;{origTf}{versionExtension}&#34;
+        newVersion = f&#34;{app.version}{versionExtension}&#34;
+
+        if dirExists(newTf):
+            dirRemove(newTf)
+
+        app.indent(reset=True)
+
+        if not silent:
+            app.info(&#34;Creating a dataset with entity nodes ...&#34;)
+
+        good = modify(
+            origTf,
+            newTf,
+            targetVersion=newVersion,
+            addTypes=addTypes,
+            featureMeta=featureMeta,
+            silent=DEEP if silent else SILENT_D,
+        )
+
+        if not silent:
+            app.info(&#34;Done&#34;)
+
+        if not good:
+            return False
+
+        self.console(f&#34;The dataset with entities is now in version {newVersion}&#34;)
+
+        # tweak the app
+
+        config = f&#34;{appPath}/{APP_CONFIG}&#34;
+
+        with fileOpen(config) as fh:
+            text = fh.read()
+
+        text = text.replace(f&#34;version: {version}&#34;, f&#39;version: &#34;{newVersion}&#34;&#39;)
+        text = text.replace(f&#39;version: &#34;{version}&#34;&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
+
+        with fileOpen(config, mode=&#34;w&#34;) as fh:
+            fh.write(text)
+
+        self.console(&#34;The dataset with entities is now the standard version&#34;)
+
+        return True
+
+    def variantDetection(self):
+        setIsX = self.setIsX
+
+        if not setIsX:
+            console(&#34;You can only do variant analysis on sheets&#34;, error=True)
+            return None
+
+        return Detect(self)</code></pre>
+</details>
+<div class="desc"><p>API for Named Entity marking.</p>
+<p>This class is the central class of the trigger based Named Entity
+Recognition tool whose main task is to find occurrences of annotations on
+the basis of criteria.</p>
+<p>This class inherits from a number of other classes:</p>
+<ul>
+<li><code><a title="tf.ner.sheets" href="sheets.html">tf.ner.sheets</a></code>: manage annotation spreadsheets;</li>
+<li><code><a title="tf.ner.sets" href="sets.html">tf.ner.sets</a></code>: manage annotation sets;</li>
+<li><code><a title="tf.ner.show" href="show.html">tf.ner.show</a></code>: generate HTML for annotated buckets of the corpus;</li>
+</ul>
+<p>In turn, these classes inherit from yet other classes:</p>
+<ul>
+<li><code><a title="tf.ner.sets" href="sets.html">tf.ner.sets</a></code>:<ul>
+<li>from <code><a title="tf.ner.data" href="data.html">tf.ner.data</a></code>: manage the annotation data in various
+convenient representations;</li>
+</ul>
+</li>
+<li><code><a title="tf.ner.data" href="data.html">tf.ner.data</a></code>:<ul>
+<li>from <code><a title="tf.ner.corpus" href="corpus.html">tf.ner.corpus</a></code>: manage the corpus dependent bits; it uses
+the TF machinery to extract the specifics of the corpus;</li>
+</ul>
+</li>
+<li><code><a title="tf.ner.corpus" href="corpus.html">tf.ner.corpus</a></code>:<ul>
+<li>from <code><a title="tf.ner.settings" href="settings.html">tf.ner.settings</a></code>: additional settings, some of which
+derive from a config file;</li>
+</ul>
+</li>
+<li><code><a title="tf.ner.sheets" href="sheets.html">tf.ner.sheets</a></code>:<ul>
+<li>from <code><a title="tf.ner.scopes" href="scopes.html">tf.ner.scopes</a></code>: support the concept of scope in the corpus;</li>
+<li>from <code><a title="tf.ner.triggers" href="triggers.html">tf.ner.triggers</a></code>: support the concept of trigger.</li>
+</ul>
+</li>
+</ul>
+<p>The NER machinery can be used by</p>
+<ul>
+<li>users to manipulate annotations in their own programs, especially in a
+Jupyter notebook.</li>
+<li><code><a title="tf.browser.ner.web" href="../browser/ner/web.html">tf.browser.ner.web</a></code>: Flask app that routes URLs to controller functions.</li>
+</ul>
+<p>The browsing experience is supported by:</p>
+<ul>
+<li><code><a title="tf.browser.ner.web" href="../browser/ner/web.html">tf.browser.ner.web</a></code>: map urls to the controllers of the web app</li>
+<li><code><a title="tf.browser.ner.serve" href="../browser/ner/serve.html">tf.browser.ner.serve</a></code>: implement the controllers of the web app</li>
+<li><code><a title="tf.browser.ner.request" href="../browser/ner/request.html">tf.browser.ner.request</a></code>: manage the data of a request;</li>
+<li><code><a title="tf.browser.ner.form" href="../browser/ner/form.html">tf.browser.ner.form</a></code>: retrieve form values into typed and structured values.</li>
+<li><code><a title="tf.browser.ner.fragments" href="../browser/ner/fragments.html">tf.browser.ner.fragments</a></code>: generate HTML for widgets on the page;</li>
+<li><code><a title="tf.browser.ner.websettings" href="../browser/ner/websettings.html">tf.browser.ner.websettings</a></code>: settings for the browser experience;</li>
+<li><code><a title="tf.browser.html" href="../browser/html.html">tf.browser.html</a></code>: a generic library to generate HTML using Pythonic syntax.</li>
+</ul>
+<p>See this
+<a href="https://nbviewer.org/urls/gitlab.huc.knaw.nl/suriano/letters/-/raw/main/programs/ner.ipynb/%3Fref_type%3Dheads%26inline%3Dfalse">example notebook</a>.</p>
+<p>Top level functions for entity annotation.</p>
+<p>This is a high-level class, building on the lower-level tools provided
+by the Sheets, Sets and Show classes on which it is based and on the classes
+that these are based on in turn.</p>
+<p>These methods can be used by code that runs in the TF browser
+and by code that runs in a Jupyter notebook.</p>
+<p>Entities are collected in sets. There are three kind of sets:</p>
+<ul>
+<li>
+<p>entities that are already part of the TF data as nodes and features; this
+is a <em>readonly</em> set. However, you can duplicate it, and the copy is a
+modifiable set;</p>
+</li>
+<li>
+<p>entities that have been looked up on the basis of triggers specified in a
+spreadsheet; these are also <em>readonly</em> sets, and also these can be
+duplicated in modifiable sets;</p>
+</li>
+<li>
+<p>entities that have been found by hand; these are <em>modifiable</em> sets.</p>
+</li>
+</ul>
+<p>The concept of entity <em>task</em> stands for entity sets, of all three kinds.
+In shorthand, we say a task is either a set, or a sheet, or the given
+entity set.</p>
+<p>Underneath, the given entity set looks like a set, but in fact there is
+no other representation of them than the nodes and features that are already
+in the TF dataset.</p>
+<p>Sheets have
+corresponding sets, but there is a bit of logic around sheets
+that prevent the set from being modified, among other things.</p>
+<p>Sets are the lowest level of data corresponding to entities.</p>
+<p>This class handles <em>tasks</em>, which is an abstraction of the three concepts of
+entity collections.</p>
+<p>It does not handle HTML generation, but its parent class, <code>Show</code>, does that.</p>
+<p>We consider the corpus as a list of buckets (lowest level sectional
+units; in TEI-derived corpora called <code>chunk</code>, being generalizations of
+<code>p</code> (paragraph) elements). We read this type off from the TF dataset,
+see <code><a title="tf.ner.corpus.Corpus.bucketType" href="corpus.html#tf.ner.corpus.Corpus.bucketType">Corpus.bucketType</a></code></p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dd>The object that corresponds to a loaded TF app for a corpus.</dd>
+<dt><strong><code>data</code></strong> :&ensp;<code>object</code>, optional <code>None</code></dt>
+<dd>Entity data to start with. If this class is initialized by the browser,
+the browser hands over the in-memory data that the tool needs.
+That way, it can maintain access to the same data between requests.
+If None, no data is handed over, and a fresh data store will be
+created by an ancestor class (Data)</dd>
+<dt><strong><code>browse</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, the object is informed that it is run by the TF browser.
+This will influence how results are reported back.</dd>
+<dt><strong><code>caseSensitive</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether the lookup of entities should be case-sensitive. For spreadsheets
+it specifies whether the triggers should be treated case-sensitively.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to keep most operations silent.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="tf.ner.sheets.Sheets" href="sheets.html#tf.ner.sheets.Sheets">Sheets</a></li>
+<li><a title="tf.ner.scopes.Scopes" href="scopes.html#tf.ner.scopes.Scopes">Scopes</a></li>
+<li><a title="tf.ner.triggers.Triggers" href="triggers.html#tf.ner.triggers.Triggers">Triggers</a></li>
+<li><a title="tf.ner.sets.Sets" href="sets.html#tf.ner.sets.Sets">Sets</a></li>
+<li><a title="tf.ner.data.Data" href="data.html#tf.ner.data.Data">Data</a></li>
+<li><a title="tf.ner.corpus.Corpus" href="corpus.html#tf.ner.corpus.Corpus">Corpus</a></li>
+<li><a title="tf.ner.settings.Settings" href="settings.html#tf.ner.settings.Settings">Settings</a></li>
+<li><a title="tf.ner.show.Show" href="show.html#tf.ner.show.Show">Show</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.ner.ner.NER.bakeEntities"><code class="name flex">
+<span>def <span class="ident">bakeEntities</span></span>(<span>self, versionExtension='e')</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/ner.py#L383-L555" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def bakeEntities(self, versionExtension=&#34;e&#34;):
+    &#34;&#34;&#34;Consolidates the current entities as nodes into a new TF data source.
+
+    This operation is not allowed if the current set is the read-only set with the
+    empty name, because these entities are already present as nodes in the
+    TF dataset.
+
+    Entities and entity occurrences are stored as nodes of type `entity` and `ent`
+    respectively.
+
+    Nodes of both types will get the features `eid` (entity id) and `kind` (type
+    of entity, e.g. `PER`, `LOC`).
+
+    Additionally, nodes of type `entity` will also get the feature `ename`: the
+    full name of the entity. But this can be done only if the set of entities
+    belongs to a spreadsheet.
+
+    There will also be an edge feature `eoccs` that goes from `entity` nddes to
+    the `ent` nodes that correspond to their occurrences.
+
+    `entity` nodes will also be linked to all slots occupied by their occurrences.
+
+    Parameters
+    ----------
+    versionExtension: string, optional &#34;e&#34;
+        The new dataset gets a version like the original dataset, but extended
+        with this string.
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
+    silent = self.silent
+    setNameRep = self.setNameRep
+    setIsSrc = self.setIsSrc
+    setIsX = self.setIsX
+
+    if setIsSrc:
+        console(f&#34;Entity consolidation not meaningful on {setNameRep}&#34;, error=True)
+        return False
+
+    version = self.version
+    settings = self.settings
+    features = settings.features
+    featureMeta = settings.featureMeta
+    setData = self.getSetData()
+
+    slotLink = {}
+    nodeFeatures = AttrDict({feat: {} for feat in features})
+    edgeFeatures = AttrDict(eoccs={})
+    entities = {}
+
+    if setIsX:
+        sheetData = self.getSheetData()
+        nameMap = sheetData.nameMap
+        eNameFeature = settings.eNameFeature
+        eNameFeat = list(eNameFeature)[0]
+        featureMeta[eNameFeat] = eNameFeature[eNameFeat]
+        nodeFeatures[eNameFeat] = {}
+
+    # Data preparation for the modify function
+
+    entityOccs = sorted(set(setData.entities.values()))
+    self.console(
+        f&#34;Entity consolidation for {len(entityOccs)} entity occurrences &#34;
+        f&#34;into version {version}{versionExtension}&#34;
+    )
+
+    n = 0
+
+    for fVals, slots in entityOccs:
+        n += 1
+        slotLink[n] = slots
+
+        for feat, fVal in zip(features, fVals):
+            nodeFeatures[feat][n] = fVal
+
+        entities.setdefault(fVals, []).append(n)
+
+    nEntityOccs = len(entityOccs)
+    occEdge = edgeFeatures.eoccs
+
+    for fVals, occs in entities.items():
+        n += 1
+        occEdge[n] = set(occs)
+        slotLink[n] = tuple(chain.from_iterable(slotLink[m] for m in occs))
+
+        for feat, fVal in zip(features, fVals):
+            nodeFeatures[feat][n] = fVal
+
+        if setIsX:
+            eName = nameMap[fVals]
+            nodeFeatures[eNameFeat][n] = eName
+
+    nEntities = len(entities)
+
+    self.console(f&#34;{nEntityOccs:&gt;6} entity occurrences&#34;)
+    self.console(f&#34;{nEntities:&gt;6} distinct entities&#34;)
+
+    featureMeta.eoccs = dict(
+        valueType=&#34;str&#34;,
+        description=&#34;from entity nodes to their occurrence nodes&#34;,
+    )
+
+    addTypes = dict(
+        ent=dict(
+            nodeFrom=1,
+            nodeTo=nEntityOccs,
+            nodeSlots=slotLink,
+            nodeFeatures=nodeFeatures,
+        ),
+        entity=dict(
+            nodeFrom=nEntityOccs + 1,
+            nodeTo=nEntityOccs + nEntities,
+            nodeSlots=slotLink,
+            nodeFeatures=nodeFeatures,
+            edgeFeatures=edgeFeatures,
+        ),
+    )
+    self.featureMeta = featureMeta
+
+    # Call the modify function
+
+    app = self.app
+    context = app.context
+    appPath = context.appPath
+    relative = context.relative
+    dataPath = f&#34;{dirNm(appPath)}/{relative}&#34;
+
+    origTf = f&#34;{dataPath}/{app.version}&#34;
+    newTf = f&#34;{origTf}{versionExtension}&#34;
+    newVersion = f&#34;{app.version}{versionExtension}&#34;
+
+    if dirExists(newTf):
+        dirRemove(newTf)
+
+    app.indent(reset=True)
+
+    if not silent:
+        app.info(&#34;Creating a dataset with entity nodes ...&#34;)
+
+    good = modify(
+        origTf,
+        newTf,
+        targetVersion=newVersion,
+        addTypes=addTypes,
+        featureMeta=featureMeta,
+        silent=DEEP if silent else SILENT_D,
+    )
+
+    if not silent:
+        app.info(&#34;Done&#34;)
+
+    if not good:
+        return False
+
+    self.console(f&#34;The dataset with entities is now in version {newVersion}&#34;)
+
+    # tweak the app
+
+    config = f&#34;{appPath}/{APP_CONFIG}&#34;
+
+    with fileOpen(config) as fh:
+        text = fh.read()
+
+    text = text.replace(f&#34;version: {version}&#34;, f&#39;version: &#34;{newVersion}&#34;&#39;)
+    text = text.replace(f&#39;version: &#34;{version}&#34;&#39;, f&#39;version: &#34;{newVersion}&#34;&#39;)
+
+    with fileOpen(config, mode=&#34;w&#34;) as fh:
+        fh.write(text)
+
+    self.console(&#34;The dataset with entities is now the standard version&#34;)
+
+    return True</code></pre>
+</details>
+<div class="desc"><p>Consolidates the current entities as nodes into a new TF data source.</p>
+<p>This operation is not allowed if the current set is the read-only set with the
+empty name, because these entities are already present as nodes in the
+TF dataset.</p>
+<p>Entities and entity occurrences are stored as nodes of type <code>entity</code> and <code>ent</code>
+respectively.</p>
+<p>Nodes of both types will get the features <code>eid</code> (entity id) and <code>kind</code> (type
+of entity, e.g. <code>PER</code>, <code>LOC</code>).</p>
+<p>Additionally, nodes of type <code>entity</code> will also get the feature <code>ename</code>: the
+full name of the entity. But this can be done only if the set of entities
+belongs to a spreadsheet.</p>
+<p>There will also be an edge feature <code>eoccs</code> that goes from <code>entity</code> nddes to
+the <code>ent</code> nodes that correspond to their occurrences.</p>
+<p><code>entity</code> nodes will also be linked to all slots occupied by their occurrences.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>versionExtension</code></strong> :&ensp;<code>string</code>, optional <code>"e"</code></dt>
+<dd>The new dataset gets a version like the original dataset, but extended
+with this string.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.ner.NER.getTasks"><code class="name flex">
+<span>def <span class="ident">getTasks</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/ner.py#L364-L381" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def getTasks(self):
+    &#34;&#34;&#34;Get a list of task names.
+
+    Sheets will be listed by just their main name, although they are associated
+    with two sets, due to the optional case sensitivity.
+    &#34;&#34;&#34;
+    setNames = self.setNames
+
+    tasks = set()
+
+    for setName in setNames:
+        tasks.add(
+            setName.removesuffix(&#34;-no-case&#34;).removesuffix(&#34;-with-case&#34;)
+            if setName.startswith(&#34;.&#34;)
+            else setName
+        )
+
+    return tasks</code></pre>
+</details>
+<div class="desc"><p>Get a list of task names.</p>
+<p>Sheets will be listed by just their main name, although they are associated
+with two sets, due to the optional case sensitivity.</p></div>
+</dd>
+<dt id="tf.ner.ner.NER.setTask"><code class="name flex">
+<span>def <span class="ident">setTask</span></span>(<span>self, task, force=False, caseSensitive=None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/ner.py#L329-L362" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def setTask(self, task, force=False, caseSensitive=None):
+    &#34;&#34;&#34;Switch to a named NER task.
+
+    After the switch, the data associated with this task will be looked up
+    from disk if it is not already in memory. If no data can be found, the data will
+    be generated and stored.
+
+    Parameters
+    ----------
+    task: string
+        The name of the NER task to switch to.
+    force: boolean, optional False
+        If True, the data for this task will be generated from scratch, bypassing
+        earlier stored data.
+    caseSenstive: boolean, optional None
+        Whether to use the triggers of sheets in a case-sensitive way.
+        If `None`, the value is taken from the NER instance, otherwise you can
+        override it here.
+
+        **N.B.:** Case sensitivity is only relevant for sheets. When the task is
+        a sheet, it is associated with potentially two *sets*, one for the sheet
+        taken in a case-sensitive way, and one for the sheet taken in a
+        case-insensitive way.
+    &#34;&#34;&#34;
+    if caseSensitive is None:
+        caseSensitive = self.caseSensitive
+
+    (newSetNameRep, newSetRo, newSetSrc, newSetX) = self.setInfo(task)
+    self.setSet(task)
+    self.setSheet(
+        task[1:] if newSetX else None,
+        force=force,
+        caseSensitive=caseSensitive,
+    )</code></pre>
+</details>
+<div class="desc"><p>Switch to a named NER task.</p>
+<p>After the switch, the data associated with this task will be looked up
+from disk if it is not already in memory. If no data can be found, the data will
+be generated and stored.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>task</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of the NER task to switch to.</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, the data for this task will be generated from scratch, bypassing
+earlier stored data.</dd>
+<dt><strong><code>caseSenstive</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>
+<p>Whether to use the triggers of sheets in a case-sensitive way.
+If <code>None</code>, the value is taken from the NER instance, otherwise you can
+override it here.</p>
+<p><strong>N.B.:</strong> Case sensitivity is only relevant for sheets. When the task is
+a sheet, it is associated with potentially two <em>sets</em>, one for the sheet
+taken in a case-sensitive way, and one for the sheet taken in a
+case-insensitive way.</p>
+</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.ner.NER.variantDetection"><code class="name flex">
+<span>def <span class="ident">variantDetection</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/ner.py#L557-L564" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def variantDetection(self):
+    setIsX = self.setIsX
+
+    if not setIsX:
+        console(&#34;You can only do variant analysis on sheets&#34;, error=True)
+        return None
+
+    return Detect(self)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="tf.ner.sheets.Sheets" href="sheets.html#tf.ner.sheets.Sheets">Sheets</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tf.ner.sheets.Sheets.diagnoseTrigger" href="triggers.html#tf.ner.triggers.Triggers.diagnoseTrigger">diagnoseTrigger</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.diagnoseTriggers" href="triggers.html#tf.ner.triggers.Triggers.diagnoseTriggers">diagnoseTriggers</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.findOccs" href="triggers.html#tf.ner.triggers.Triggers.findOccs">findOccs</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.findTrigger" href="triggers.html#tf.ner.triggers.Triggers.findTrigger">findTrigger</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.findTriggers" href="triggers.html#tf.ner.triggers.Triggers.findTriggers">findTriggers</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.flush" href="sheets.html#tf.ner.sheets.Sheets.flush">flush</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.getMeta" href="sheets.html#tf.ner.sheets.Sheets.getMeta">getMeta</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.getSheetData" href="sheets.html#tf.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.getToTokensFunc" href="sheets.html#tf.ner.sheets.Sheets.getToTokensFunc">getToTokensFunc</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.interference" href="triggers.html#tf.ner.triggers.Triggers.interference">interference</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.intersectScopes" href="scopes.html#tf.ner.scopes.Scopes.intersectScopes">intersectScopes</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.loadSheetData" href="sheets.html#tf.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.log" href="sheets.html#tf.ner.sheets.Sheets.log">log</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.makeSheetOfSingleTokens" href="sheets.html#tf.ner.sheets.Sheets.makeSheetOfSingleTokens">makeSheetOfSingleTokens</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.parseInterval" href="scopes.html#tf.ner.scopes.Scopes.parseInterval">parseInterval</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.parseLoc" href="scopes.html#tf.ner.scopes.Scopes.parseLoc">parseLoc</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.parseScope" href="scopes.html#tf.ner.scopes.Scopes.parseScope">parseScope</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.partitionTriggers" href="triggers.html#tf.ner.triggers.Triggers.partitionTriggers">partitionTriggers</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.readSheetData" href="sheets.html#tf.ner.sheets.Sheets.readSheetData">readSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.readSheets" href="sheets.html#tf.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.repInterval" href="scopes.html#tf.ner.scopes.Scopes.repInterval">repInterval</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.repLoc" href="scopes.html#tf.ner.scopes.Scopes.repLoc">repLoc</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.repScope" href="scopes.html#tf.ner.scopes.Scopes.repScope">repScope</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.reportHits" href="triggers.html#tf.ner.triggers.Triggers.reportHits">reportHits</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.setSheet" href="sheets.html#tf.ner.sheets.Sheets.setSheet">setSheet</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.sheetName" href="sheets.html#tf.ner.sheets.Sheets.sheetName">sheetName</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.sheetNames" href="sheets.html#tf.ner.sheets.Sheets.sheetNames">sheetNames</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.testPartitioning" href="scopes.html#tf.ner.scopes.Scopes.testPartitioning">testPartitioning</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.triggerInterference" href="triggers.html#tf.ner.triggers.Triggers.triggerInterference">triggerInterference</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.writeSheetData" href="sheets.html#tf.ner.sheets.Sheets.writeSheetData">writeSheetData</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="tf.ner.sets.Sets" href="sets.html#tf.ner.sets.Sets">Sets</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tf.ner.sets.Sets.addEntities" href="data.html#tf.ner.data.Data.addEntities">addEntities</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.addEntity" href="data.html#tf.ner.data.Data.addEntity">addEntity</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.addEntityRich" href="data.html#tf.ner.data.Data.addEntityRich">addEntityRich</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.bucketType" href="corpus.html#tf.ner.corpus.Corpus.bucketType">bucketType</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.checkBuckets" href="corpus.html#tf.ner.corpus.Corpus.checkBuckets">checkBuckets</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.checkFeature" href="corpus.html#tf.ner.corpus.Corpus.checkFeature">checkFeature</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.console" href="settings.html#tf.ner.settings.Settings.console">console</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.consoleLine" href="settings.html#tf.ner.settings.Settings.consoleLine">consoleLine</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.delEntity" href="data.html#tf.ner.data.Data.delEntity">delEntity</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.delEntityRich" href="data.html#tf.ner.data.Data.delEntityRich">delEntityRich</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.featureDefault" href="corpus.html#tf.ner.corpus.Corpus.featureDefault">featureDefault</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">filterContent</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.fromSourceSet" href="data.html#tf.ner.data.Data.fromSourceSet">fromSourceSet</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.fvalFromNode" href="corpus.html#tf.ner.corpus.Corpus.fvalFromNode">fvalFromNode</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getAfter" href="corpus.html#tf.ner.corpus.Corpus.getAfter">getAfter</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getBucketNodes" href="corpus.html#tf.ner.corpus.Corpus.getBucketNodes">getBucketNodes</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getContext" href="corpus.html#tf.ner.corpus.Corpus.getContext">getContext</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getEid" href="corpus.html#tf.ner.corpus.Corpus.getEid">getEid</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getEntityNodes" href="corpus.html#tf.ner.corpus.Corpus.getEntityNodes">getEntityNodes</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getKind" href="corpus.html#tf.ner.corpus.Corpus.getKind">getKind</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getSeqFromNode" href="corpus.html#tf.ner.corpus.Corpus.getSeqFromNode">getSeqFromNode</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getSeqFromStr" href="corpus.html#tf.ner.corpus.Corpus.getSeqFromStr">getSeqFromStr</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getSetData" href="sets.html#tf.ner.sets.Sets.getSetData">getSetData</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getStr" href="corpus.html#tf.ner.corpus.Corpus.getStr">getStr</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.getStrFromSeq" href="corpus.html#tf.ner.corpus.Corpus.getStrFromSeq">getStrFromSeq</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.loadSetData" href="data.html#tf.ner.data.Data.loadSetData">loadSetData</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.processSet" href="data.html#tf.ner.data.Data.processSet">processSet</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.properlySetup" href="corpus.html#tf.ner.corpus.Corpus.properlySetup">properlySetup</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.readSets" href="sets.html#tf.ner.sets.Sets.readSets">readSets</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.resetSet" href="sets.html#tf.ner.sets.Sets.resetSet">resetSet</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.saveEntitiesAs" href="data.html#tf.ner.data.Data.saveEntitiesAs">saveEntitiesAs</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.sectionHead" href="corpus.html#tf.ner.corpus.Corpus.sectionHead">sectionHead</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.setDel" href="sets.html#tf.ner.sets.Sets.setDel">setDel</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.setDup" href="sets.html#tf.ner.sets.Sets.setDup">setDup</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.setInfo" href="sets.html#tf.ner.sets.Sets.setInfo">setInfo</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.setMove" href="sets.html#tf.ner.sets.Sets.setMove">setMove</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.setName" href="sets.html#tf.ner.sets.Sets.setName">setName</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.setNames" href="sets.html#tf.ner.sets.Sets.setNames">setNames</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.setSet" href="sets.html#tf.ner.sets.Sets.setSet">setSet</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.slotType" href="corpus.html#tf.ner.corpus.Corpus.slotType">slotType</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.slotsFromNode" href="corpus.html#tf.ner.corpus.Corpus.slotsFromNode">slotsFromNode</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.stringsFromTokens" href="corpus.html#tf.ner.corpus.Corpus.stringsFromTokens">stringsFromTokens</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.textFromNode" href="corpus.html#tf.ner.corpus.Corpus.textFromNode">textFromNode</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.textFromSlots" href="corpus.html#tf.ner.corpus.Corpus.textFromSlots">textFromSlots</a></code></li>
+<li><code><a title="tf.ner.sets.Sets.tokensFromNode" href="corpus.html#tf.ner.corpus.Corpus.tokensFromNode">tokensFromNode</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="tf.ner.show.Show" href="show.html#tf.ner.show.Show">Show</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tf.ner.show.Show.showContent" href="show.html#tf.ner.show.Show.showContent">showContent</a></code></li>
+<li><code><a title="tf.ner.show.Show.showEntities" href="show.html#tf.ner.show.Show.showEntities">showEntities</a></code></li>
+<li><code><a title="tf.ner.show.Show.showEntityOverview" href="show.html#tf.ner.show.Show.showEntityOverview">showEntityOverview</a></code></li>
+<li><code><a title="tf.ner.show.Show.showTriggers" href="show.html#tf.ner.show.Show.showTriggers">showTriggers</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.css" integrity="sha512-b+T2i3P45i1LZM7I00Ci5QquB9szqaxu+uuk5TUSGjZQ4w4n+qujQiIuvTv2BxE7WCGQCifNMksyKILDiHzsOg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.js" integrity="sha512-2B9/byNV1KKRm5nQ2RLViPFD6U4dUjDGwuW1GU+ImJh8YinPU9Zlq1GzdTMO+G2ROrB5o1qasJBy1ttYz0wCug==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<div class="toc">
+<ul>
+<li><a href="#for-corpus-designers">For corpus designers</a></li>
+<li><a href="#starting-up">Starting up</a><ul>
+<li><a href="#in-the-tf-browser">In the TF browser</a></li>
+<li><a href="#in-a-program">In a program</a></li>
+</ul>
+</li>
+<li><a href="#trigger-investigations">Trigger investigations</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.ner.ner.NER" href="#tf.ner.ner.NER">NER</a></code></h4>
+<ul class="">
+<li><code><a title="tf.ner.ner.NER.bakeEntities" href="#tf.ner.ner.NER.bakeEntities">bakeEntities</a></code></li>
+<li><code><a title="tf.ner.ner.NER.getTasks" href="#tf.ner.ner.NER.getTasks">getTasks</a></code></li>
+<li><code><a title="tf.ner.ner.NER.setTask" href="#tf.ner.ner.NER.setTask">setTask</a></code></li>
+<li><code><a title="tf.ner.ner.NER.variantDetection" href="#tf.ner.ner.NER.variantDetection">variantDetection</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

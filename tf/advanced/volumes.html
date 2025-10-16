@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>tf.advanced.volumes API documentation</title>
+<meta name="description" content="Produce links to TF data and links from nodes to web resources.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.advanced.volumes</code></h1>
+</header>
+<section id="section-intro">
+<p>Produce links to TF data and links from nodes to web resources.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.advanced.volumes.collect"><code class="name flex">
+<span>def <span class="ident">collect</span></span>(<span>app, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/advanced/volumes.py#L83-L90" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def collect(app, *args, **kwargs):
+    &#34;&#34;&#34;Calls `tf.fabric.Fabric.collect` from an app object.&#34;&#34;&#34;
+    TF = app.TF
+
+    if TF is None:
+        return False
+
+    return TF.collect(*args, **kwargs)</code></pre>
+</details>
+<div class="desc"><p>Calls <code><a title="tf.fabric.Fabric.collect" href="../fabric.html#tf.fabric.Fabric.collect">Fabric.collect()</a></code> from an app object.</p></div>
+</dd>
+<dt id="tf.advanced.volumes.extract"><code class="name flex">
+<span>def <span class="ident">extract</span></span>(<span>app, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/advanced/volumes.py#L72-L80" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def extract(app, *args, **kwargs):
+    &#34;&#34;&#34;Calls `tf.fabric.Fabric.extract` from an app object.&#34;&#34;&#34;
+
+    TF = app.TF
+
+    if TF is None:
+        return {}
+
+    return TF.extract(*args, **kwargs)</code></pre>
+</details>
+<div class="desc"><p>Calls <code><a title="tf.fabric.Fabric.extract" href="../fabric.html#tf.fabric.Fabric.extract">Fabric.extract()</a></code> from an app object.</p></div>
+</dd>
+<dt id="tf.advanced.volumes.getVolumes"><code class="name flex">
+<span>def <span class="ident">getVolumes</span></span>(<span>app, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/advanced/volumes.py#L54-L69" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def getVolumes(app, *args, **kwargs):
+    &#34;&#34;&#34;Calls `tf.fabric.Fabric.getVolumes` from an app object.
+
+    !!! hint &#34;No need to load feature data&#34;
+        This function works even if no data has been loaded,
+        so you can use it after
+
+            A = use(xxx, loadData=False)
+    &#34;&#34;&#34;
+
+    TF = app.TF
+
+    if TF is None:
+        return []
+
+    return TF.getVolumes(*args, **kwargs)</code></pre>
+</details>
+<div class="desc"><p>Calls <code><a title="tf.fabric.Fabric.getVolumes" href="../fabric.html#tf.fabric.Fabric.getVolumes">Fabric.getVolumes()</a></code> from an app object.</p>
+<div class="admonition hint">
+<p class="admonition-title">No need to load feature data</p>
+<p>This function works even if no data has been loaded,
+so you can use it after</p>
+<pre><code>A = use(xxx, loadData=False)
+</code></pre>
+</div></div>
+</dd>
+<dt id="tf.advanced.volumes.volumesApi"><code class="name flex">
+<span>def <span class="ident">volumesApi</span></span>(<span>app)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/advanced/volumes.py#L16-L51" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def volumesApi(app):
+    &#34;&#34;&#34;Produce the volume support functions API.
+
+    Volume support provides the functions `tf.volumes.extract` and
+    `tf.volumes.collect` as methods on the app object.
+    These operations will be called with the `_local` source/destination
+    With these operations you can `extract()` and `collect()` volumes
+    from the currently loaded work.
+    The volumes in question reside in the directory `_local`
+    under the main directory with feature files.
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    &#34;&#34;&#34;
+
+    app.getVolumes = types.MethodType(getVolumes, app)
+
+    if hasattr(app, &#34;api&#34;):
+        app.extract = types.MethodType(extract, app)
+        app.collect = types.MethodType(collect, app)
+
+    TF = app.TF
+
+    if TF is None:
+        return
+
+    app.collectionInfo = None
+    app.volumeInfo = None
+
+    if TF.collection:
+        app.collectionInfo = TF.collectionInfo
+    else:
+        if TF.volume:
+            app.volumeInfo = TF.volumeInfo</code></pre>
+</details>
+<div class="desc"><p>Produce the volume support functions API.</p>
+<p>Volume support provides the functions <code><a title="tf.volumes.extract" href="../volumes/extract.html">tf.volumes.extract</a></code> and
+<code><a title="tf.volumes.collect" href="../volumes/collect.html">tf.volumes.collect</a></code> as methods on the app object.
+These operations will be called with the <code>_local</code> source/destination
+With these operations you can <code><a title="tf.advanced.volumes.extract" href="#tf.advanced.volumes.extract">extract()</a></code> and <code><a title="tf.advanced.volumes.collect" href="#tf.advanced.volumes.collect">collect()</a></code> volumes
+from the currently loaded work.
+The volumes in question reside in the directory <code>_local</code>
+under the main directory with feature files.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
+<dd>The high-level API object</dd>
+</dl></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.css" integrity="sha512-b+T2i3P45i1LZM7I00Ci5QquB9szqaxu+uuk5TUSGjZQ4w4n+qujQiIuvTv2BxE7WCGQCifNMksyKILDiHzsOg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.js" integrity="sha512-2B9/byNV1KKRm5nQ2RLViPFD6U4dUjDGwuW1GU+ImJh8YinPU9Zlq1GzdTMO+G2ROrB5o1qasJBy1ttYz0wCug==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.advanced.volumes.collect" href="#tf.advanced.volumes.collect">collect</a></code></li>
+<li><code><a title="tf.advanced.volumes.extract" href="#tf.advanced.volumes.extract">extract</a></code></li>
+<li><code><a title="tf.advanced.volumes.getVolumes" href="#tf.advanced.volumes.getVolumes">getVolumes</a></code></li>
+<li><code><a title="tf.advanced.volumes.volumesApi" href="#tf.advanced.volumes.volumesApi">volumesApi</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

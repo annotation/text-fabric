@@ -1,0 +1,2229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>tf.ner.variants API documentation</title>
+<meta name="description" content="Detect name variants in the corpus …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.ner.variants</code></h1>
+</header>
+<section id="section-intro">
+<p>Detect name variants in the corpus.</p>
+<p>We provide a class can detect variants of the triggers in a NER spreadsheet,
+that is variants as they occur in the corpus.</p>
+<p>One way (and the way supported here) of obtaining the variants is
+by the tool
+<a href="https://github.com/proycon/analiticcl">analiticcl</a> by Martin
+Reynaert and Maarten van Gompel.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.ner.variants.Detect"><code class="flex name class">
+<span>class <span class="ident">Detect</span></span>
+<span>(</span><span>NE, sheet=None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/variants.py#L39-L1001" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">class Detect:
+    def __init__(self, NE, sheet=None):
+        &#34;&#34;&#34;Detect spelling variants.
+
+        In order to use this class you may have to install analiticcl. First
+        you have to make sure you have the programming language Rust operational on
+        your machine, and then you have to install analiticcl as a Rust program,
+        and finally you have to do
+
+        ```
+        pip install analiticcl
+        ```
+
+        See the
+        [python bindings](https://github.com/proycon/analiticcl/tree/master/bindings/python)
+        for detailed instructions.
+
+        If you have an instance of the `tf.ner.ner.NER` class, e.g. from an earlier
+        call like this
+
+        ```
+        NE = A.makeNer()
+        ```
+
+        and if you have pointed this `NE` to a NER spreadsheet, e.g. by
+
+        ```
+        NE.setTask(&#34;.persons&#34;)
+        ```
+
+        then you can get an instance of this class by saying
+
+        ```
+        D = NE.variantDetection()
+        ```
+
+        There are methods to produce a plain text of the corpus, a lexicon based on the
+        triggers in the spreadsheet, and then to search the plain text for variants
+        of the lexicon by passing some well-chosen parameters to analiticcl.
+
+        After the search, which may take long, the raw results are cached, and then
+        filtered, with the help of an optional exceptions file.
+        If you change the filtering parameters, you do not have to rerun the expensive
+        search by analiticcl.
+
+        The variants found can then be merged with the original triggers, and saved as
+        a new spreadsheet, next to the original one.
+
+        The settings for analiticcl are ultimately given in the config.yaml in the
+        `ner` directory of the corpus, where the other settings for the NER process
+        are also given. See `tf.ner.settings`.
+
+        Parameters
+        ----------
+        NE: object
+            A `tf.ner.ner.NER` instance.
+        sheet: string, optional None
+            The name of a NER sheet that serves as input of the variant detection
+            process. If not passed, it is assumed that the `NE` instances is
+            already switched to a NER sheet before setting up this object.
+            However, in any case, we switch again to the sheet in question to make
+            sure we do so in case sesnsitive mode (even if we have used the sheet
+            in case insensitive mode for the lookup).
+        &#34;&#34;&#34;
+        CI = CheckImport(&#34;analiticcl&#34;)
+
+        if CI.importOK(hint=True):
+            an = CI.importGet()
+            self.VariantModel = an.VariantModel
+            self.Weights = an.Weights
+            self.SearchParameters = an.SearchParameters
+        else:
+            self.properlySetup = False
+            return
+
+        self.properlySetup = True
+
+        self.NE = NE
+
+        if sheet is None:
+            sheet = NE.sheetName
+            NE.setSheet(sheet, caseSensitive=True, force=True, forceSilent=True)
+        else:
+            NE.setSheet(sheet, caseSensitive=True, force=True)
+
+        if not NE.setIsX:
+            console(
+                (
+                    &#34;Setting up this instance requires having a current &#34;
+                    f&#34;NER spreadsheet selected. &#39;{sheet}&#39; is not a spreadsheet.&#34;
+                ),
+                error=True,
+            )
+            self.properlySetup = False
+            return
+
+        self.sheet = sheet
+        self.sheetData = NE.getSheetData()
+
+        app = NE.app
+        self.app = app
+
+        settings = NE.settings.variants
+        self.settings = settings
+
+        workDir = f&#34;{app.context.localDir}/{app.context.extraData}/analyticcl&#34;
+        self.workDir = workDir
+        initTree(workDir, fresh=False)
+
+        NE.setSheet(sheet, caseSensitive=True, force=True)
+        sheetData = NE.getSheetData()
+
+        NE.console(&#34;Overview of names by length:&#34;)
+        triggers = set(sheetData.rowMap)
+
+        lengths = collections.defaultdict(list)
+
+        for trigger in triggers:
+            lengths[len(trigger.split())].append(trigger)
+
+        for n, trigs in sorted(lengths.items(), key=lambda x: -x[0]):
+            examples = &#34;\n      &#34;.join(sorted(trigs, key=lambda x: x.lower())[0:5])
+            NE.console(f&#34;  {n} tokens: {len(trigs):&gt;3} names e.g.:\n      {examples}&#34;)
+
+    def prepare(self):
+        &#34;&#34;&#34;Prepare the data for the search of spelling variants.
+
+        We construct an alphabet and a plain text out of the corpus,
+        and we construct a lexicon from the triggers in the current spreadsheet.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            console(&#34;This instance is not properly set up&#34;, error=True)
+            return
+
+        self.makeAlphabet()
+        self.makeText()
+        self.makeLexicon()
+        self.setupAnaliticcl()
+
+    def search(self, start=None, end=None, force=0):
+        &#34;&#34;&#34;Search for spelling variants in the corpus.
+
+        We search part of the corpus or the whole corpus for spelling variants.
+        The process has two stages:
+
+        1.  a run of analaticcl
+        2. filtering of the results
+
+        The run of analiticcl is expensive, more than 10 minutes on the
+        [Suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters).
+
+        The results of stage 1 will be cached. For every choice of search parameters
+        and boundary points in the corpus there is a separate cache.
+
+        A number of analiticcl-specific parameters will influence the search.
+        They can be tweaked in the config file of the NER module, under the variants
+        section.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The place in the corpus where the search has to start; it is the offset
+            in the plain text. If `None`, start from the beginning of the corpus.
+        end: integer, optional None
+            The place in the corpus where the search must end; it is the offset
+            in the plain text. If `None`, the search will be performed till the end
+            of the corpus.
+        force: integer, optional 0
+            Valid values are `0`, `1`, `2`.
+            Meaning: `0`: use the cached result, if it is available.
+            `1`: use the cached result for stage 1, if available, but perform the
+            filtering (again).
+            `2`: do not use the cache, but compute everything again.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            console(&#34;This instance is not properly set up&#34;, error=True)
+            return
+
+        SearchParameters = self.SearchParameters
+        ansettings = self.settings.analiticcl
+        searchParams = ansettings.searchParams
+        suoffsets = searchParams.unicodeoffsets
+        smaxngram = searchParams.max_ngram
+        sfreqweight = searchParams.freq_weight
+        scoring = ansettings.scoring
+        sthreshold = scoring.threshold
+
+        NE = self.NE
+        app = self.app
+        model = self.model
+        rec = self.rec
+        textComplete = self.textComplete
+        workDir = self.workDir
+        lexiconOccs = self.lexiconOccs
+
+        text = textComplete[start:end]
+        nText = len(text)
+
+        offset = 0 if start is None else nText + start if start &lt; 0 else start
+
+        NE.console(f&#34;{nText:&gt;8} text  length&#34;)
+        NE.console(f&#34;{offset:&gt;8} offset in complete text&#34;)
+
+        slug = (
+            f&#34;{suoffsets}-{smaxngram}-{sfreqweight}-{sthreshold}-&#34;
+            f&#34;{suoffsets}-{smaxngram}-{sfreqweight}-{sthreshold}&#34;
+        )
+        matchesFile = f&#34;{workDir}/matches-{start}-{end}-settings={slug}.json&#34;
+        matchesPosFile = f&#34;{workDir}/matchespos-{start}-{end}-settings={slug}.json&#34;
+        rawMatchesFile = f&#34;{workDir}/rawmatches-{start}-{end}-settings={slug}.json&#34;
+
+        app.indent(reset=True)
+
+        if force == 2 or not fileExists(rawMatchesFile):
+            app.info(&#34;Compute variants of the lexicon words ...&#34;)
+            rawMatches = model.find_all_matches(
+                text,
+                SearchParameters(
+                    unicodeoffsets=suoffsets,
+                    max_ngram=smaxngram,
+                    freq_weight=sfreqweight,
+                    score_threshold=sthreshold,
+                ),
+            )
+            writeJson(rawMatches, asFile=rawMatchesFile)
+        else:
+            app.info(&#34;Read previously computed variants of the lexicon words ...&#34;)
+            rawMatches = readJson(asFile=rawMatchesFile, plain=False)
+
+        app.info(f&#34;{len(rawMatches):&gt;8} raw   matches&#34;)
+
+        if force == 1 or not fileExists(matchesFile) or not fileExists(matchesPosFile):
+            app.info(&#34;Filter variants of the lexicon words ...&#34;)
+            positions = rec.positions(simple=True)
+
+            matches = {}
+            matchPositions = collections.defaultdict(list)
+
+            for match in rawMatches:
+                text = match[&#34;input&#34;].replace(&#34;\n&#34;, &#34; &#34;)
+                textL = text.lower()
+
+                if text in lexiconOccs:
+                    continue
+
+                candidates = match[&#34;variants&#34;]
+
+                if len(candidates) == 0:
+                    continue
+
+                candidates = {
+                    cand[&#34;text&#34;]: s
+                    for cand in candidates
+                    if (s := cand[&#34;score&#34;]) &gt;= sthreshold
+                }
+
+                if len(candidates) == 0:
+                    continue
+
+                textRemove = set()
+
+                for cand in candidates:
+                    candL = cand.lower()
+                    if candL == textL:
+                        textRemove.add(cand)
+
+                for cand in textRemove:
+                    del candidates[cand]
+
+                if len(candidates) == 0:
+                    continue
+
+                # if the match ends with &#39;s we remove the part without it from the
+                # candidates
+
+                if text.endswith(&#34;&#39;s&#34;):
+                    head = text.removesuffix(&#34;&#39;s&#34;)
+                    if head in candidates:
+                        del candidates[head]
+
+                        if len(candidates) == 0:
+                            continue
+
+                # we have another need to filter: if the text of a match is one short
+                # word longer than a candidate we remove that candidate
+                # provided the extra word is lower case and has at most 3 letters
+                # this is to prevent cases like
+                # «Adam Schivelbergh» versus «Adam Schivelbergh di»
+                #
+                # We do this also when the extra word is at the start, like
+                # «di monsignor Mangot» versus «monsignor Mangot»
+
+                parts = text.split()
+
+                if len(parts) &gt; 0:
+                    (head, tail) = (parts[0:-1], parts[-1])
+
+                    # if len(tail) &lt;= 3 and tail.islower():
+                    if len(tail) &lt;= 3:
+                        head = &#34; &#34;.join(head)
+
+                        if head in candidates:
+                            del candidates[head]
+
+                            if len(candidates) == 0:
+                                continue
+
+                    (head, tail) = (parts[0], parts[1:])
+
+                    # if len(head) &lt;= 3 and head.islower():
+                    if len(head) &lt;= 3:
+                        tail = &#34; &#34;.join(tail)
+
+                        if tail in candidates:
+                            del candidates[tail]
+
+                            if len(candidates) == 0:
+                                continue
+
+                position = match[&#34;offset&#34;]
+                start = position[&#34;begin&#34;]
+                end = position[&#34;end&#34;]
+                nodes = sorted(
+                    {positions[i] for i in range(offset + start, offset + end)}
+                )
+
+                matches[text] = candidates
+                matchPositions[text].append(nodes)
+
+            writeJson(matches, asFile=matchesFile)
+            writeJson(matchPositions, asFile=matchesPosFile)
+        else:
+            app.info(&#34;Read previously filtered variants of the lexicon words ...&#34;)
+            matches = readJson(asFile=matchesFile, plain=False)
+            matchPositions = readJson(asFile=matchesPosFile, plain=False)
+
+        app.info(f&#34;{len(matches):&gt;8} filtered matches&#34;)
+
+        self.matches = matches
+        self.matchPositions = matchPositions
+        console(f&#34;{len(matches)} variants found&#34;)
+
+    def listVariants(self, start=None, end=None):
+        &#34;&#34;&#34;List the search results to the console.
+
+        Show (part of) the variants found on the console as a plain text table.
+
+        This content will also be written to the file `variants.txt` in the
+        work directory.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            console(&#34;This instance is not properly set up&#34;, error=True)
+            return
+
+        workDir = self.workDir
+        matches = self.matches
+
+        lines = []
+
+        head = (&#34;variant&#34;, &#34;score&#34;, &#34;candidate&#34;)
+        dash = f&#34;{&#39;-&#39; * 4} | {&#39;-&#39; * 25} | {&#39;-&#39; * 5} | {&#39;-&#39; * 25}&#34;
+        console(f&#34;{&#39;i&#39;:&gt;4} | {head[0]:&lt;25} | {head[1]} | {head[2]}&#34;)
+        console(f&#34;{dash}&#34;)
+        startN = start or 0
+
+        for text, candidates in sorted(matches.items(), key=lambda x: x[0].lower()):
+            for cand, score in sorted(candidates.items(), key=lambda x: x[0].lower()):
+                lines.append((text, score, cand))
+
+        for i, (text, score, cand) in enumerate(lines[start:end]):
+            console(f&#34;{i + startN:&gt;4} | {text:&lt;25} |  {score:4.2f} | {cand}&#34;)
+
+        console(f&#34;{dash}&#34;)
+
+        file = f&#34;{workDir}/variants.tsv&#34;
+
+        with fileOpen(file, &#34;w&#34;) as fh:
+            headStr = &#34;\t&#34;.join(head)
+            fh.write(f&#34;{headStr}\n&#34;)
+            for text, score, cand in lines:
+                fh.write(f&#34;{text}\t{score:4.2f}\t{cand}\n&#34;)
+
+        console(f&#34;{len(matches)} variants found and written to {file}&#34;)
+
+    def mergeTriggers(self, level=1):
+        &#34;&#34;&#34;Merge spelling variants of triggers into a NER sheet.
+
+        When we have found spelling variants of triggers, we want to include
+        them in the entity lookup. This function places the variants in the same
+        cells as the triggers they are variants of. However, it will not
+        overwrite the original spreadsheet, but create a new, enriched spreadsheet.
+
+        We collect the necessary information as follows:
+
+        *   `matches: dict`:
+            The spelling variants are keys, and their values are again dicts, keyed
+            by the words in the triggers that come closest, and valued by a measure
+            of the proximity.
+            It is assumed that all of these variants are good variants, in that the
+            scores are always above a certain threshold, e.g. 0.8 .
+        *   `mergedFile: string`:
+            The path of the new spreadsheet with the merged triggers: it will sit next
+            to the original spreadsheet, but with an extension such as `-merged` added
+            to its name (this can be configured in the NER config file near the corpus).
+        *   `exclusionFile: string, optional None`
+            The path to an optional file with exclusions, one per line.
+            Variants that occur in the exclusion list will not be merged in.
+            The file sits next to the original spreadsheet, but with an extension such
+            as `-notmerged` (this is configurable) and file extension `.txt`.
+
+        This function will also produce several reports:
+
+        Parameters
+        ----------
+        level: integer, optional 1
+            Only relevant for reporting the new variants. Occurrences of the
+            new variants are counted by section. This parameter specifies the
+            level of those sections. It should be 1, 2 or 3.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            console(&#34;This instance is not properly set up&#34;, error=True)
+            return
+
+        NE = self.NE
+        trigI = NE.trigI
+        commentI = NE.commentI
+        sheetDir = NE.sheetDir
+        sheetName = NE.sheetName
+        settings = self.settings
+        mergedExtension = settings.mergedExtension
+        notMergedExtension = settings.notMergedExtension
+        mergedFile = f&#34;{sheetDir}/{sheetName}{mergedExtension}.xlsx&#34;
+        mergedReportFile = f&#34;{sheetDir}/{sheetName}{mergedExtension}-report.tsv&#34;
+        exclusionFile = f&#34;{sheetDir}/{sheetName}{notMergedExtension}.txt&#34;
+
+        if not fileExists(exclusionFile):
+            NE.console(f&#34;File with excluded variants not found: {exclusionFile}&#34;)
+            exclusionFile = None
+
+        matches = self.matches
+        matchPositions = self.matchPositions
+        sectionHead = NE.sectionHead
+
+        noVariant = set()
+
+        if exclusionFile is not None and fileExists(exclusionFile):
+            with fileOpen(exclusionFile) as fh:
+                for line in fh:
+                    noVariant.add(line.strip())
+
+            nNoVariant = len(noVariant)
+            pl = &#34;&#34; if nNoVariant == 1 else &#34;s&#34;
+            NE.console(f&#34;{nNoVariant} excluded variant{pl} found in {exclusionFile}&#34;)
+
+        mapping = {}
+        excluded = 0
+
+        for text, candidates in matches.items():
+            if text in noVariant:
+                excluded += 1
+                continue
+            for cand in candidates:
+                mapping.setdefault(cand, set()).add(text)
+
+        ple = &#34;&#34; if excluded == 1 else &#34;s&#34;
+        NE.console(f&#34;{excluded} variant{ple} excluded as trigger&#34;)
+
+        rows = NE.readSheetData()
+
+        nAdded = 0
+        totAdded = 0
+
+        variantsAdded = {}
+
+        for r, row in enumerate(rows):
+            if r == 0 or r == 1 or row[commentI].startswith(&#34;#&#34;):
+                continue
+
+            rn = r + 1
+            triggers = set(row[trigI])
+            nPrev = len(triggers)
+
+            newTriggers = []
+
+            for trigger in triggers:
+                newTriggers.append(trigger)
+
+                for variant in mapping.get(trigger, []):
+                    newTriggers.append(variant)
+                    variantsAdded.setdefault(rn, []).append((variant, trigger))
+
+            newTriggers = sorted(set(newTriggers))
+            row[trigI] = newTriggers
+            nPost = len(newTriggers)
+
+            nDiff = nPost - nPrev
+
+            if nDiff != 0:
+                nAdded += 1
+                totAdded += nDiff
+
+        lines = [(&#34;row&#34;, &#34;trigger&#34;, &#34;variant&#34;, &#34;occurences&#34;)]
+
+        for rn in sorted(variantsAdded):
+            for variant, trigger in variantsAdded[rn]:
+                sectionInfo = collections.Counter()
+
+                for occ in matchPositions[variant]:
+                    slot = occ[0]
+
+                    section = sectionHead(slot, level=level)
+                    sectionInfo[section] += 1
+
+                hitData = [
+                    f&#34;{section}x{hits}&#34; for section, hits in sorted(sectionInfo.items())
+                ]
+                for hits in hitData:
+                    lines.append((rn, trigger, variant, hits))
+
+        with fileOpen(mergedReportFile, &#34;w&#34;) as fh:
+            nLines = len(lines)
+
+            for i, line in enumerate(lines):
+                if i &lt; 10 or i &gt; nLines - 10:
+                    (row, trigger, variant, hits) = line
+                    NE.console(f&#34;{row:&lt;4} {trigger:&lt;40} ~&gt; {variant:&lt;40} = {hits}&#34;)
+
+                lineStr = &#34;\t&#34;.join(str(x) for x in line)
+                fh.write(f&#34;{lineStr}\n&#34;)
+
+        pls = &#34;&#34; if nAdded == 1 else &#34;s&#34;
+        plt = &#34;&#34; if totAdded == 1 else &#34;s&#34;
+        NE.console(f&#34;{nAdded} triggerset{pls} expanded with {totAdded} trigger{plt}&#34;)
+        NE.console(f&#34;Wrote merge report to file {mergedReportFile}&#34;)
+
+        NE.writeSheetData(rows, asFile=mergedFile)
+        NE.console(f&#34;Wrote merged triggers to sheet {mergedFile}&#34;)
+
+    def showResults(self, start=None, end=None):
+        &#34;&#34;&#34;Show the search results to the console.
+
+        Show (part of) the variants found on the console with additional context.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            console(&#34;This instance is not properly set up&#34;, error=True)
+            return
+
+        app = self.app
+        F = app.api.F
+        matches = self.matches
+        matchPositions = self.matchPositions
+
+        i = 0
+
+        for text, candidates in sorted(matches.items())[start:end]:
+            i += 1
+            nCand = len(candidates)
+            pl = &#34;&#34; if nCand == 1 else &#34;s&#34;
+            console(f&#34;{i:&gt;4} Variant «{text}» of {nCand} candidate{pl}&#34;)
+            console(&#34;  Occurrences:&#34;)
+            occs = matchPositions[text]
+
+            for nodes in occs:
+                sectionStart = app.sectionStrFromNode(nodes[0])
+                sectionEnd = app.sectionStrFromNode(nodes[-1])
+                section = (
+                    sectionStart
+                    if sectionStart == sectionEnd
+                    else f&#34;{sectionStart} - {sectionEnd}&#34;
+                )
+                preStart = max((nodes[0] - 10, 1))
+                preEnd = nodes[0]
+                postStart = nodes[-1] + 1
+                postEnd = min((nodes[-1] + 10, F.otype.maxSlot + 1))
+                preText = &#34;&#34;.join(
+                    f&#34;{F.str.v(n)}{F.after.v(n)}&#34; for n in range(preStart, preEnd)
+                )
+                inText = &#34;&#34;.join(f&#34;{F.str.v(n)}{F.after.v(n)}&#34; for n in nodes)
+                postText = &#34;&#34;.join(
+                    f&#34;{F.str.v(n)}{F.after.v(n)}&#34; for n in range(postStart, postEnd)
+                )
+                context = f&#34;{section}: {preText}«{inText}»{postText}&#34;.replace(&#34;\n&#34;, &#34; &#34;)
+                console(f&#34;    {context}&#34;)
+
+            console(&#34;  Candidates with score:&#34;)
+
+            for cand, score in sorted(candidates.items(), key=lambda x: (-x[1], x[0])):
+                console(f&#34;\t{score:4.2f} {cand}&#34;)
+
+            console(&#34;-----&#34;)
+
+    def displayResults(self, start=None, end=None, asFile=None):
+        &#34;&#34;&#34;Display the results as HTML files.
+
+        This content will also be written to the files under the subdirectory
+        `extra` in the work directory.
+
+        Parameters
+        ----------
+        start: integer, optional None
+            The sequence number of the first result to show.
+            If `None`, start with the first result.
+        end: integer, optional None
+            The sequence number of the last result to show.
+            If `None`, continue to the last result.
+        asFile: string, optional None
+            If None, the results will be displayed as HTML on the console.
+            Otherwise, the results will be written down as a set of HTML files,
+            whose names start with this string.
+        &#34;&#34;&#34;
+
+        if not self.properlySetup:
+            console(&#34;This instance is not properly set up&#34;, error=True)
+            return
+
+        app = self.app
+        L = app.api.L
+        matches = self.matches
+        matchPositions = self.matchPositions
+        lexiconOccs = self.lexiconOccs
+        workDir = self.workDir
+
+        if asFile is not None:
+            content = []
+
+            htmlStart = HTML_PRE.replace(&#34;«css»&#34;, app.context.css)
+            htmlEnd = HTML_POST
+
+            content.append([htmlStart])
+            empty = True
+
+            app.indent(reset=True)
+            app.info(&#34;Gathering information on extra triggers ...&#34;)
+
+        i = 0
+        s = 0
+
+        for varText, candidates in sorted(
+            matches.items(), key=lambda x: (-len(x[1]), x[0])
+        )[start:end]:
+            i += 1
+
+            # make a list of where the candidates are and include the score
+
+            varOccs = matchPositions[varText]
+            nVar = len(varOccs)
+
+            candOccs = []
+            candRep1 = &#34;`&#34; + &#34;` or `&#34;.join(candidates) + &#34;`&#34;
+            candRep2 = &#34;&lt;code&gt;&#34; + &#34;&lt;/code&gt; or &lt;code&gt;&#34;.join(candidates) + &#34;&lt;/code&gt;&#34;
+
+            for cand, score in candidates.items():
+                myOccs = lexiconOccs[cand]
+
+                for occ in myOccs:
+                    candOccs.append((occ[0], score, cand, occ))
+
+            # use this list later to find the nearest/best variant
+
+            if asFile is None:
+                app.dm(
+                    f&#34;# {i}: {nVar} x variant `{varText}` on &#34;
+                    f&#34;candidate {candRep1}\n\n&#34;
+                )
+            else:
+                content[-1].append(
+                    f&#34;&lt;h1&gt;{i}: {nVar} x variant &lt;code&gt;{varText}&lt;/code&gt; on &#34;
+                    f&#34;candidate {candRep2}&lt;/h1&gt;&#34;
+                )
+                empty = False
+
+            sections = set()
+            highlights = {}
+            bestCand = None
+
+            for candOcc in candOccs:
+                if bestCand is None or bestCand[1] &lt; candOcc[1]:
+                    bestCand = candOcc
+
+            for n in bestCand[3]:
+                highlights[n] = &#34;lightgreen&#34;
+
+            section = L.u(bestCand[0], otype=&#34;chunk&#34;)[0]
+            sections.add(section)
+
+            for varNodes in varOccs:
+                highlights |= {n: &#34;goldenrod&#34; for n in varNodes}
+
+                nFirst = varNodes[0]
+                section = L.u(nFirst, otype=&#34;chunk&#34;)[0]
+                sections.add(section)
+
+                nearestCand = None
+
+                for candOcc in candOccs:
+                    if nearestCand is None or abs(nearestCand[0] - nFirst) &gt; abs(
+                        candOcc[0] - nFirst
+                    ):
+                        nearestCand = candOcc
+
+                for n in nearestCand[3]:
+                    if n in highlights:
+                        highlights[n] = &#34;yellow&#34;
+                    else:
+                        highlights[n] = &#34;cyan&#34;
+
+                section = L.u(nearestCand[0], otype=&#34;chunk&#34;)[0]
+                sections.add(section)
+
+            sections = tuple((s,) for s in sorted(sections))
+
+            s += len(sections)
+
+            if asFile is None:
+                app.table(sections, highlights=highlights, full=True)
+            else:
+                content[-1].append(
+                    app.table(
+                        sections, highlights=highlights, full=True, _asString=True
+                    )
+                )
+
+                if i % 10 == 0:
+                    app.info(f&#34;{i:&gt;4} variants done giving {s:&gt;4} chunks&#34;)
+                if i % 100 == 0:
+                    content[-1].append(htmlEnd)
+                    content.append([htmlStart])
+                    empty = True
+
+        app.info(f&#34;{i:&gt;4} matches done&#34;)
+
+        if asFile is not None:
+            content[-1].append(htmlEnd)
+            if empty:
+                content.pop()
+
+            extraFileBase = f&#34;{workDir}/extra&#34;
+            initTree(extraFileBase, fresh=True, gentle=True)
+
+            for i, material in enumerate(content):
+                extraFile = f&#34;{extraFileBase}/{asFile}{i + 1:&gt;02}.html&#34;
+
+                with fileOpen(extraFile, &#34;w&#34;) as fh:
+                    fh.write(&#34;\n&#34;.join(material))
+
+                console(f&#34;Extra triggers written to {extraFile}&#34;)
+
+    def makeAlphabet(self):
+        &#34;&#34;&#34;Gathers the alphabet on which the corpus is based.
+
+        The characters of the corpus have already been collected by Text-Fabric,
+        and that is from where we pick them up.
+
+        We separate the digits from the rest.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            console(&#34;This instance is not properly set up&#34;, error=True)
+            return
+
+        app = self.app
+        C = app.api.C
+        workDir = self.workDir
+
+        alphabetFile = f&#34;{workDir}/alphabet.tsv&#34;
+        self.alphabetFile = alphabetFile
+
+        with fileOpen(alphabetFile, &#34;w&#34;) as fh:
+            # This file will consist of one character per line,
+            # for each distinct alpha character in the corpus, ordered by frequency.
+            # Numeric characters will be put on a single line, with tabs in between.
+            # All other characters will be ignored.
+
+            digits = []
+
+            for c, freq in C.characters.data[&#34;text-orig-full&#34;]:
+                if c.isalpha():
+                    fh.write(f&#34;{c}\n&#34;)
+                elif c.isdigit():
+                    digits.append(c)
+            fh.write(&#34;\t&#34;.join(digits))
+
+        console(f&#34;Alphabet written to {alphabetFile}&#34;)
+
+    def makeText(self):
+        &#34;&#34;&#34;Generate a plain text from the corpus.
+
+        We make sure that we resolve the hyphenation of words across line
+        boundaries.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            console(&#34;This instance is not properly set up&#34;, error=True)
+            return
+
+        NE = self.NE
+        app = self.app
+        api = app.api
+        F = app.api.F
+        L = app.api.L
+        workDir = self.workDir
+
+        rec = Recorder(api)
+
+        lineType = self.settings.lineType
+        slotType = F.otype.slotType
+        maxSlot = F.otype.maxSlot
+        lines = F.otype.s(lineType)
+        lineEnds = {L.d(ln, otype=slotType)[-1] for ln in lines}
+        skipTo = None
+
+        for t in range(1, maxSlot + 1):
+            tp = t + 1
+            tpp = t + 2
+
+            if tp in lineEnds and tp &lt; maxSlot and F.str.v(tp) == &#34;-&#34;:
+                rec.start(t)
+                rec.add(f&#34;{F.str.v(t)}{F.after.v(t)}&#34;)
+                rec.end(t)
+                rec.start(tpp)
+                rec.add(f&#34;{F.str.v(tpp)}{F.after.v(tpp)}\n&#34;)
+                rec.end(tpp)
+                skipTo = tpp
+            elif skipTo is not None:
+                if t &lt; skipTo:
+                    continue
+                else:
+                    skipTo = None
+            else:
+                rec.start(t)
+                rec.add(f&#34;{F.str.v(t)}{F.after.v(t)}&#34;)
+                rec.end(t)
+
+        self.rec = rec
+        textComplete = rec.text()
+        self.textComplete = textComplete
+
+        textFile = f&#34;{workDir}/text.txt&#34;
+
+        with fileOpen(textFile, &#34;w&#34;) as fh:
+            fh.write(textComplete)
+
+        NE.console(f&#34;Text written to {textFile} - {len(textComplete)} characters&#34;)
+
+    def makeLexicon(self):
+        &#34;&#34;&#34;Make a lexicon out of the triggers of a spreadsheet.&#34;&#34;&#34;
+        if not self.properlySetup:
+            console(&#34;This instance is not properly set up&#34;, error=True)
+            return
+
+        NE = self.NE
+        app = self.app
+        workDir = self.workDir
+
+        sheetData = self.sheetData
+        NEinventory = sheetData.inventory
+
+        app.indent(reset=True)
+        app.info(&#34;Collecting the triggers for the lexicon&#34;)
+
+        inventory = {}
+
+        for eidkind, triggers in NEinventory.items():
+            for trigger, scopes in triggers.items():
+                inventory.setdefault(trigger, set())
+
+                for occs in scopes.values():
+                    for slots in occs:
+                        inventory[trigger].add(tuple(slots))
+
+        app.info(f&#34;{len(inventory)} triggers collected&#34;)
+
+        remSpaceRe = re.compile(r&#34;&#34;&#34; +([^A-Za-z])&#34;&#34;&#34;)
+        accentSpaceRe = re.compile(r&#34;&#34;&#34;([’&#39;]) +&#34;&#34;&#34;)
+
+        lexicon = {}
+        mapNormal = {}
+
+        lexiconOccs = {}
+        self.lexiconOccs = lexiconOccs
+
+        for name, occs in inventory.items():
+            occStr = name
+            occNormal = remSpaceRe.sub(r&#34;\1&#34;, occStr)
+            occNormal = accentSpaceRe.sub(r&#34;\1&#34;, occNormal)
+            nOccs = len(occs)
+            lexicon[occNormal] = nOccs
+            mapNormal[occNormal] = occStr
+            lexiconOccs[occNormal] = occs
+
+        sortedLexicon = sorted(lexicon.items(), key=lambda x: (-x[1], x[0].lower()))
+
+        for name, n in sortedLexicon[0:10]:
+            NE.console(f&#34;  {n:&gt;3} x {name}&#34;)
+
+        NE.console(&#34;  ...&#34;)
+
+        for name, n in sortedLexicon[-10:]:
+            NE.console(f&#34;  {n:&gt;3} x {name}&#34;)
+
+        NE.console(f&#34;{len(lexicon):&gt;8} lexicon length&#34;)
+
+        lexiconFile = f&#34;{workDir}/lexicon.tsv&#34;
+        self.lexiconFile = lexiconFile
+
+        with fileOpen(lexiconFile, &#34;w&#34;) as fh:
+            for name, n in sorted(lexicon.items()):
+                fh.write(f&#34;{name}\t{n}\n&#34;)
+
+        NE.console(f&#34;Lexicon written to {lexiconFile}&#34;)
+
+    def setupAnaliticcl(self):
+        &#34;&#34;&#34;Configure analiticcl for the big search.
+
+        We gather the parameters from the variants section of the NER
+        config file (see `tf.ner.settings`).
+
+        For the description of the parameters, see the
+        [analiticcl tutorial](https://github.com/proycon/analiticcl/blob/master/tutorial.ipynb)
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            console(&#34;This instance is not properly set up&#34;, error=True)
+            return
+
+        NE = self.NE
+        VariantModel = self.VariantModel
+        Weights = self.Weights
+        ansettings = self.settings.analiticcl
+        weights = ansettings.weights
+        wld = weights.ld
+        wlcs = weights.lcs
+        wprefix = weights.prefix
+        wsuffix = weights.suffix
+        wcase = weights.case
+
+        alphabetFile = self.alphabetFile
+        lexiconFile = self.lexiconFile
+
+        NE.console(&#34;Set up analiticcl&#34;)
+
+        model = VariantModel(
+            alphabetFile,
+            Weights(ld=wld, lcs=wlcs, prefix=wprefix, suffix=wsuffix, case=wcase),
+        )
+        self.model = model
+        model.read_lexicon(lexiconFile)
+        model.build()</code></pre>
+</details>
+<div class="desc"><p>Detect spelling variants.</p>
+<p>In order to use this class you may have to install analiticcl. First
+you have to make sure you have the programming language Rust operational on
+your machine, and then you have to install analiticcl as a Rust program,
+and finally you have to do</p>
+<pre><code>pip install analiticcl
+</code></pre>
+<p>See the
+<a href="https://github.com/proycon/analiticcl/tree/master/bindings/python">python bindings</a>
+for detailed instructions.</p>
+<p>If you have an instance of the <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code> class, e.g. from an earlier
+call like this</p>
+<pre><code>NE = A.makeNer()
+</code></pre>
+<p>and if you have pointed this <code>NE</code> to a NER spreadsheet, e.g. by</p>
+<pre><code>NE.setTask(&quot;.persons&quot;)
+</code></pre>
+<p>then you can get an instance of this class by saying</p>
+<pre><code>D = NE.variantDetection()
+</code></pre>
+<p>There are methods to produce a plain text of the corpus, a lexicon based on the
+triggers in the spreadsheet, and then to search the plain text for variants
+of the lexicon by passing some well-chosen parameters to analiticcl.</p>
+<p>After the search, which may take long, the raw results are cached, and then
+filtered, with the help of an optional exceptions file.
+If you change the filtering parameters, you do not have to rerun the expensive
+search by analiticcl.</p>
+<p>The variants found can then be merged with the original triggers, and saved as
+a new spreadsheet, next to the original one.</p>
+<p>The settings for analiticcl are ultimately given in the config.yaml in the
+<code>ner</code> directory of the corpus, where the other settings for the NER process
+are also given. See <code><a title="tf.ner.settings" href="settings.html">tf.ner.settings</a></code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>NE</code></strong> :&ensp;<code>object</code></dt>
+<dd>A <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code> instance.</dd>
+<dt><strong><code>sheet</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>The name of a NER sheet that serves as input of the variant detection
+process. If not passed, it is assumed that the <code>NE</code> instances is
+already switched to a NER sheet before setting up this object.
+However, in any case, we switch again to the sheet in question to make
+sure we do so in case sesnsitive mode (even if we have used the sheet
+in case insensitive mode for the lookup).</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.ner.variants.Detect.displayResults"><code class="name flex">
+<span>def <span class="ident">displayResults</span></span>(<span>self, start=None, end=None, asFile=None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/variants.py#L648-L802" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def displayResults(self, start=None, end=None, asFile=None):
+    &#34;&#34;&#34;Display the results as HTML files.
+
+    This content will also be written to the files under the subdirectory
+    `extra` in the work directory.
+
+    Parameters
+    ----------
+    start: integer, optional None
+        The sequence number of the first result to show.
+        If `None`, start with the first result.
+    end: integer, optional None
+        The sequence number of the last result to show.
+        If `None`, continue to the last result.
+    asFile: string, optional None
+        If None, the results will be displayed as HTML on the console.
+        Otherwise, the results will be written down as a set of HTML files,
+        whose names start with this string.
+    &#34;&#34;&#34;
+
+    if not self.properlySetup:
+        console(&#34;This instance is not properly set up&#34;, error=True)
+        return
+
+    app = self.app
+    L = app.api.L
+    matches = self.matches
+    matchPositions = self.matchPositions
+    lexiconOccs = self.lexiconOccs
+    workDir = self.workDir
+
+    if asFile is not None:
+        content = []
+
+        htmlStart = HTML_PRE.replace(&#34;«css»&#34;, app.context.css)
+        htmlEnd = HTML_POST
+
+        content.append([htmlStart])
+        empty = True
+
+        app.indent(reset=True)
+        app.info(&#34;Gathering information on extra triggers ...&#34;)
+
+    i = 0
+    s = 0
+
+    for varText, candidates in sorted(
+        matches.items(), key=lambda x: (-len(x[1]), x[0])
+    )[start:end]:
+        i += 1
+
+        # make a list of where the candidates are and include the score
+
+        varOccs = matchPositions[varText]
+        nVar = len(varOccs)
+
+        candOccs = []
+        candRep1 = &#34;`&#34; + &#34;` or `&#34;.join(candidates) + &#34;`&#34;
+        candRep2 = &#34;&lt;code&gt;&#34; + &#34;&lt;/code&gt; or &lt;code&gt;&#34;.join(candidates) + &#34;&lt;/code&gt;&#34;
+
+        for cand, score in candidates.items():
+            myOccs = lexiconOccs[cand]
+
+            for occ in myOccs:
+                candOccs.append((occ[0], score, cand, occ))
+
+        # use this list later to find the nearest/best variant
+
+        if asFile is None:
+            app.dm(
+                f&#34;# {i}: {nVar} x variant `{varText}` on &#34;
+                f&#34;candidate {candRep1}\n\n&#34;
+            )
+        else:
+            content[-1].append(
+                f&#34;&lt;h1&gt;{i}: {nVar} x variant &lt;code&gt;{varText}&lt;/code&gt; on &#34;
+                f&#34;candidate {candRep2}&lt;/h1&gt;&#34;
+            )
+            empty = False
+
+        sections = set()
+        highlights = {}
+        bestCand = None
+
+        for candOcc in candOccs:
+            if bestCand is None or bestCand[1] &lt; candOcc[1]:
+                bestCand = candOcc
+
+        for n in bestCand[3]:
+            highlights[n] = &#34;lightgreen&#34;
+
+        section = L.u(bestCand[0], otype=&#34;chunk&#34;)[0]
+        sections.add(section)
+
+        for varNodes in varOccs:
+            highlights |= {n: &#34;goldenrod&#34; for n in varNodes}
+
+            nFirst = varNodes[0]
+            section = L.u(nFirst, otype=&#34;chunk&#34;)[0]
+            sections.add(section)
+
+            nearestCand = None
+
+            for candOcc in candOccs:
+                if nearestCand is None or abs(nearestCand[0] - nFirst) &gt; abs(
+                    candOcc[0] - nFirst
+                ):
+                    nearestCand = candOcc
+
+            for n in nearestCand[3]:
+                if n in highlights:
+                    highlights[n] = &#34;yellow&#34;
+                else:
+                    highlights[n] = &#34;cyan&#34;
+
+            section = L.u(nearestCand[0], otype=&#34;chunk&#34;)[0]
+            sections.add(section)
+
+        sections = tuple((s,) for s in sorted(sections))
+
+        s += len(sections)
+
+        if asFile is None:
+            app.table(sections, highlights=highlights, full=True)
+        else:
+            content[-1].append(
+                app.table(
+                    sections, highlights=highlights, full=True, _asString=True
+                )
+            )
+
+            if i % 10 == 0:
+                app.info(f&#34;{i:&gt;4} variants done giving {s:&gt;4} chunks&#34;)
+            if i % 100 == 0:
+                content[-1].append(htmlEnd)
+                content.append([htmlStart])
+                empty = True
+
+    app.info(f&#34;{i:&gt;4} matches done&#34;)
+
+    if asFile is not None:
+        content[-1].append(htmlEnd)
+        if empty:
+            content.pop()
+
+        extraFileBase = f&#34;{workDir}/extra&#34;
+        initTree(extraFileBase, fresh=True, gentle=True)
+
+        for i, material in enumerate(content):
+            extraFile = f&#34;{extraFileBase}/{asFile}{i + 1:&gt;02}.html&#34;
+
+            with fileOpen(extraFile, &#34;w&#34;) as fh:
+                fh.write(&#34;\n&#34;.join(material))
+
+            console(f&#34;Extra triggers written to {extraFile}&#34;)</code></pre>
+</details>
+<div class="desc"><p>Display the results as HTML files.</p>
+<p>This content will also be written to the files under the subdirectory
+<code>extra</code> in the work directory.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>start</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The sequence number of the first result to show.
+If <code>None</code>, start with the first result.</dd>
+<dt><strong><code>end</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The sequence number of the last result to show.
+If <code>None</code>, continue to the last result.</dd>
+<dt><strong><code>asFile</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>If None, the results will be displayed as HTML on the console.
+Otherwise, the results will be written down as a set of HTML files,
+whose names start with this string.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.variants.Detect.listVariants"><code class="name flex">
+<span>def <span class="ident">listVariants</span></span>(<span>self, start=None, end=None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/variants.py#L381-L430" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def listVariants(self, start=None, end=None):
+    &#34;&#34;&#34;List the search results to the console.
+
+    Show (part of) the variants found on the console as a plain text table.
+
+    This content will also be written to the file `variants.txt` in the
+    work directory.
+
+    Parameters
+    ----------
+    start: integer, optional None
+        The sequence number of the first result to show.
+        If `None`, start with the first result.
+    end: integer, optional None
+        The sequence number of the last result to show.
+        If `None`, continue to the last result.
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        console(&#34;This instance is not properly set up&#34;, error=True)
+        return
+
+    workDir = self.workDir
+    matches = self.matches
+
+    lines = []
+
+    head = (&#34;variant&#34;, &#34;score&#34;, &#34;candidate&#34;)
+    dash = f&#34;{&#39;-&#39; * 4} | {&#39;-&#39; * 25} | {&#39;-&#39; * 5} | {&#39;-&#39; * 25}&#34;
+    console(f&#34;{&#39;i&#39;:&gt;4} | {head[0]:&lt;25} | {head[1]} | {head[2]}&#34;)
+    console(f&#34;{dash}&#34;)
+    startN = start or 0
+
+    for text, candidates in sorted(matches.items(), key=lambda x: x[0].lower()):
+        for cand, score in sorted(candidates.items(), key=lambda x: x[0].lower()):
+            lines.append((text, score, cand))
+
+    for i, (text, score, cand) in enumerate(lines[start:end]):
+        console(f&#34;{i + startN:&gt;4} | {text:&lt;25} |  {score:4.2f} | {cand}&#34;)
+
+    console(f&#34;{dash}&#34;)
+
+    file = f&#34;{workDir}/variants.tsv&#34;
+
+    with fileOpen(file, &#34;w&#34;) as fh:
+        headStr = &#34;\t&#34;.join(head)
+        fh.write(f&#34;{headStr}\n&#34;)
+        for text, score, cand in lines:
+            fh.write(f&#34;{text}\t{score:4.2f}\t{cand}\n&#34;)
+
+    console(f&#34;{len(matches)} variants found and written to {file}&#34;)</code></pre>
+</details>
+<div class="desc"><p>List the search results to the console.</p>
+<p>Show (part of) the variants found on the console as a plain text table.</p>
+<p>This content will also be written to the file <code>variants.txt</code> in the
+work directory.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>start</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The sequence number of the first result to show.
+If <code>None</code>, start with the first result.</dd>
+<dt><strong><code>end</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The sequence number of the last result to show.
+If <code>None</code>, continue to the last result.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.variants.Detect.makeAlphabet"><code class="name flex">
+<span>def <span class="ident">makeAlphabet</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/variants.py#L804-L838" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def makeAlphabet(self):
+    &#34;&#34;&#34;Gathers the alphabet on which the corpus is based.
+
+    The characters of the corpus have already been collected by Text-Fabric,
+    and that is from where we pick them up.
+
+    We separate the digits from the rest.
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        console(&#34;This instance is not properly set up&#34;, error=True)
+        return
+
+    app = self.app
+    C = app.api.C
+    workDir = self.workDir
+
+    alphabetFile = f&#34;{workDir}/alphabet.tsv&#34;
+    self.alphabetFile = alphabetFile
+
+    with fileOpen(alphabetFile, &#34;w&#34;) as fh:
+        # This file will consist of one character per line,
+        # for each distinct alpha character in the corpus, ordered by frequency.
+        # Numeric characters will be put on a single line, with tabs in between.
+        # All other characters will be ignored.
+
+        digits = []
+
+        for c, freq in C.characters.data[&#34;text-orig-full&#34;]:
+            if c.isalpha():
+                fh.write(f&#34;{c}\n&#34;)
+            elif c.isdigit():
+                digits.append(c)
+        fh.write(&#34;\t&#34;.join(digits))
+
+    console(f&#34;Alphabet written to {alphabetFile}&#34;)</code></pre>
+</details>
+<div class="desc"><p>Gathers the alphabet on which the corpus is based.</p>
+<p>The characters of the corpus have already been collected by Text-Fabric,
+and that is from where we pick them up.</p>
+<p>We separate the digits from the rest.</p></div>
+</dd>
+<dt id="tf.ner.variants.Detect.makeLexicon"><code class="name flex">
+<span>def <span class="ident">makeLexicon</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/variants.py#L899-L964" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def makeLexicon(self):
+    &#34;&#34;&#34;Make a lexicon out of the triggers of a spreadsheet.&#34;&#34;&#34;
+    if not self.properlySetup:
+        console(&#34;This instance is not properly set up&#34;, error=True)
+        return
+
+    NE = self.NE
+    app = self.app
+    workDir = self.workDir
+
+    sheetData = self.sheetData
+    NEinventory = sheetData.inventory
+
+    app.indent(reset=True)
+    app.info(&#34;Collecting the triggers for the lexicon&#34;)
+
+    inventory = {}
+
+    for eidkind, triggers in NEinventory.items():
+        for trigger, scopes in triggers.items():
+            inventory.setdefault(trigger, set())
+
+            for occs in scopes.values():
+                for slots in occs:
+                    inventory[trigger].add(tuple(slots))
+
+    app.info(f&#34;{len(inventory)} triggers collected&#34;)
+
+    remSpaceRe = re.compile(r&#34;&#34;&#34; +([^A-Za-z])&#34;&#34;&#34;)
+    accentSpaceRe = re.compile(r&#34;&#34;&#34;([’&#39;]) +&#34;&#34;&#34;)
+
+    lexicon = {}
+    mapNormal = {}
+
+    lexiconOccs = {}
+    self.lexiconOccs = lexiconOccs
+
+    for name, occs in inventory.items():
+        occStr = name
+        occNormal = remSpaceRe.sub(r&#34;\1&#34;, occStr)
+        occNormal = accentSpaceRe.sub(r&#34;\1&#34;, occNormal)
+        nOccs = len(occs)
+        lexicon[occNormal] = nOccs
+        mapNormal[occNormal] = occStr
+        lexiconOccs[occNormal] = occs
+
+    sortedLexicon = sorted(lexicon.items(), key=lambda x: (-x[1], x[0].lower()))
+
+    for name, n in sortedLexicon[0:10]:
+        NE.console(f&#34;  {n:&gt;3} x {name}&#34;)
+
+    NE.console(&#34;  ...&#34;)
+
+    for name, n in sortedLexicon[-10:]:
+        NE.console(f&#34;  {n:&gt;3} x {name}&#34;)
+
+    NE.console(f&#34;{len(lexicon):&gt;8} lexicon length&#34;)
+
+    lexiconFile = f&#34;{workDir}/lexicon.tsv&#34;
+    self.lexiconFile = lexiconFile
+
+    with fileOpen(lexiconFile, &#34;w&#34;) as fh:
+        for name, n in sorted(lexicon.items()):
+            fh.write(f&#34;{name}\t{n}\n&#34;)
+
+    NE.console(f&#34;Lexicon written to {lexiconFile}&#34;)</code></pre>
+</details>
+<div class="desc"><p>Make a lexicon out of the triggers of a spreadsheet.</p></div>
+</dd>
+<dt id="tf.ner.variants.Detect.makeText"><code class="name flex">
+<span>def <span class="ident">makeText</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/variants.py#L840-L897" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def makeText(self):
+    &#34;&#34;&#34;Generate a plain text from the corpus.
+
+    We make sure that we resolve the hyphenation of words across line
+    boundaries.
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        console(&#34;This instance is not properly set up&#34;, error=True)
+        return
+
+    NE = self.NE
+    app = self.app
+    api = app.api
+    F = app.api.F
+    L = app.api.L
+    workDir = self.workDir
+
+    rec = Recorder(api)
+
+    lineType = self.settings.lineType
+    slotType = F.otype.slotType
+    maxSlot = F.otype.maxSlot
+    lines = F.otype.s(lineType)
+    lineEnds = {L.d(ln, otype=slotType)[-1] for ln in lines}
+    skipTo = None
+
+    for t in range(1, maxSlot + 1):
+        tp = t + 1
+        tpp = t + 2
+
+        if tp in lineEnds and tp &lt; maxSlot and F.str.v(tp) == &#34;-&#34;:
+            rec.start(t)
+            rec.add(f&#34;{F.str.v(t)}{F.after.v(t)}&#34;)
+            rec.end(t)
+            rec.start(tpp)
+            rec.add(f&#34;{F.str.v(tpp)}{F.after.v(tpp)}\n&#34;)
+            rec.end(tpp)
+            skipTo = tpp
+        elif skipTo is not None:
+            if t &lt; skipTo:
+                continue
+            else:
+                skipTo = None
+        else:
+            rec.start(t)
+            rec.add(f&#34;{F.str.v(t)}{F.after.v(t)}&#34;)
+            rec.end(t)
+
+    self.rec = rec
+    textComplete = rec.text()
+    self.textComplete = textComplete
+
+    textFile = f&#34;{workDir}/text.txt&#34;
+
+    with fileOpen(textFile, &#34;w&#34;) as fh:
+        fh.write(textComplete)
+
+    NE.console(f&#34;Text written to {textFile} - {len(textComplete)} characters&#34;)</code></pre>
+</details>
+<div class="desc"><p>Generate a plain text from the corpus.</p>
+<p>We make sure that we resolve the hyphenation of words across line
+boundaries.</p></div>
+</dd>
+<dt id="tf.ner.variants.Detect.mergeTriggers"><code class="name flex">
+<span>def <span class="ident">mergeTriggers</span></span>(<span>self, level=1)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/variants.py#L432-L584" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def mergeTriggers(self, level=1):
+    &#34;&#34;&#34;Merge spelling variants of triggers into a NER sheet.
+
+    When we have found spelling variants of triggers, we want to include
+    them in the entity lookup. This function places the variants in the same
+    cells as the triggers they are variants of. However, it will not
+    overwrite the original spreadsheet, but create a new, enriched spreadsheet.
+
+    We collect the necessary information as follows:
+
+    *   `matches: dict`:
+        The spelling variants are keys, and their values are again dicts, keyed
+        by the words in the triggers that come closest, and valued by a measure
+        of the proximity.
+        It is assumed that all of these variants are good variants, in that the
+        scores are always above a certain threshold, e.g. 0.8 .
+    *   `mergedFile: string`:
+        The path of the new spreadsheet with the merged triggers: it will sit next
+        to the original spreadsheet, but with an extension such as `-merged` added
+        to its name (this can be configured in the NER config file near the corpus).
+    *   `exclusionFile: string, optional None`
+        The path to an optional file with exclusions, one per line.
+        Variants that occur in the exclusion list will not be merged in.
+        The file sits next to the original spreadsheet, but with an extension such
+        as `-notmerged` (this is configurable) and file extension `.txt`.
+
+    This function will also produce several reports:
+
+    Parameters
+    ----------
+    level: integer, optional 1
+        Only relevant for reporting the new variants. Occurrences of the
+        new variants are counted by section. This parameter specifies the
+        level of those sections. It should be 1, 2 or 3.
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        console(&#34;This instance is not properly set up&#34;, error=True)
+        return
+
+    NE = self.NE
+    trigI = NE.trigI
+    commentI = NE.commentI
+    sheetDir = NE.sheetDir
+    sheetName = NE.sheetName
+    settings = self.settings
+    mergedExtension = settings.mergedExtension
+    notMergedExtension = settings.notMergedExtension
+    mergedFile = f&#34;{sheetDir}/{sheetName}{mergedExtension}.xlsx&#34;
+    mergedReportFile = f&#34;{sheetDir}/{sheetName}{mergedExtension}-report.tsv&#34;
+    exclusionFile = f&#34;{sheetDir}/{sheetName}{notMergedExtension}.txt&#34;
+
+    if not fileExists(exclusionFile):
+        NE.console(f&#34;File with excluded variants not found: {exclusionFile}&#34;)
+        exclusionFile = None
+
+    matches = self.matches
+    matchPositions = self.matchPositions
+    sectionHead = NE.sectionHead
+
+    noVariant = set()
+
+    if exclusionFile is not None and fileExists(exclusionFile):
+        with fileOpen(exclusionFile) as fh:
+            for line in fh:
+                noVariant.add(line.strip())
+
+        nNoVariant = len(noVariant)
+        pl = &#34;&#34; if nNoVariant == 1 else &#34;s&#34;
+        NE.console(f&#34;{nNoVariant} excluded variant{pl} found in {exclusionFile}&#34;)
+
+    mapping = {}
+    excluded = 0
+
+    for text, candidates in matches.items():
+        if text in noVariant:
+            excluded += 1
+            continue
+        for cand in candidates:
+            mapping.setdefault(cand, set()).add(text)
+
+    ple = &#34;&#34; if excluded == 1 else &#34;s&#34;
+    NE.console(f&#34;{excluded} variant{ple} excluded as trigger&#34;)
+
+    rows = NE.readSheetData()
+
+    nAdded = 0
+    totAdded = 0
+
+    variantsAdded = {}
+
+    for r, row in enumerate(rows):
+        if r == 0 or r == 1 or row[commentI].startswith(&#34;#&#34;):
+            continue
+
+        rn = r + 1
+        triggers = set(row[trigI])
+        nPrev = len(triggers)
+
+        newTriggers = []
+
+        for trigger in triggers:
+            newTriggers.append(trigger)
+
+            for variant in mapping.get(trigger, []):
+                newTriggers.append(variant)
+                variantsAdded.setdefault(rn, []).append((variant, trigger))
+
+        newTriggers = sorted(set(newTriggers))
+        row[trigI] = newTriggers
+        nPost = len(newTriggers)
+
+        nDiff = nPost - nPrev
+
+        if nDiff != 0:
+            nAdded += 1
+            totAdded += nDiff
+
+    lines = [(&#34;row&#34;, &#34;trigger&#34;, &#34;variant&#34;, &#34;occurences&#34;)]
+
+    for rn in sorted(variantsAdded):
+        for variant, trigger in variantsAdded[rn]:
+            sectionInfo = collections.Counter()
+
+            for occ in matchPositions[variant]:
+                slot = occ[0]
+
+                section = sectionHead(slot, level=level)
+                sectionInfo[section] += 1
+
+            hitData = [
+                f&#34;{section}x{hits}&#34; for section, hits in sorted(sectionInfo.items())
+            ]
+            for hits in hitData:
+                lines.append((rn, trigger, variant, hits))
+
+    with fileOpen(mergedReportFile, &#34;w&#34;) as fh:
+        nLines = len(lines)
+
+        for i, line in enumerate(lines):
+            if i &lt; 10 or i &gt; nLines - 10:
+                (row, trigger, variant, hits) = line
+                NE.console(f&#34;{row:&lt;4} {trigger:&lt;40} ~&gt; {variant:&lt;40} = {hits}&#34;)
+
+            lineStr = &#34;\t&#34;.join(str(x) for x in line)
+            fh.write(f&#34;{lineStr}\n&#34;)
+
+    pls = &#34;&#34; if nAdded == 1 else &#34;s&#34;
+    plt = &#34;&#34; if totAdded == 1 else &#34;s&#34;
+    NE.console(f&#34;{nAdded} triggerset{pls} expanded with {totAdded} trigger{plt}&#34;)
+    NE.console(f&#34;Wrote merge report to file {mergedReportFile}&#34;)
+
+    NE.writeSheetData(rows, asFile=mergedFile)
+    NE.console(f&#34;Wrote merged triggers to sheet {mergedFile}&#34;)</code></pre>
+</details>
+<div class="desc"><p>Merge spelling variants of triggers into a NER sheet.</p>
+<p>When we have found spelling variants of triggers, we want to include
+them in the entity lookup. This function places the variants in the same
+cells as the triggers they are variants of. However, it will not
+overwrite the original spreadsheet, but create a new, enriched spreadsheet.</p>
+<p>We collect the necessary information as follows:</p>
+<ul>
+<li><code>matches: dict</code>:
+The spelling variants are keys, and their values are again dicts, keyed
+by the words in the triggers that come closest, and valued by a measure
+of the proximity.
+It is assumed that all of these variants are good variants, in that the
+scores are always above a certain threshold, e.g. 0.8 .</li>
+<li><code>mergedFile: string</code>:
+The path of the new spreadsheet with the merged triggers: it will sit next
+to the original spreadsheet, but with an extension such as <code>-merged</code> added
+to its name (this can be configured in the NER config file near the corpus).</li>
+<li><code>exclusionFile: string, optional None</code>
+The path to an optional file with exclusions, one per line.
+Variants that occur in the exclusion list will not be merged in.
+The file sits next to the original spreadsheet, but with an extension such
+as <code>-notmerged</code> (this is configurable) and file extension <code>.txt</code>.</li>
+</ul>
+<p>This function will also produce several reports:</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>level</code></strong> :&ensp;<code>integer</code>, optional <code>1</code></dt>
+<dd>Only relevant for reporting the new variants. Occurrences of the
+new variants are counted by section. This parameter specifies the
+level of those sections. It should be 1, 2 or 3.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.variants.Detect.prepare"><code class="name flex">
+<span>def <span class="ident">prepare</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/variants.py#L163-L176" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def prepare(self):
+    &#34;&#34;&#34;Prepare the data for the search of spelling variants.
+
+    We construct an alphabet and a plain text out of the corpus,
+    and we construct a lexicon from the triggers in the current spreadsheet.
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        console(&#34;This instance is not properly set up&#34;, error=True)
+        return
+
+    self.makeAlphabet()
+    self.makeText()
+    self.makeLexicon()
+    self.setupAnaliticcl()</code></pre>
+</details>
+<div class="desc"><p>Prepare the data for the search of spelling variants.</p>
+<p>We construct an alphabet and a plain text out of the corpus,
+and we construct a lexicon from the triggers in the current spreadsheet.</p></div>
+</dd>
+<dt id="tf.ner.variants.Detect.search"><code class="name flex">
+<span>def <span class="ident">search</span></span>(<span>self, start=None, end=None, force=0)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/variants.py#L178-L379" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def search(self, start=None, end=None, force=0):
+    &#34;&#34;&#34;Search for spelling variants in the corpus.
+
+    We search part of the corpus or the whole corpus for spelling variants.
+    The process has two stages:
+
+    1.  a run of analaticcl
+    2. filtering of the results
+
+    The run of analiticcl is expensive, more than 10 minutes on the
+    [Suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters).
+
+    The results of stage 1 will be cached. For every choice of search parameters
+    and boundary points in the corpus there is a separate cache.
+
+    A number of analiticcl-specific parameters will influence the search.
+    They can be tweaked in the config file of the NER module, under the variants
+    section.
+
+    Parameters
+    ----------
+    start: integer, optional None
+        The place in the corpus where the search has to start; it is the offset
+        in the plain text. If `None`, start from the beginning of the corpus.
+    end: integer, optional None
+        The place in the corpus where the search must end; it is the offset
+        in the plain text. If `None`, the search will be performed till the end
+        of the corpus.
+    force: integer, optional 0
+        Valid values are `0`, `1`, `2`.
+        Meaning: `0`: use the cached result, if it is available.
+        `1`: use the cached result for stage 1, if available, but perform the
+        filtering (again).
+        `2`: do not use the cache, but compute everything again.
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        console(&#34;This instance is not properly set up&#34;, error=True)
+        return
+
+    SearchParameters = self.SearchParameters
+    ansettings = self.settings.analiticcl
+    searchParams = ansettings.searchParams
+    suoffsets = searchParams.unicodeoffsets
+    smaxngram = searchParams.max_ngram
+    sfreqweight = searchParams.freq_weight
+    scoring = ansettings.scoring
+    sthreshold = scoring.threshold
+
+    NE = self.NE
+    app = self.app
+    model = self.model
+    rec = self.rec
+    textComplete = self.textComplete
+    workDir = self.workDir
+    lexiconOccs = self.lexiconOccs
+
+    text = textComplete[start:end]
+    nText = len(text)
+
+    offset = 0 if start is None else nText + start if start &lt; 0 else start
+
+    NE.console(f&#34;{nText:&gt;8} text  length&#34;)
+    NE.console(f&#34;{offset:&gt;8} offset in complete text&#34;)
+
+    slug = (
+        f&#34;{suoffsets}-{smaxngram}-{sfreqweight}-{sthreshold}-&#34;
+        f&#34;{suoffsets}-{smaxngram}-{sfreqweight}-{sthreshold}&#34;
+    )
+    matchesFile = f&#34;{workDir}/matches-{start}-{end}-settings={slug}.json&#34;
+    matchesPosFile = f&#34;{workDir}/matchespos-{start}-{end}-settings={slug}.json&#34;
+    rawMatchesFile = f&#34;{workDir}/rawmatches-{start}-{end}-settings={slug}.json&#34;
+
+    app.indent(reset=True)
+
+    if force == 2 or not fileExists(rawMatchesFile):
+        app.info(&#34;Compute variants of the lexicon words ...&#34;)
+        rawMatches = model.find_all_matches(
+            text,
+            SearchParameters(
+                unicodeoffsets=suoffsets,
+                max_ngram=smaxngram,
+                freq_weight=sfreqweight,
+                score_threshold=sthreshold,
+            ),
+        )
+        writeJson(rawMatches, asFile=rawMatchesFile)
+    else:
+        app.info(&#34;Read previously computed variants of the lexicon words ...&#34;)
+        rawMatches = readJson(asFile=rawMatchesFile, plain=False)
+
+    app.info(f&#34;{len(rawMatches):&gt;8} raw   matches&#34;)
+
+    if force == 1 or not fileExists(matchesFile) or not fileExists(matchesPosFile):
+        app.info(&#34;Filter variants of the lexicon words ...&#34;)
+        positions = rec.positions(simple=True)
+
+        matches = {}
+        matchPositions = collections.defaultdict(list)
+
+        for match in rawMatches:
+            text = match[&#34;input&#34;].replace(&#34;\n&#34;, &#34; &#34;)
+            textL = text.lower()
+
+            if text in lexiconOccs:
+                continue
+
+            candidates = match[&#34;variants&#34;]
+
+            if len(candidates) == 0:
+                continue
+
+            candidates = {
+                cand[&#34;text&#34;]: s
+                for cand in candidates
+                if (s := cand[&#34;score&#34;]) &gt;= sthreshold
+            }
+
+            if len(candidates) == 0:
+                continue
+
+            textRemove = set()
+
+            for cand in candidates:
+                candL = cand.lower()
+                if candL == textL:
+                    textRemove.add(cand)
+
+            for cand in textRemove:
+                del candidates[cand]
+
+            if len(candidates) == 0:
+                continue
+
+            # if the match ends with &#39;s we remove the part without it from the
+            # candidates
+
+            if text.endswith(&#34;&#39;s&#34;):
+                head = text.removesuffix(&#34;&#39;s&#34;)
+                if head in candidates:
+                    del candidates[head]
+
+                    if len(candidates) == 0:
+                        continue
+
+            # we have another need to filter: if the text of a match is one short
+            # word longer than a candidate we remove that candidate
+            # provided the extra word is lower case and has at most 3 letters
+            # this is to prevent cases like
+            # «Adam Schivelbergh» versus «Adam Schivelbergh di»
+            #
+            # We do this also when the extra word is at the start, like
+            # «di monsignor Mangot» versus «monsignor Mangot»
+
+            parts = text.split()
+
+            if len(parts) &gt; 0:
+                (head, tail) = (parts[0:-1], parts[-1])
+
+                # if len(tail) &lt;= 3 and tail.islower():
+                if len(tail) &lt;= 3:
+                    head = &#34; &#34;.join(head)
+
+                    if head in candidates:
+                        del candidates[head]
+
+                        if len(candidates) == 0:
+                            continue
+
+                (head, tail) = (parts[0], parts[1:])
+
+                # if len(head) &lt;= 3 and head.islower():
+                if len(head) &lt;= 3:
+                    tail = &#34; &#34;.join(tail)
+
+                    if tail in candidates:
+                        del candidates[tail]
+
+                        if len(candidates) == 0:
+                            continue
+
+            position = match[&#34;offset&#34;]
+            start = position[&#34;begin&#34;]
+            end = position[&#34;end&#34;]
+            nodes = sorted(
+                {positions[i] for i in range(offset + start, offset + end)}
+            )
+
+            matches[text] = candidates
+            matchPositions[text].append(nodes)
+
+        writeJson(matches, asFile=matchesFile)
+        writeJson(matchPositions, asFile=matchesPosFile)
+    else:
+        app.info(&#34;Read previously filtered variants of the lexicon words ...&#34;)
+        matches = readJson(asFile=matchesFile, plain=False)
+        matchPositions = readJson(asFile=matchesPosFile, plain=False)
+
+    app.info(f&#34;{len(matches):&gt;8} filtered matches&#34;)
+
+    self.matches = matches
+    self.matchPositions = matchPositions
+    console(f&#34;{len(matches)} variants found&#34;)</code></pre>
+</details>
+<div class="desc"><p>Search for spelling variants in the corpus.</p>
+<p>We search part of the corpus or the whole corpus for spelling variants.
+The process has two stages:</p>
+<ol>
+<li>a run of analaticcl</li>
+<li>filtering of the results</li>
+</ol>
+<p>The run of analiticcl is expensive, more than 10 minutes on the
+<a href="https://gitlab.huc.knaw.nl/suriano/letters">Suriano corpus</a>.</p>
+<p>The results of stage 1 will be cached. For every choice of search parameters
+and boundary points in the corpus there is a separate cache.</p>
+<p>A number of analiticcl-specific parameters will influence the search.
+They can be tweaked in the config file of the NER module, under the variants
+section.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>start</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The place in the corpus where the search has to start; it is the offset
+in the plain text. If <code>None</code>, start from the beginning of the corpus.</dd>
+<dt><strong><code>end</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The place in the corpus where the search must end; it is the offset
+in the plain text. If <code>None</code>, the search will be performed till the end
+of the corpus.</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>integer</code>, optional <code>0</code></dt>
+<dd>Valid values are <code>0</code>, <code>1</code>, <code>2</code>.
+Meaning: <code>0</code>: use the cached result, if it is available.
+<code>1</code>: use the cached result for stage 1, if available, but perform the
+filtering (again).
+<code>2</code>: do not use the cache, but compute everything again.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.variants.Detect.setupAnaliticcl"><code class="name flex">
+<span>def <span class="ident">setupAnaliticcl</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/variants.py#L966-L1001" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def setupAnaliticcl(self):
+    &#34;&#34;&#34;Configure analiticcl for the big search.
+
+    We gather the parameters from the variants section of the NER
+    config file (see `tf.ner.settings`).
+
+    For the description of the parameters, see the
+    [analiticcl tutorial](https://github.com/proycon/analiticcl/blob/master/tutorial.ipynb)
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        console(&#34;This instance is not properly set up&#34;, error=True)
+        return
+
+    NE = self.NE
+    VariantModel = self.VariantModel
+    Weights = self.Weights
+    ansettings = self.settings.analiticcl
+    weights = ansettings.weights
+    wld = weights.ld
+    wlcs = weights.lcs
+    wprefix = weights.prefix
+    wsuffix = weights.suffix
+    wcase = weights.case
+
+    alphabetFile = self.alphabetFile
+    lexiconFile = self.lexiconFile
+
+    NE.console(&#34;Set up analiticcl&#34;)
+
+    model = VariantModel(
+        alphabetFile,
+        Weights(ld=wld, lcs=wlcs, prefix=wprefix, suffix=wsuffix, case=wcase),
+    )
+    self.model = model
+    model.read_lexicon(lexiconFile)
+    model.build()</code></pre>
+</details>
+<div class="desc"><p>Configure analiticcl for the big search.</p>
+<p>We gather the parameters from the variants section of the NER
+config file (see <code><a title="tf.ner.settings" href="settings.html">tf.ner.settings</a></code>).</p>
+<p>For the description of the parameters, see the
+<a href="https://github.com/proycon/analiticcl/blob/master/tutorial.ipynb">analiticcl tutorial</a></p></div>
+</dd>
+<dt id="tf.ner.variants.Detect.showResults"><code class="name flex">
+<span>def <span class="ident">showResults</span></span>(<span>self, start=None, end=None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/variants.py#L586-L646" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def showResults(self, start=None, end=None):
+    &#34;&#34;&#34;Show the search results to the console.
+
+    Show (part of) the variants found on the console with additional context.
+
+    Parameters
+    ----------
+    start: integer, optional None
+        The sequence number of the first result to show.
+        If `None`, start with the first result.
+    end: integer, optional None
+        The sequence number of the last result to show.
+        If `None`, continue to the last result.
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        console(&#34;This instance is not properly set up&#34;, error=True)
+        return
+
+    app = self.app
+    F = app.api.F
+    matches = self.matches
+    matchPositions = self.matchPositions
+
+    i = 0
+
+    for text, candidates in sorted(matches.items())[start:end]:
+        i += 1
+        nCand = len(candidates)
+        pl = &#34;&#34; if nCand == 1 else &#34;s&#34;
+        console(f&#34;{i:&gt;4} Variant «{text}» of {nCand} candidate{pl}&#34;)
+        console(&#34;  Occurrences:&#34;)
+        occs = matchPositions[text]
+
+        for nodes in occs:
+            sectionStart = app.sectionStrFromNode(nodes[0])
+            sectionEnd = app.sectionStrFromNode(nodes[-1])
+            section = (
+                sectionStart
+                if sectionStart == sectionEnd
+                else f&#34;{sectionStart} - {sectionEnd}&#34;
+            )
+            preStart = max((nodes[0] - 10, 1))
+            preEnd = nodes[0]
+            postStart = nodes[-1] + 1
+            postEnd = min((nodes[-1] + 10, F.otype.maxSlot + 1))
+            preText = &#34;&#34;.join(
+                f&#34;{F.str.v(n)}{F.after.v(n)}&#34; for n in range(preStart, preEnd)
+            )
+            inText = &#34;&#34;.join(f&#34;{F.str.v(n)}{F.after.v(n)}&#34; for n in nodes)
+            postText = &#34;&#34;.join(
+                f&#34;{F.str.v(n)}{F.after.v(n)}&#34; for n in range(postStart, postEnd)
+            )
+            context = f&#34;{section}: {preText}«{inText}»{postText}&#34;.replace(&#34;\n&#34;, &#34; &#34;)
+            console(f&#34;    {context}&#34;)
+
+        console(&#34;  Candidates with score:&#34;)
+
+        for cand, score in sorted(candidates.items(), key=lambda x: (-x[1], x[0])):
+            console(f&#34;\t{score:4.2f} {cand}&#34;)
+
+        console(&#34;-----&#34;)</code></pre>
+</details>
+<div class="desc"><p>Show the search results to the console.</p>
+<p>Show (part of) the variants found on the console with additional context.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>start</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The sequence number of the first result to show.
+If <code>None</code>, start with the first result.</dd>
+<dt><strong><code>end</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>The sequence number of the last result to show.
+If <code>None</code>, continue to the last result.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.css" integrity="sha512-b+T2i3P45i1LZM7I00Ci5QquB9szqaxu+uuk5TUSGjZQ4w4n+qujQiIuvTv2BxE7WCGQCifNMksyKILDiHzsOg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.js" integrity="sha512-2B9/byNV1KKRm5nQ2RLViPFD6U4dUjDGwuW1GU+ImJh8YinPU9Zlq1GzdTMO+G2ROrB5o1qasJBy1ttYz0wCug==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.ner.variants.Detect" href="#tf.ner.variants.Detect">Detect</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.ner.variants.Detect.displayResults" href="#tf.ner.variants.Detect.displayResults">displayResults</a></code></li>
+<li><code><a title="tf.ner.variants.Detect.listVariants" href="#tf.ner.variants.Detect.listVariants">listVariants</a></code></li>
+<li><code><a title="tf.ner.variants.Detect.makeAlphabet" href="#tf.ner.variants.Detect.makeAlphabet">makeAlphabet</a></code></li>
+<li><code><a title="tf.ner.variants.Detect.makeLexicon" href="#tf.ner.variants.Detect.makeLexicon">makeLexicon</a></code></li>
+<li><code><a title="tf.ner.variants.Detect.makeText" href="#tf.ner.variants.Detect.makeText">makeText</a></code></li>
+<li><code><a title="tf.ner.variants.Detect.mergeTriggers" href="#tf.ner.variants.Detect.mergeTriggers">mergeTriggers</a></code></li>
+<li><code><a title="tf.ner.variants.Detect.prepare" href="#tf.ner.variants.Detect.prepare">prepare</a></code></li>
+<li><code><a title="tf.ner.variants.Detect.search" href="#tf.ner.variants.Detect.search">search</a></code></li>
+<li><code><a title="tf.ner.variants.Detect.setupAnaliticcl" href="#tf.ner.variants.Detect.setupAnaliticcl">setupAnaliticcl</a></code></li>
+<li><code><a title="tf.ner.variants.Detect.showResults" href="#tf.ner.variants.Detect.showResults">showResults</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>tf.ner.match API documentation</title>
+<meta name="description" content="Match functions …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.ner.match</code></h1>
+</header>
+<section id="section-intro">
+<p>Match functions.</p>
+<p>In this module we define an efficient search for multiple strings in one pass
+over the corpus.
+We also define a search for a single entity.</p>
+<p>All corpus-specific functions that we need must be passed as arguments.
+And the portions of the corpus in which we search must be given by a set of nodes.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.ner.match.entityMatch"><code class="name flex">
+<span>def <span class="ident">entityMatch</span></span>(<span>entityIndex,<br>eStarts,<br>entitySlotVal,<br>entitySlotAll,<br>entitySlotIndex,<br>triggerFromMatch,<br>textFromNode,<br>tokensFromNode,<br>b,<br>bFindRe,<br>anyEnt,<br>eVals,<br>trigger,<br>qTokens,<br>valSelect,<br>freeState,<br>fValStats)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/match.py#L156-L360" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def entityMatch(
+    entityIndex,
+    eStarts,
+    entitySlotVal,
+    entitySlotAll,
+    entitySlotIndex,
+    triggerFromMatch,
+    textFromNode,
+    tokensFromNode,
+    b,
+    bFindRe,
+    anyEnt,
+    eVals,
+    trigger,
+    qTokens,
+    valSelect,
+    freeState,
+    fValStats,
+):
+    &#34;&#34;&#34;Checks whether a bucket satisfies a variety of criteria.
+
+    When we do the checking, we ignore empty tokens in the bucket.
+
+    Parameters
+    ----------
+    entityIndex, eStarts, entitySlotVal, entitySlotAll, entitySlotIndex: object
+        Various kinds of processed entity data, see `tf.ner.data.Data.processSet()`
+    triggerFromMatch: dict
+        Mapping from matches to triggers, part of sheet data,
+        see `tf.ner.sheets.SHEET_KEYS`
+    textFromNode: function
+        See `tf.ner.corpus.Corpus.textFromNode`
+    tokensFromNode: function
+        See `tf.ner.corpus.Corpus.tokensFromNode`
+    b: integer
+        The node of the bucket in question
+    bFindRe, anyEnt, eVals, trigger, qTokens, valSelect, freeState: object
+        As in `tf.ner.corpus.Corpus.filterContent`
+    fValStats: dict
+        Dictionary to collect statistics of entities that are encountered;
+        this is a result of the function!
+
+    Returns
+    -------
+    tuple
+        Members:
+
+        *   `fits`: boolean, whether the bucket passes the filter
+        *   `(tokens, matches, positions)`:
+            *   `tokens` all tokens of the bucket, each token is a tuple consisting
+                of its slot number (position) and string value;
+            *   `matches`: a list of the positions of the found occurrences for the
+                `qTokens` and / or `eVals` possibly with `trigger` in the bucket;
+            *   `positions`: a set of positions in the bucket where the
+                `bFindRe` starts to match;
+
+    &#34;&#34;&#34;
+    positions = set()
+
+    fits = None
+
+    if bFindRe:
+        fits = False
+        sText = textFromNode(b)
+
+        for match in bFindRe.finditer(sText):
+            positions |= set(range(match.start(), match.end()))
+            fits = True
+
+    bTokensAll = tokensFromNode(b)
+    bTokens = [x for x in bTokensAll if xstrip(x[1] or &#34;&#34;)]
+
+    if fits is None or fits:
+        if anyEnt is not None:
+            containsEntities = False
+
+            for i, (t, w) in enumerate(bTokens):
+                if t in entitySlotAll:
+                    containsEntities = True
+                    break
+
+            fits = anyEnt and containsEntities or not anyEnt and not containsEntities
+
+    matches = []
+
+    if eVals is not None:
+        for i, (t, w) in enumerate(bTokens):
+            lastT = eStarts.get(t, None)
+            if lastT is None:
+                continue
+
+            slots = tuple(range(t, lastT + 1))
+
+            if freeState is None:
+                freeOK = True
+            else:
+                bound = any(slot in entitySlotIndex for slot in slots)
+                freeOK = freeState and not bound or not freeState and bound
+
+            if not freeOK:
+                continue
+
+            for feat, stats in fValStats.items():
+                for val in eVals:
+                    stats[val] += 1
+
+            valOK = True
+
+            for feat, val in zip(fValStats, eVals):
+                if valSelect is None:
+                    continue
+                selectedVals = valSelect[feat]
+                if val not in selectedVals:
+                    valOK = False
+                    break
+
+            if valOK:
+                matches.append(slots)
+
+        if trigger is not None:
+            triggerMatches = [
+                slots
+                for slots in matches
+                if triggerFromMatch.get(slots, None) == trigger
+            ]
+
+            if len(triggerMatches) == 0:
+                matches = []
+
+    elif qTokens is not None:
+        nTokens = len(qTokens)
+
+        if nTokens:
+            bStrings = {s for (t, s) in bTokens}
+
+            if any(s not in bStrings for s in qTokens):
+                return (fits, (bTokensAll, matches, positions))
+
+            nBTokens = len(bTokens)
+
+            for i, (t, w) in enumerate(bTokens):
+                if w != qTokens[0]:
+                    continue
+                if i + nTokens - 1 &gt;= nBTokens:
+                    return (fits, (bTokensAll, matches, positions))
+
+                match = True
+
+                for j, w in enumerate(qTokens[1:]):
+                    if bTokens[i + j + 1][1] != w:
+                        match = False
+                        break
+
+                if match:
+                    lastT = bTokens[i + nTokens - 1][0]
+                    slots = tuple(range(t, lastT + 1))
+
+                    if freeState is None:
+                        freeOK = True
+                    else:
+                        bound = any(slot in entitySlotIndex for slot in slots)
+                        freeOK = freeState and not bound or not freeState and bound
+
+                    if not freeOK:
+                        continue
+
+                    for feat, stats in fValStats.items():
+                        vals = entityIndex[feat].get(slots, set())
+
+                        if len(vals) == 0:
+                            stats[NONE] += 1
+                        else:
+                            for val in vals:
+                                stats[val] += 1
+
+                    valTuples = entitySlotVal.get(slots, set())
+
+                    if len(valTuples):
+                        valOK = False
+
+                        if valSelect is not None:
+                            for valTuple in valTuples:
+                                thisOK = True
+
+                                for feat, val in zip(fValStats, valTuple):
+                                    selectedVals = valSelect[feat]
+                                    if val not in selectedVals:
+                                        thisOK = False
+                                        break
+
+                                if thisOK:
+                                    valOK = True
+                                    break
+                    else:
+                        valOK = valSelect is None or all(
+                            NONE in valSelect[feat] for feat in fValStats
+                        )
+
+                    if valOK:
+                        matches.append(slots)
+
+    else:
+        return (fits, (bTokensAll, matches, positions))
+
+    return (fits, (bTokensAll, matches, positions))</code></pre>
+</details>
+<div class="desc"><p>Checks whether a bucket satisfies a variety of criteria.</p>
+<p>When we do the checking, we ignore empty tokens in the bucket.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>entityIndex</code></strong>, <strong><code>eStarts</code></strong>, <strong><code>entitySlotVal</code></strong>, <strong><code>entitySlotAll</code></strong>, <strong><code>entitySlotIndex</code></strong> :&ensp;<code>object</code></dt>
+<dd>Various kinds of processed entity data, see <code><a title="tf.ner.data.Data.processSet" href="data.html#tf.ner.data.Data.processSet">Data.processSet()</a></code></dd>
+<dt><strong><code>triggerFromMatch</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Mapping from matches to triggers, part of sheet data,
+see <code><a title="tf.ner.sheets.SHEET_KEYS" href="sheets.html#tf.ner.sheets.SHEET_KEYS">SHEET_KEYS</a></code></dd>
+<dt><strong><code>textFromNode</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code><a title="tf.ner.corpus.Corpus.textFromNode" href="corpus.html#tf.ner.corpus.Corpus.textFromNode">Corpus.textFromNode</a></code></dd>
+<dt><strong><code>tokensFromNode</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code><a title="tf.ner.corpus.Corpus.tokensFromNode" href="corpus.html#tf.ner.corpus.Corpus.tokensFromNode">Corpus.tokensFromNode</a></code></dd>
+<dt><strong><code>b</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The node of the bucket in question</dd>
+<dt><strong><code>bFindRe</code></strong>, <strong><code>anyEnt</code></strong>, <strong><code>eVals</code></strong>, <strong><code>trigger</code></strong>, <strong><code>qTokens</code></strong>, <strong><code>valSelect</code></strong>, <strong><code>freeState</code></strong> :&ensp;<code>object</code></dt>
+<dd>As in <code><a title="tf.ner.corpus.Corpus.filterContent" href="corpus.html#tf.ner.corpus.Corpus.filterContent">Corpus.filterContent()</a></code></dd>
+<dt><strong><code>fValStats</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Dictionary to collect statistics of entities that are encountered;
+this is a result of the function!</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>
+<p>Members:</p>
+<ul>
+<li><code>fits</code>: boolean, whether the bucket passes the filter</li>
+<li><code>(tokens, matches, positions)</code>:<ul>
+<li><code>tokens</code> all tokens of the bucket, each token is a tuple consisting
+of its slot number (position) and string value;</li>
+<li><code>matches</code>: a list of the positions of the found occurrences for the
+<code>qTokens</code> and / or <code>eVals</code> possibly with <code>trigger</code> in the bucket;</li>
+<li><code>positions</code>: a set of positions in the bucket where the
+<code>bFindRe</code> starts to match;</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.match.occMatch"><code class="name flex">
+<span>def <span class="ident">occMatch</span></span>(<span>tokensFromNode,<br>getSeqFromNode,<br>buckets,<br>instructions,<br>spaceEscaped,<br>caseSensitive=False)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/48722101caea31f5eabbadcea25817621f7425af/tf/ner/match.py#L16-L153" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def occMatch(
+    tokensFromNode,
+    getSeqFromNode,
+    buckets,
+    instructions,
+    spaceEscaped,
+    caseSensitive=False,
+):
+    &#34;&#34;&#34;Finds the occurrences of multiple sequences of tokens in a single bucket.
+
+    Parameters
+    ----------
+    tokensFromNode: function
+        See `tf.ner.corpus.Corpus.tokensFromNode`
+    getSeqFromNode: function
+        See `tf.ner.corpus.Corpus.getSeqFromNode`
+    buckets: tuple of integer
+        The bucket nodes in question
+    instructions: dict, optional None
+        Datastructure that encodes the trigger information in a spreadsheet.
+        The structure is described in `tf.ner.sheets.SHEET_KEYS`.
+    spaceEscaped: boolean
+        A corpus property indicating whether tokens in the corpus may contain
+        escaped spaces
+
+    Returns
+    -------
+    dict
+        A multiply nested dict, first keyed by entity identifier/kind tuples,
+        then by its triggers then by the scope of such a trigger, and then
+        the value is a list of occurrences, where each occurrence is a tuple of slots.
+
+    &#34;&#34;&#34;
+
+    # compile the token sequences that we search for into data to optimize search
+    # we produce dicts, keyed by a postion number and valued by a dict whose
+    # keys are tokens and whose values are the token sequences that have that token
+    # at that position
+
+    LONGEST_ONLY = True
+
+    # We can switch between two behaviours:
+    #
+    # 1. once a match is found, stop looking for smaller matches that start at the same place
+    #    of that match, or somewhere inside that match
+    #
+    # 2. find all matches, irrespective of overlap
+
+    results = {}
+
+    intvIndex = getIntvIndex(buckets, instructions, getSeqFromNode)
+
+    for b in buckets:
+        intv = intvIndex[b]
+        data = instructions[intv]
+
+        tPos = data[&#34;tPos&#34;]
+        tMap = data[&#34;tMap&#34;]
+        idMap = data[&#34;idMap&#34;]
+
+        # compile the bucket into logical tokens
+        (lineEnds, bTokensAll) = tokensFromNode(b, lineBoundaries=True)
+        # bTokensAll = tokensFromNode(b, lineBoundaries=False)
+        bTokens = [x for x in bTokensAll if xstrip(x[1] or &#34;&#34;)]
+        bStrings = []
+        bStringFirst = {}
+        bStringLast = {}
+
+        for t, s in bTokens:
+            # if len(bStrings) &gt; 1 and bStrings[-1] == &#34;-&#34;:
+            if t - 1 in lineEnds and len(bStrings) &gt; 1 and bStrings[-1] == &#34;-&#34;:
+                bStrings.pop()
+                bStrings[-1] += s
+                bStringLast[len(bStrings) - 1] = t
+            else:
+                bStrings.append(s)
+                bStringFirst[len(bStrings) - 1] = t
+                bStringLast[len(bStrings) - 1] = t
+
+        bStrings = tuple(bStrings)
+
+        if not caseSensitive:
+            bStrings = tuple(t.lower() for t in bStrings)
+
+        nBStrings = len(bStrings)
+
+        # perform the search
+        i = 0
+
+        while i &lt; nBStrings:
+            j = 0
+
+            candidateMatches = None
+            matches = {}
+
+            while i + j &lt; nBStrings:
+                k = i + j
+                sj = bStrings[k]
+                newCandidates = tPos.get(j, {}).get(sj, set())
+
+                if candidateMatches is None:
+                    candidateMatches = newCandidates
+                else:
+                    candidateMatches = candidateMatches &amp; newCandidates
+
+                matches[j] = [qt for qt in candidateMatches if len(qt) == j + 1]
+                j += 1
+
+                if len(candidateMatches) == 0:
+                    break
+
+            for m in range(j - 1, -1, -1):
+                resultMatches = matches[m]
+
+                if len(resultMatches):
+                    resultMatch = resultMatches[0]
+
+                    trigger = fromTokens(resultMatch, spaceEscaped=spaceEscaped)
+                    scope = tMap[trigger]
+
+                    firstT = bStringFirst[i]
+                    lastT = bStringLast[i + m]
+                    slots = tuple(range(firstT, lastT + 1))
+                    eidkind = idMap[trigger]
+
+                    dest = (
+                        results.setdefault(eidkind, {})
+                        .setdefault(trigger, {})
+                        .setdefault(scope, [])
+                    )
+                    dest.append(slots)
+
+                    if LONGEST_ONLY:
+                        break
+
+            i += m + 1 if LONGEST_ONLY else 1
+
+    return results</code></pre>
+</details>
+<div class="desc"><p>Finds the occurrences of multiple sequences of tokens in a single bucket.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tokensFromNode</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code><a title="tf.ner.corpus.Corpus.tokensFromNode" href="corpus.html#tf.ner.corpus.Corpus.tokensFromNode">Corpus.tokensFromNode</a></code></dd>
+<dt><strong><code>getSeqFromNode</code></strong> :&ensp;<code>function</code></dt>
+<dd>See <code><a title="tf.ner.corpus.Corpus.getSeqFromNode" href="corpus.html#tf.ner.corpus.Corpus.getSeqFromNode">Corpus.getSeqFromNode</a></code></dd>
+<dt><strong><code>buckets</code></strong> :&ensp;<code>tuple</code> of <code>integer</code></dt>
+<dd>The bucket nodes in question</dd>
+<dt><strong><code>instructions</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>Datastructure that encodes the trigger information in a spreadsheet.
+The structure is described in <code><a title="tf.ner.sheets.SHEET_KEYS" href="sheets.html#tf.ner.sheets.SHEET_KEYS">SHEET_KEYS</a></code>.</dd>
+<dt><strong><code>spaceEscaped</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>A corpus property indicating whether tokens in the corpus may contain
+escaped spaces</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>A multiply nested dict, first keyed by entity identifier/kind tuples,
+then by its triggers then by the scope of such a trigger, and then
+the value is a list of occurrences, where each occurrence is a tuple of slots.</dd>
+</dl></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.css" integrity="sha512-b+T2i3P45i1LZM7I00Ci5QquB9szqaxu+uuk5TUSGjZQ4w4n+qujQiIuvTv2BxE7WCGQCifNMksyKILDiHzsOg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.js" integrity="sha512-2B9/byNV1KKRm5nQ2RLViPFD6U4dUjDGwuW1GU+ImJh8YinPU9Zlq1GzdTMO+G2ROrB5o1qasJBy1ttYz0wCug==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.ner.match.entityMatch" href="#tf.ner.match.entityMatch">entityMatch</a></code></li>
+<li><code><a title="tf.ner.match.occMatch" href="#tf.ner.match.occMatch">occMatch</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
