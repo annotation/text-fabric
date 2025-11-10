@@ -14,12 +14,14 @@ class AppData:
         app,
         backend,
         moduleRefs,
+        bare,
         locations,
         modules,
         version,
         checkout,
         silent,
         dest=None,
+        source=None,
     ):
         """Collects TF data according to specifications.
 
@@ -34,6 +36,11 @@ class AppData:
         moduleRefs: tuple
             Each member consists of a module ref, which is a tuple of information
             that defines a module.
+        bare: whether to load the standard modules
+            If False, only modules explicitly given in moduleRefs are loaded.
+            Standard modules will only be loaded if they are explicitly passed by
+            moduleRefs.
+            If True, standatd modules will always be loaded.
         locations: string|tuple
             One or more directory paths. They will be combined with the `modules`
             argument and used as locations to search for TF data files.
@@ -50,6 +57,8 @@ class AppData:
             See `tf.core.timestamp.Timestamp`
         dest: string, optional None
             The location where the text-fabric-data cache is.
+        source: string, optional None
+            The base of your local repository clones.
 
         """
         self.backend = backend
@@ -61,11 +70,13 @@ class AppData:
             if type(moduleRefs) is str
             else list(moduleRefs)
         )
+        self.bare = bare
         self.locationsArg = locations
         self.modulesArg = modules
         self.version = version
         self.checkout = checkout
         self.dest = dest
+        self.source = source
         self.silent = silent
 
     def getMain(self):
@@ -80,6 +91,7 @@ class AppData:
         """
 
         app = self.app
+        source = self.source
         checkout = self.checkout
         aContext = app.context
         org = aContext.org
@@ -108,6 +120,7 @@ class AppData:
             appParent=appParent,
             versionOverride=app.versionOverride,
             allowExpress=True,
+            source=source,
         ):
             self.good = False
 
@@ -127,7 +140,13 @@ class AppData:
         tf.advanced.settings: options allowed in `config.yaml`
         """
 
+        bare = self.bare
+
+        if not bare:
+            return
+
         app = self.app
+        source = self.source
         loadData = app.loadData
 
         if not loadData or loadData == "core":
@@ -160,6 +179,7 @@ class AppData:
                 specs=m,
                 versionOverride=app.versionOverride,
                 allowExpress=True,
+                source=source,
             ):
                 self.good = False
 
@@ -177,7 +197,13 @@ class AppData:
         tf.advanced.settings: options allowed in `config.yaml`
         """
 
+        bare = self.bare
+
+        if not bare:
+            return
+
         app = self.app
+        source = self.source
         loadData = app.loadData
 
         if not loadData or loadData == "core":
@@ -205,6 +231,7 @@ class AppData:
             isExtra=True,
             versionOverride=app.versionOverride,
             allowExpress=True,
+            source=source,
         ):
             self.good = False
 
@@ -217,8 +244,10 @@ class AppData:
         """
 
         app = self.app
+        source = self.source
         backend = self.backend
         refs = self.moduleRefs
+
         for ref in refs:
             refPure = ref.rsplit(":", 1)[0]
             if refPure in self.seen:
@@ -239,6 +268,7 @@ class AppData:
                 backend=theBackend,
                 versionOverride=app.versionOverride,
                 allowExpress=False,
+                source=source,
             ):
                 self.good = False
 
@@ -312,6 +342,7 @@ class AppData:
         specs=None,
         versionOverride=False,
         allowExpress=True,
+        source=None,
     ):
         """Prepare to load a single module.
 
@@ -349,6 +380,8 @@ class AppData:
             Whether we ask for the data of a non-standard version
         allowExpress: boolean, optional True
             Whether express downloading of the whole corpus may be triggered
+        source: string, optional None
+            The base of your local repository clones.
         """
 
         backend = self.backend if backend is None else backendRep(backend, "norm")
@@ -392,6 +425,7 @@ class AppData:
                 keep=True if isExtra else False,
                 silent=silent,
                 allowExpress=allowExpress,
+                source=source,
             )
             if not localBase:
                 return False
@@ -446,7 +480,7 @@ class AppData:
         return True
 
 
-def getModulesData(*args, dest=None):
+def getModulesData(*args, dest=None, source=None):
     """Retrieve all data for a corpus.
 
     Parameters
@@ -456,7 +490,7 @@ def getModulesData(*args, dest=None):
         They are the same as are needed to construct an `AppData` object.
     """
 
-    mData = AppData(*args, dest=dest)
+    mData = AppData(*args, dest=dest, source=source)
     mData.getModules()
 
     if not mData.good or mData.locations is None:

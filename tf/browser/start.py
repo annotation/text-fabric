@@ -112,7 +112,7 @@ where all args are optional and args have one of these forms:
   --relative=string
   --backend=backend name (github, gitlab, gitlab.domain)
   --mod=modules
-  --set=file
+  --sets=file
   --modules=modules-string
   --locations=locations-string
   --version=version

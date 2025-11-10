@@ -18,6 +18,12 @@ which kan be pip installed separately.
 
 ### 13.0
 
+#### 13.0.17
+
+2025-11-10
+
+Small fixes
+
 #### 13.0.15-16
 
 2025-10-16

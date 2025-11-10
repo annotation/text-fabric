@@ -2231,9 +2231,10 @@ def checkoutRepo(
         Typically, this should be set to True for app and main data and standard module
         data, and False for optional module data.
 
-    source: string, optional empty string
+    source: string, optional None
         The base of your local repository clones.
-        If given, it overrides the semi-baked in `~/github` value.
+        If given, it overrides the default value, which is `~/github` or `~/gitlab`,
+        etc.
 
     dest: string, optional empty string
         The base of your local cache of downloaded TF feature files.

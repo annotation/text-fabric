@@ -71,7 +71,9 @@ class App:
         versionOverride=False,
         checkout="",
         dest=None,
+        source=None,
         mod=[],
+        bare=False,
         locations=None,
         modules=None,
         volume=None,
@@ -94,6 +96,7 @@ class App:
         backend: string
         checkout: string, optional ""
         mod: string or iterable, optional []
+        bare: whether to suppress standard modules
         version: string, optional None
         versionOverride: boolean, optional False
         locations, modules: string, optional None
@@ -133,6 +136,7 @@ class App:
             silent=silent,
             loadData=loadData,
             dest=dest,
+            source=source,
             _browse=_browse,
         ).items():
             setattr(self, key, value)
@@ -165,12 +169,14 @@ class App:
                 self,
                 backend,
                 mod,
+                bare,
                 locations,
                 modules,
                 version,
                 checkout,
                 silent,
                 dest=dest,
+                source=source,
             )
 
             if specs:
@@ -464,6 +470,7 @@ def findApp(
     version=None,
     legacy=False,
     dest=None,
+    source=None,
     **kwargs,
 ):
     """Find a TF app by name and initialize an object of its main class.
@@ -588,6 +595,7 @@ def findApp(
                 repo=dataRepo,
                 folder=appFolder,
                 checkout=checkoutApp,
+                source=source,
                 dest=dest,
                 withPaths=True,
                 keep=False,
@@ -605,6 +613,7 @@ def findApp(
                 folder=APP_CODE,
                 checkout=checkoutApp,
                 dest=dest,
+                source=source,
                 withPaths=True,
                 keep=False,
                 silent=silent,
@@ -642,6 +651,7 @@ def findApp(
                         folder=APP_APP,
                         checkout=checkoutApp,
                         dest=dest,
+                        source=source,
                         withPaths=True,
                         keep=False,
                         silent=silent,
@@ -719,6 +729,7 @@ def findApp(
             *args,
             version=version,
             dest=dest,
+            source=source,
             versionOverride=not not versionGiven,
             silent=silent,
             **kwargs,
