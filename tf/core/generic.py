@@ -38,7 +38,7 @@ class AttrDict(dict):
         return deepdict(self)
 
 
-def deepdict(info):
+def deepdict(info, ordinary=False):
     """Turns an `AttrDict` into a `dict`, recursively.
 
     Parameters
@@ -49,6 +49,9 @@ def deepdict(info):
         `int`, `str`, `bool`.
         We assume there are no user defined objects in it, and no generators
         and functions.
+    ordinary: boolean, optional False
+        If True, no frozensets and tuples are constructed, but sets and lists
+        instead.
 
     Returns
     -------
@@ -59,17 +62,29 @@ def deepdict(info):
     tp = type(info)
 
     return (
-        dict({k: deepdict(v) for (k, v) in info.items()})
+        dict({k: deepdict(v, ordinary=ordinary) for (k, v) in info.items()})
         if tp in {dict, AttrDict}
-        else tuple(deepdict(item) for item in info)
-        if tp is tuple
-        else frozenset(deepdict(item) for item in info)
-        if tp is frozenset
-        else [deepdict(item) for item in info]
-        if tp is list
-        else {deepdict(item) for item in info}
-        if tp is set
-        else info
+        else (
+            (list if ordinary else tuple)(
+                deepdict(item, ordinary=ordinary) for item in info
+            )
+            if tp is tuple
+            else (
+                (set if ordinary else frozenset)(
+                    deepdict(item, ordinary=ordinary) for item in info
+                )
+                if tp is frozenset
+                else (
+                    [deepdict(item, ordinary=ordinary) for item in info]
+                    if tp is list
+                    else (
+                        {deepdict(item, ordinary=ordinary) for item in info}
+                        if tp is set
+                        else info
+                    )
+                )
+            )
+        )
     )
 
 
@@ -100,15 +115,25 @@ def deepAttrDict(info, preferTuples=False):
             {k: deepAttrDict(v, preferTuples=preferTuples) for (k, v) in info.items()}
         )
         if tp in {dict, AttrDict}
-        else tuple(deepAttrDict(item, preferTuples=preferTuples) for item in info)
-        if tp is tuple or (tp is list and preferTuples)
-        else frozenset(deepAttrDict(item, preferTuples=preferTuples) for item in info)
-        if tp is frozenset
-        else [deepAttrDict(item, preferTuples=preferTuples) for item in info]
-        if tp is list
-        else {deepAttrDict(item, preferTuples=preferTuples) for item in info}
-        if tp is set
-        else info
+        else (
+            tuple(deepAttrDict(item, preferTuples=preferTuples) for item in info)
+            if tp is tuple or (tp is list and preferTuples)
+            else (
+                frozenset(
+                    deepAttrDict(item, preferTuples=preferTuples) for item in info
+                )
+                if tp is frozenset
+                else (
+                    [deepAttrDict(item, preferTuples=preferTuples) for item in info]
+                    if tp is list
+                    else (
+                        {deepAttrDict(item, preferTuples=preferTuples) for item in info}
+                        if tp is set
+                        else info
+                    )
+                )
+            )
+        )
     )
 
 
