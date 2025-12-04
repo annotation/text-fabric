@@ -53,7 +53,7 @@ el.replaceWith(d);
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ca38325661a104c324ce2a56757053bb850358b/tf/core/generic.py#L76-L112" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4b9dcc7b03d4874f519835911e678912bd615207/tf/core/generic.py#L91-L137" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def deepAttrDict(info, preferTuples=False):
     &#34;&#34;&#34;Turn a `dict` into an `AttrDict`, recursively.
@@ -82,15 +82,25 @@ el.replaceWith(d);
             {k: deepAttrDict(v, preferTuples=preferTuples) for (k, v) in info.items()}
         )
         if tp in {dict, AttrDict}
-        else tuple(deepAttrDict(item, preferTuples=preferTuples) for item in info)
-        if tp is tuple or (tp is list and preferTuples)
-        else frozenset(deepAttrDict(item, preferTuples=preferTuples) for item in info)
-        if tp is frozenset
-        else [deepAttrDict(item, preferTuples=preferTuples) for item in info]
-        if tp is list
-        else {deepAttrDict(item, preferTuples=preferTuples) for item in info}
-        if tp is set
-        else info
+        else (
+            tuple(deepAttrDict(item, preferTuples=preferTuples) for item in info)
+            if tp is tuple or (tp is list and preferTuples)
+            else (
+                frozenset(
+                    deepAttrDict(item, preferTuples=preferTuples) for item in info
+                )
+                if tp is frozenset
+                else (
+                    [deepAttrDict(item, preferTuples=preferTuples) for item in info]
+                    if tp is list
+                    else (
+                        {deepAttrDict(item, preferTuples=preferTuples) for item in info}
+                        if tp is set
+                        else info
+                    )
+                )
+            )
+        )
     )</code></pre>
 </details>
 <div class="desc"><p>Turn a <code>dict</code> into an <code><a title="tf.core.generic.AttrDict" href="#tf.core.generic.AttrDict">AttrDict</a></code>, recursively.</p>
@@ -113,15 +123,15 @@ each value of type <code>dict</code> is turned into an <code><a title="tf.core.g
 </dl></div>
 </dd>
 <dt id="tf.core.generic.deepdict"><code class="name flex">
-<span>def <span class="ident">deepdict</span></span>(<span>info)</span>
+<span>def <span class="ident">deepdict</span></span>(<span>info, ordinary=False)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ca38325661a104c324ce2a56757053bb850358b/tf/core/generic.py#L41-L73" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4b9dcc7b03d4874f519835911e678912bd615207/tf/core/generic.py#L41-L88" class="git-link" target="_blank">Browse git</a>
 </summary>
-<pre><code class="python">def deepdict(info):
+<pre><code class="python">def deepdict(info, ordinary=False):
     &#34;&#34;&#34;Turns an `AttrDict` into a `dict`, recursively.
 
     Parameters
@@ -132,6 +142,9 @@ each value of type <code>dict</code> is turned into an <code><a title="tf.core.g
         `int`, `str`, `bool`.
         We assume there are no user defined objects in it, and no generators
         and functions.
+    ordinary: boolean, optional False
+        If True, no frozensets and tuples are constructed, but sets and lists
+        instead.
 
     Returns
     -------
@@ -142,17 +155,29 @@ each value of type <code>dict</code> is turned into an <code><a title="tf.core.g
     tp = type(info)
 
     return (
-        dict({k: deepdict(v) for (k, v) in info.items()})
+        dict({k: deepdict(v, ordinary=ordinary) for (k, v) in info.items()})
         if tp in {dict, AttrDict}
-        else tuple(deepdict(item) for item in info)
-        if tp is tuple
-        else frozenset(deepdict(item) for item in info)
-        if tp is frozenset
-        else [deepdict(item) for item in info]
-        if tp is list
-        else {deepdict(item) for item in info}
-        if tp is set
-        else info
+        else (
+            (list if ordinary else tuple)(
+                deepdict(item, ordinary=ordinary) for item in info
+            )
+            if tp is tuple
+            else (
+                (set if ordinary else frozenset)(
+                    deepdict(item, ordinary=ordinary) for item in info
+                )
+                if tp is frozenset
+                else (
+                    [deepdict(item, ordinary=ordinary) for item in info]
+                    if tp is list
+                    else (
+                        {deepdict(item, ordinary=ordinary) for item in info}
+                        if tp is set
+                        else info
+                    )
+                )
+            )
+        )
     )</code></pre>
 </details>
 <div class="desc"><p>Turns an <code><a title="tf.core.generic.AttrDict" href="#tf.core.generic.AttrDict">AttrDict</a></code> into a <code>dict</code>, recursively.</p>
@@ -164,6 +189,9 @@ each value of type <code>dict</code> is turned into an <code><a title="tf.core.g
 <code>int</code>, <code>str</code>, <code>bool</code>.
 We assume there are no user defined objects in it, and no generators
 and functions.</dd>
+<dt><strong><code>ordinary</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, no frozensets and tuples are constructed, but sets and lists
+instead.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -179,7 +207,7 @@ each value of type <code><a title="tf.core.generic.AttrDict" href="#tf.core.gene
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ca38325661a104c324ce2a56757053bb850358b/tf/core/generic.py#L115-L123" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4b9dcc7b03d4874f519835911e678912bd615207/tf/core/generic.py#L140-L148" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def isIterable(value):
     &#34;&#34;&#34;Whether a value is a non-string iterable.
@@ -211,7 +239,7 @@ But for this purpose we regard strings as non-iterable scalars.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ca38325661a104c324ce2a56757053bb850358b/tf/core/generic.py#L1-L38" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4b9dcc7b03d4874f519835911e678912bd615207/tf/core/generic.py#L1-L38" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class AttrDict(dict):
     &#34;&#34;&#34;Turn a dict into an object with attributes.
@@ -281,7 +309,7 @@ dict by means of keys, like <code>xxx["yyy"]</code> rather then by attribute lik
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7ca38325661a104c324ce2a56757053bb850358b/tf/core/generic.py#L37-L38" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4b9dcc7b03d4874f519835911e678912bd615207/tf/core/generic.py#L37-L38" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def deepdict(self):
     return deepdict(self)</code></pre>
