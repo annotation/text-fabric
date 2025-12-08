@@ -239,7 +239,7 @@ def zipTables(csvs, tupleResultsX, queryResultsX, about, form):
     with ZipFile(zipBuffer, "w", **ZIP_OPTIONS) as zipFile:
 
         zipFile.writestr("job.json", writeJson(form).encode("utf8"))
-        zipFile.writestr("job.json", writeJson.dumps(
+        zipFile.writestr("job.json", writeJson(
             {k: v for (k, v) in form.items() if k not in {"edgeHighlights", "colorMap"}}
         ).encode("utf8"))
         zipFile.writestr("about.md", about)

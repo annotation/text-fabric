@@ -18,6 +18,13 @@ which kan be pip installed separately.
 
 ### 13.0
 
+#### 13.0.19
+
+2025-12-08
+
+Bug fix in exporting jobs from the TF browser. Thanks to Martijn Naaijer for
+reporting it.
+
 #### 13.0.18
 
 2025-12-04
