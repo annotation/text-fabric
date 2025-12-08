@@ -1,0 +1,2276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>tf.ner.sheets API documentation</title>
+<meta name="description" content="Management of NER spreadsheets …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.ner.sheets</code></h1>
+</header>
+<section id="section-intro">
+<p>Management of NER spreadsheets.</p>
+<p>NER spreadsheets contain information about named entities and the
+trigger strings by which they can be found in the corpus.</p>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-variables">Global variables</h2>
+<dl>
+<dt id="tf.ner.sheets.SHEET_KEYS"><code class="name">var <span class="ident">SHEET_KEYS</span></code></dt>
+<dd>
+<div class="desc"><p>Keys by which the data of a NER sheet is organized.</p>
+<ul>
+<li><code>caseSensitive</code>: boolean, whether to look for triggers in the corpus in a
+case-sensitive way;</li>
+<li><code>metaFields</code>: the list of colums in the NER spreadsheet that are not involved
+in entity lookup: this is the metadata of an entity;</li>
+<li><code>metaData</code>: the metadata of an entity as dictionary;</li>
+<li><code>logData</code>: the collected messages issues while reading and processing a NER sheet;</li>
+<li><code>nameMap</code>: mapping from entities to names;</li>
+<li><code>scopeMap</code>: mapping from scope strings to scope data structures;</li>
+<li><code>rowMap</code>: mapping from triggers to the rows where they occur;</li>
+<li>
+<p><code>instructions</code>: compiled search instructions to search for all triggers
+simultaneously; more precisely, it is a mapping from intervals to tuples of
+three dictionaries:</p>
+<ul>
+<li><code>tPos</code>: dictionary that maps positions to tokens that a trigger may
+have in that position to the set of triggers that have that token in
+that position;</li>
+<li><code>tMap</code>: a mapping from triggers to scopes; the idea is that in every
+interval all triggers that are active in that interval have exactly one scope
+that includes that interval; the mapping gives that scope;</li>
+<li><code>idMap</code>: a mapping from triggers to entities; given a trigger that is
+active in an interval, and given its scope in that interval, there is
+exactly one entity that is triggered; the eid and kind of that entity
+identify it and is the value;</li>
+</ul>
+</li>
+<li>
+<p><code>inventory</code>: complete result of the search for triggers;</p>
+</li>
+<li><code>triggerFromMatch</code>: mapping for each match in the corpus which trigger was matched
+in what scope;</li>
+<li><code>triggerScopes</code>: for each trigger, the set of its scopes where it is used is stored;</li>
+<li><code>allTriggers</code>: the set of all triggers, more precisely, the set of all
+trigger-entity-scope combinations;</li>
+<li><code>hitData</code>: overview of the inventory (see above).</li>
+</ul></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.ner.sheets.Sheets"><code class="flex name class">
+<span>class <span class="ident">Sheets</span></span>
+<span>(</span><span>sheets=None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/sheets.py#L83-L1255" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">class Sheets(Scopes, Triggers):
+    def __init__(self, sheets=None):
+        &#34;&#34;&#34;Handling of NER spreadsheets.
+
+        A NER spreadsheet contains entity information; in particular it links
+        named entities to triggers by which they can be found in the corpus.
+
+        See `readSheetData()` for the description of the shape of the spreadsheet,
+        which is expected to be an Excel sheet.
+
+        Parameters
+        ----------
+        sheets: dict, optional None
+            Sheet data to start with. Relevant for when the TF browser uses this class.
+            See `tf.ner.ner.NER`
+        &#34;&#34;&#34;
+        CI = CheckImport(&#34;openpyxl&#34;)
+
+        if CI.importOK(hint=True):
+            openpyxl = CI.importGet()
+            self.loadXls = openpyxl.load_workbook
+            self.Workbook = openpyxl.Workbook
+        else:
+            self.properlySetup = False
+            return None
+
+        self.properlySetup = True
+        self.scopeI = 3
+        self.trigI = 4
+        self.commentI = 0
+
+        # browse = self.browse
+        self.sheets = sheets
+        settings = self.settings
+        self.spaceEscaped = settings.spaceEscaped
+        self.transform = settings.transform
+        keywordFeatures = settings.keywordFeatures
+        kindFeature = keywordFeatures[0]
+        self.kindFeature = kindFeature
+        defaultValues = settings.defaultValues
+        self.defaultKind = defaultValues.get(kindFeature, &#34;&#34;)
+
+        self.sheetName = None
+        &#34;&#34;&#34;The current NER sheet.&#34;&#34;&#34;
+
+        self.sheetNames = set()
+        &#34;&#34;&#34;The set of names of NER sheets that are present on the file system.&#34;&#34;&#34;
+
+        self.readSheets()
+
+    def getToTokensFunc(self):
+        &#34;&#34;&#34;Make a tokenize function.
+
+        Produce a function that can tokenize strings in the same way as the corpus
+        has been tokenized.
+
+        Returns
+        -------
+        function
+            This function takes a string and returns an iterable of tokens.
+            The tokenization is aware of whether the current sheet works
+            case-sensitively, and whether spaces have been escaped as underscores.
+        &#34;&#34;&#34;
+        settings = self.settings
+        spaceEscaped = settings.spaceEscaped
+        sheetData = self.getSheetData()
+        caseSensitive = sheetData.caseSensitive
+
+        def myToTokens(trigger):
+            return toTokens(
+                trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+            )
+
+        return myToTokens
+
+    def readSheets(self):
+        &#34;&#34;&#34;Read the list current ner sheets (again).
+
+        Use this when you change ner sheets outside the NER browser, e.g.
+        by editing the spreadsheets in Excel.
+        &#34;&#34;&#34;
+        sheetDir = self.sheetDir
+        setNames = self.setNames
+
+        sheetNames = set()
+        self.sheetNames = sheetNames
+
+        for sheetFile in dirContents(sheetDir)[0]:
+            if extNm(sheetFile) == &#34;xlsx&#34;:
+                sheetName = sheetFile.removesuffix(&#34;.xlsx&#34;)
+                sheetNames.add(sheetName)
+                setNames.add(f&#34;.{sheetName}&#34;)
+
+    def setSheet(self, newSheet, force=False, caseSensitive=None, forceSilent=False):
+        &#34;&#34;&#34;Switch to a named ner sheet.
+
+        After the switch, the new sheet will be loaded into memory, processed, and
+        executed.
+
+        Parameters
+        ----------
+        newSheet: string
+            The name of the new ner sheet to switch to.
+        force: boolean, optional False
+            If True, do not load from cached data, but do all computations afresh.
+        caseSensitive: boolean, optional None
+            Whether to work with the spreadsheet in a case-sensitive way.
+            If `None`, the value is taken from the current instance of this class.
+        forceSilent: boolean, optional False
+            If True, all output is suppressed, irrespective of the `silent` member
+            in the instance. Only show stopping error messages are let through.
+
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        browse = self.browse
+
+        sheetName = self.sheetName
+
+        sheetNames = self.sheetNames
+        sheetDir = self.sheetDir
+        sheetFile = f&#34;{sheetDir}/{newSheet}.xlsx&#34;
+
+        if newSheet not in sheetNames and not fileExists(sheetFile):
+            if not browse:
+                console(f&#34;NER sheet {newSheet} ({sheetFile}) does not exist&#34;)
+            if newSheet is not None:
+                return
+
+        # if not browse:
+        #    self.setSet(&#34;&#34; if newSheet is None else f&#34;.{newSheet}&#34;)
+
+        if newSheet != sheetName:
+            sheetName = newSheet
+            self.sheetName = sheetName
+
+        if caseSensitive is None:
+            caseSensitive = self.caseSensitive
+
+        self.forceSilent = True
+        self.loadSheetData(force=force, caseSensitive=caseSensitive)
+
+    def loadSheetData(self, force=False, caseSensitive=False):
+        &#34;&#34;&#34;Loads the current ner sheet into memory, if there is one.
+
+        If the current ner sheet is None, nothing has to be done.
+
+        Otherwise, we read the corresponding excel sheet(s) from disk and compile them
+        into instructions, if needed.
+
+        When loading a sheet, it will be checked first whether its data is already
+        in memory and uptotdate, in that case nothing will be done.
+
+        Otherwise, it will be checked wether an uptodate version of its data exists
+        on disk. If so, it will be loaded.
+
+        Otherwise, or if `force=True` is passed, the data will be computed from
+        scratch and saved to disk, with a time stamp.
+
+        Parameters
+        ----------
+        force: boolean, optional False
+            If True, do not load from cached data, but do all computations afresh.
+        caseSensitive: boolean, optional False
+            Whether to work with the spreadsheet in a case-sensitive way.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        sheetName = self.sheetName
+        setName = self.setName
+        annoDir = self.annoDir
+        setDir = f&#34;{annoDir}/{setName}&#34;
+        dataFile = f&#34;{setDir}/data.gz&#34;
+        timeFile = f&#34;{setDir}/time.txt&#34;
+        timeKey = &#34;time&#34;
+
+        if sheetName is None:
+            return None
+
+        forceSilent = self.forceSilent
+        sheets = self.sheets
+
+        if sheetName not in sheets:
+            sheets[sheetName] = AttrDict()
+
+        browse = self.browse
+        sheetData = self.getSheetData()
+        sheetDir = self.sheetDir
+        sheetFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
+        sheetExists = fileExists(sheetFile)
+        sheetUpdated = mTime(sheetFile) if sheetExists else 0
+        needReload = (
+            force
+            or sheetData.caseSensitive != caseSensitive
+            or sheetData.get(timeKey, 0) &lt; sheetUpdated
+        )
+
+        showLog = True
+
+        if needReload:
+            # try to load from zipped data file first
+            tm = 0
+            dataUptodate = not force and fileExists(timeFile)
+
+            if dataUptodate:
+                with fileOpen(timeFile) as fh:
+                    info = fh.read().strip()
+                try:
+                    tm = float(info)
+                    dataUptodate = sheetUpdated &lt; tm
+                except Exception:
+                    dataUptodate = False
+
+            # only load if that data exists and is still up to date
+
+            if dataUptodate:
+                if fileExists(dataFile):
+                    with gzip.open(dataFile, mode=&#34;rb&#34;) as f:
+                        data = pickle.load(f)
+
+                    if data[&#34;caseSensitive&#34;] != caseSensitive:
+                        loaded = False
+                    else:
+                        for k in CLEAR_KEYS:
+                            if k in sheetData:
+                                sheetData[k].clear()
+
+                        for k in SHEET_KEYS:
+                            v = data.get(k, None)
+
+                            if v is None:
+                                if k in sheetData:
+                                    if type(sheetData[k]) in {list, dict, set}:
+                                        sheetData[k].clear()
+                                    else:
+                                        sheetData[k] = None
+                            else:
+                                sheetData[k] = v
+
+                        sheetData[timeKey] = tm
+                        loaded = True
+                else:
+                    loaded = False
+            else:
+                loaded = False
+
+            if loaded:
+                # we have loaded valid, up-to-date, previously compiled spreadsheet data
+                if not forceSilent:
+                    self.console(&#34;SHEET data: loaded from disk&#34;)
+            else:
+                # now we really heave to read and compile the spreadsheet
+                if not forceSilent:
+                    self.console(
+                        &#34;SHEET data: computing from scratch ...&#34;, newline=False
+                    )
+                sheetData.logData = []
+                sheetData.caseSensitive = caseSensitive
+
+                self._readSheet()
+                tm = time.time()
+                sheetData[timeKey] = tm
+
+                self._compileSheet()
+                self._prepareSheet()
+                self._processSheet()
+
+                with gzip.open(dataFile, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
+                    f.write(
+                        pickle.dumps(
+                            {k: sheetData[k] for k in SHEET_KEYS},
+                            protocol=PICKLE_PROTOCOL,
+                        )
+                    )
+
+                with fileOpen(timeFile, &#34;w&#34;) as fh:
+                    fh.write(f&#34;{tm}\n&#34;)
+
+                if not forceSilent:
+                    self.console(&#34;done&#34;)
+                showLog = False
+        else:
+            # the compiled spreadsheet data we have in memory is still up to date
+            if not forceSilent:
+                self.console(&#34;SHEET data: already in memory and uptodate&#34;)
+
+        if showLog and not browse and not forceSilent:
+            for x in sheetData.logData:
+                self.consoleLine(*x)
+
+        self.forceSilent = False
+
+    def makeSheetOfSingleTokens(self):
+        &#34;&#34;&#34;Make a derived sheet based on the individual tokens in the triggers.
+
+        The current sheet will be used to make a new sheet with a row for every
+        token in every trigger on the original sheet.
+        In this way all tokens in triggers will be searched individually.
+        Since tokens do not overlap, the tokens as triggers do not interfere with
+        each other.
+        This can be a convenient debugging tool for the entity spreadsheet in the
+        case of triggers without hits.
+
+        Note however, that there are also other functions that help with debugging
+        the spreadsheet:
+
+        *   `tf.ner.triggers.Triggers.triggerInterference`
+        *   `tf.ner.triggers.Triggers.reportHits`
+        &#34;&#34;&#34;
+        Workbook = self.Workbook
+        sheetName = self.sheetName
+        sheetDir = self.sheetDir
+        sheetPath = f&#34;{sheetDir}/{sheetName}-single.xlsx&#34;
+        sheetData = self.getSheetData()
+        raw = sheetData.raw
+
+        # raw.setdefault(eidkind, {})[normScopeStr] = (r + 1, triggers)
+        words = {}
+
+        for eidkind, eData in raw.items():
+            for scopeStr, (r, triggers) in eData.items():
+                for trigger in triggers:
+                    for word in trigger.split():
+                        if word.isalpha():
+                            words.setdefault(word, {}).setdefault(scopeStr, set()).add(
+                                r
+                            )
+
+        wb = Workbook()
+        ws = wb.active
+        ws.append((&#34;comment&#34;, &#34;name&#34;, &#34;kind&#34;, &#34;scope&#34;, &#34;triggers&#34;, &#34;origrow&#34;))
+        ws.append((&#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;))
+
+        eids = {}
+
+        for word in sorted(words):
+            wordData = words[word]
+            eid = toSmallId(word).replace(&#34;.&#34;, &#34; &#34;)
+            n = eids.get(eid, 0)
+
+            eidDis = eid if n == 0 else f&#34;{eid}({n})&#34;
+
+            n += 1
+            eids[eid] = n
+            rows = set()
+
+            for scopeStr in sorted(wordData):
+                rows |= set(wordData[scopeStr])
+
+            rowRep = &#34;,&#34;.join(str(r) for r in sorted(rows))
+            ws.append((&#34;&#34;, eidDis, &#34;x&#34;, &#34;&#34;, word, rowRep))
+
+        wb.save(sheetPath)
+
+    def writeSheetData(self, rows, asFile=None):
+        &#34;&#34;&#34;Write a spreadsheet.
+
+        When the data for a spreadsheet has been gathered, you can write it to Excel
+        by means of this function.
+
+        Parameters
+        ----------
+        rows: iterable of iterables
+            The rows, each row an interable of fields
+        asFile: string, optional None
+            The path of the file to write the Excel data to.
+        &#34;&#34;&#34;
+        if not asFile:
+            console(&#34;Pass the path of a destination file in param asFile&#34;)
+            return
+
+        Workbook = self.Workbook
+        trigI = self.trigI
+        commentI = self.commentI
+        wb = Workbook()
+        ws = wb.active
+
+        for r, row in enumerate(rows):
+            if r &lt;= 1:
+                ws.append(row)
+                continue
+
+            isCommentRow = row[commentI].startswith(&#34;#&#34;)
+
+            if not isCommentRow:
+                row[trigI] = &#34;; &#34;.join(row[trigI])
+
+            ws.append(row)
+
+        wb.save(asFile)
+
+    def readSheetData(self):
+        &#34;&#34;&#34;Read the data of the spreadsheet and deliver it as a list of field lists.
+
+        Concerning the Excel sheets in `ner/sheets`:
+
+        *   they will be read by `tf.ner.ner.NER.setSheet()`;
+        *   you might need to `pip install openpyxl` first;
+
+        Each row in the spreadsheet specifies a set of triggers for a named entity
+        in a certain scope. The row may have additional metadata, which will be linked
+        to the named entity.
+        If you need several scopes for the same named entity, make sure the metadata
+        in those rows is identical. Otherwise it is unpredictable from which row the
+        metadata will be taken.
+
+        The first row is a header row, but the names are only important for the columns
+        marked as metadata columns.
+
+        The second row will be ignored, you can use it as an explanation or subtitle
+        of the column titles in the header row.
+
+        Here is a specification of the columns. We only specify the first so many
+        columns. The remaining columns are treated as metadata.
+
+        1.  **comment**. If this cell starts with a `#` the whole row will be
+            skipped and ignored. Otherwise, the value is taken as a comment, that you
+            are free to fill in or leave empty.
+
+        1.  **name**. The full name of the entity, as it occurs in articles and
+            reference works.
+
+        1.  **kind**. A label that indicates what type of entity it is, e.g. `PER` for
+            person and `LOC` for location and `ORG` for organization. But you are free
+            to chose the labels.
+
+        1.  **scope**. A string that indicates portions in the corpus where the
+            triggers for this entity are valid. The scope specifies zero or more
+            intervals of sections in the corpus, where an empty scope denotes the
+            whole corpus. See `tf.ner.scopes.Scopes.parseScope()`
+            for the syntax of scope specifiers.
+
+        1.  **triggers**. A list of triggers, i.e. textual strings that occur in the
+            corpus and trigger the detection of the entity named in the **name**
+            column. The individual triggers must be separated by a `;`. Triggers may
+            contain multiple words, and even `,`s. It is recommended not to use
+            newlines in the trigger cells. When the triggers are read, white-space
+            will be trimmed, and some character replacements will take place, which
+            are dependent on the corpus. Think of replacing various kinds of quotes
+            by ASCII quotes.
+
+        The remaining columns are metadata columns. This metadata can be retrieved
+        by means of the function `tf.ner.ner.NER.getMeta()`
+
+        A good, real-world example of such a spreadsheet is *people.xlsx* in the
+        [Suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters/-/tree/main/ner/specs?ref_type=heads)
+
+        Returns
+        -------
+        list of list
+            Rows which are lists of fields.
+        &#34;&#34;&#34;
+        sheetName = self.sheetName
+        sheetDir = self.sheetDir
+        loadXls = self.loadXls
+        trigI = self.trigI
+        commentI = self.commentI
+        normalizeChars = self.normalizeChars
+        spaceEscaped = self.spaceEscaped
+
+        sheetData = self.getSheetData()
+        caseSensitive = sheetData.caseSensitive
+
+        def myNormalize(x):
+            return normalize(
+                str(x) if normalizeChars is None else normalizeChars(str(x))
+            )
+
+        sheetPath = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
+
+        wb = loadXls(sheetPath, data_only=True)
+        ws = wb.active
+
+        result = []
+
+        for r, row in enumerate(ws.rows):
+            fields = []
+            result.append(fields)
+
+            isCommentRow = (row[commentI].value or &#34;&#34;).startswith(&#34;#&#34;)
+
+            for i, field in enumerate(row):
+                value = field.value or &#34;&#34;
+
+                if not isCommentRow and r &gt; 1 and i == trigI:
+                    value = myNormalize(value)
+                    value = {
+                        y
+                        for x in value.split(&#34;;&#34;)
+                        if (
+                            y := tnorm(
+                                x,
+                                spaceEscaped=spaceEscaped,
+                                caseSensitive=caseSensitive,
+                            )
+                        )
+                        != &#34;&#34;
+                    }
+
+                fields.append(value)
+
+        return result
+
+    def getMeta(self):
+        &#34;&#34;&#34;Retrieves the metadata of the current sheet.
+
+        The metadata of each entity is stored in the extra fields in its row.
+        The writer of the NER sheet is free to chose additional rows.
+
+        Returns
+        -------
+        tuple
+            The first member is a list of the names of the metadata columns,
+            taken from the first row of the spreadsheet.
+
+            The second member is a dict with the metadata itself.
+            The keys are strings of the form *entity identifier*`-`*entity kind*.
+            The values are tuples, where the i-th member is the value for the i-th
+            name in the list of metadata fields.
+        &#34;&#34;&#34;
+        sheetData = self.getSheetData()
+        return (sheetData.metaFields, sheetData.metaData)
+
+    def _readSheet(self):
+        &#34;&#34;&#34;Read all the spreadsheets, the main one and the tweaks.
+
+        Several checks on the sanity of the data will be performed.
+
+        Store the results in a hierarchy that mimicks the way they are organized in the
+        file system.
+        &#34;&#34;&#34;
+        forceSilent = self.forceSilent
+        sheetName = self.sheetName
+        sheetDir = self.sheetDir
+        loadXls = self.loadXls
+        defaultKind = self.defaultKind
+        transform = self.transform
+        spaceEscaped = self.spaceEscaped
+        normalizeChars = self.normalizeChars
+        trigI = self.trigI
+        scopeI = self.scopeI
+
+        def spec(msg):
+            if forceSilent:
+                return
+            self.log(None, 0, msg)
+
+        def log(msg):
+            if forceSilent:
+                return
+            self.log(False, 0, msg)
+
+        def err(msg):
+            if forceSilent:
+                return
+            self.log(True, 0, msg)
+
+        def err1(msg):
+            if forceSilent:
+                return
+            self.log(True, 1, msg)
+
+        sheetData = self.getSheetData()
+        caseSensitive = sheetData.caseSensitive
+
+        nameMap = {}
+        sheetData.nameMap = nameMap
+        &#34;&#34;&#34;Will contain a mapping from entities to names.
+
+        The entities are keyed by their (eid, kind) tuple.
+        The values are names plus the sheet where they are first defined.
+        &#34;&#34;&#34;
+
+        metaData = {}
+        sheetData.metaData = metaData
+        &#34;&#34;&#34;Will contain the data of most columns in the spreadsheet.
+
+        The scope and triggers columns are not stored.
+
+        For each row, a key is computed (the small eid based on the name in the first
+        column). Under this key we store the list of values.
+        &#34;&#34;&#34;
+
+        rowMap = {}
+        sheetData.rowMap = rowMap
+        &#34;&#34;&#34;Will contain a mapping from triggers to row.
+
+        For each trigger we store the row in the NER sheet where that trigger occurs.
+        &#34;&#34;&#34;
+
+        for k in CLEAR_KEYS:
+            if k in sheetData:
+                sheetData[k].clear()
+
+        for k in SHEET_KEYS:
+            if k in sheetData:
+                if type(sheetData[k]) in {list, dict, set}:
+                    sheetData[k].clear()
+
+        spec(&#34;Reading sheets&#34;)
+
+        scopeMap = {}
+        sheetData.scopeMap = scopeMap
+        &#34;&#34;&#34;Will contain a mapping from scope specifiers to logical scopes.
+
+        Scope specifiers are strings, logical scopes are the data structures
+        that you get when you parse those strings.
+        &#34;&#34;&#34;
+
+        sheetPath = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
+
+        wb = loadXls(sheetPath, data_only=True)
+        ws = wb.active
+        maxCol = ws.max_column
+        maxRow = ws.max_row
+
+        if not forceSilent:
+            self.console(f&#34;Sheet with {maxRow} rows and {maxCol} columns&#34;)
+
+        raw = {}
+        sheetData.raw = raw
+
+        multiNames = {}
+        noNames = set()
+        noTrigs = set()
+        emptyLines = set()
+        scopeMistakes = {}
+
+        def myNormalize(x):
+            &#34;&#34;&#34;Normalization function that performs additional replacements.
+
+            The replacements are coded in the function `normalizeChars()`,
+            which can be passed to the instance of this class.
+            &#34;&#34;&#34;
+            return normalize(
+                str(x) if normalizeChars is None else normalizeChars(str(x))
+            )
+
+        for r, row in enumerate(ws.rows):
+            if r == 0:
+                metaFields = [
+                    myNormalize(row[i].value or &#34;&#34;)
+                    for i in range(maxCol)
+                    if i not in {0, scopeI, trigI}
+                ]
+                sheetData.metaFields = metaFields
+
+                continue
+            if r == 1:
+                continue
+            if not any(c.value for c in row):
+                continue
+
+            triggerStr = row[trigI].value
+
+            if triggerStr is not None and &#34;\n&#34; in triggerStr:
+                triggerRep = triggerStr.replace(&#34;\n&#34;, &#34;\\n&#34;)
+                msg = f&#34;r{r + 1:&gt;3}: newline in trigger string: {triggerRep}&#34;
+                log(msg)
+                continue
+
+            (comment, name, kind, scopeStr, triggerStr) = (
+                myNormalize(row[i].value or &#34;&#34;) for i in range(trigI + 1)
+            )
+
+            if comment.startswith(&#34;#&#34;):
+                continue
+
+            if not name or not triggerStr:
+                if name:
+                    noTrigs.add(r + 1)
+                elif triggerStr:
+                    noNames.add(r + 1)
+                else:
+                    emptyLines.add(r + 1)
+                continue
+
+            triggers = {
+                y
+                for x in triggerStr.split(&#34;;&#34;)
+                if (
+                    y := tnorm(
+                        x, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+                    )
+                )
+                != &#34;&#34;
+            }
+
+            for trigger in triggers:
+                rowMap.setdefault(trigger, []).append(r + 1)
+
+            if len(triggers) == 0:
+                noTrigs.add(r + 1)
+                continue
+
+            if not kind:
+                kind = defaultKind
+                msg = f&#34;r{r + 1:&gt;3}: &#34; f&#34;no kind name, supplied {defaultKind}&#34;
+                log(msg)
+
+            info = self.parseScope(scopeStr, plain=False)
+            warnings = info[&#34;warning&#34;]
+
+            if len(warnings):
+                scopeMistakes[r + 1] = &#34;; &#34;.join(warnings)
+                continue
+
+            normScopeStr = info[&#34;normal&#34;]
+
+            if normScopeStr != &#34;&#34;:
+                scopes = info[&#34;result&#34;]
+
+                if normScopeStr not in scopeMap:
+                    scopeMap[normScopeStr] = scopes
+
+            eid = toSmallId(name, transform=transform)
+            eidkind = (eid, kind)
+
+            if normScopeStr in raw.get(eidkind, {}):
+                ar = raw[eidkind][normScopeStr][0]
+                multiNames[r + 1] = f&#34;({normScopeStr}) {nameMap[eidkind]} also in r{ar}&#34;
+                continue
+            else:
+                nameMap[eidkind] = name
+
+            raw.setdefault(eidkind, {})[normScopeStr] = (r + 1, triggers)
+
+            metaKey = f&#34;{eid}-{kind}&#34;
+            metaData[metaKey] = [
+                myNormalize(row[i].value or &#34;&#34;)
+                for i in range(maxCol)
+                if i not in {0, scopeI, trigI}
+            ]
+
+        if not forceSilent:
+            for diags, isdict, label in (
+                (emptyLines, False, &#34;without a name and triggers&#34;),
+                (multiNames, True, &#34;with a duplicate name&#34;),
+                (noNames, False, &#34;without a name&#34;),
+                (scopeMistakes, True, &#34;with scope mistakes&#34;),
+                (noTrigs, False, &#34;without triggers&#34;),
+            ):
+                n = len(diags)
+
+                if n &gt; 0:
+                    if isdict:
+                        if n &gt; 0:
+                            plural = &#34;&#34; if n == 1 else &#34;s&#34;
+                            err(f&#34;{n} row{plural} {label}:&#34;)
+
+                            for r in sorted(diags):
+                                msg = diags[r]
+                                err1(f&#34;r{r:&gt;3}: {msg}&#34;)
+                    else:
+                        rep = &#34;, &#34;.join(str(x) for x in sorted(diags)[0:10])
+                        plural = &#34;&#34; if n == 1 else &#34;s&#34;
+                        err(f&#34;{n} row{plural} {label}:\n\te.g.: {rep}&#34;)
+
+    def _compileSheet(self):
+        &#34;&#34;&#34;Compiles the info in tweaked sheets according to the scopes in it.
+
+        On the basis of the scopes that are given for the triggers, we partition
+        the corpus in maximal intervals in which no trigger goes into or out of scope.
+        During these intervals we have a fixed set of triggers that must be looked up,
+        and we can check for the consistency of these triggers.
+
+        In every scope we may find two kinds of problems with triggers and scopes:
+
+        *   ambiguous trigger: a trigger is used by multiple entities in that scope.
+        *   clashing triggers: a trigger occurs in more than one row for a specific
+            entity and a specific scope.
+
+        These problems are detected and reported.
+        &#34;&#34;&#34;
+        forceSilent = self.forceSilent
+        sheetData = self.getSheetData()
+        compiled = AttrDict()
+        sheetData.compiled = compiled
+        nameMap = sheetData.nameMap
+
+        def spec(msg, cache=None):
+            if forceSilent:
+                return
+            self.log(None, 0, msg, cache=cache)
+
+        def log(msg, cache=None):
+            if forceSilent:
+                return
+            self.log(False, 0, msg, cache=cache)
+
+        def err(msg, cache=None):
+            if forceSilent:
+                return
+            self.log(True, 0, msg, cache=cache)
+
+        def errProblem(problem, cache):
+            if forceSilent:
+                return
+            for indent, msg in problem:
+                self.log(True, indent, msg, cache=cache)
+
+        tFullMap = {}
+
+        def getTriggerRep(tr):
+            triggerInfo = tFullMap[tr]
+
+            result = []
+
+            for scope in sorted(triggerInfo):
+                scopeRep = &#34;&#34; if not scope else f&#34;({scope})&#34;
+                scopeInfo = triggerInfo[scope]
+
+                for eidkind in sorted(scopeInfo):
+                    name = sheetData.nameMap[eidkind]
+                    rowRep = &#34;,&#34;.join(str(r) for r in sorted(scopeInfo[eidkind]))
+                    result.append(f&#34;&#39;{tr}&#39;{scopeRep} r{rowRep} for {name}&#34;)
+            return result
+
+        spec(&#34;Checking scopes&#34;)
+
+        raw = sheetData.raw
+        intvMap = sheetData.scopeMap
+        intervals = partitionScopes(intvMap)
+
+        problems = set()
+
+        for b, e, scopeStrs in [[None, None, None]] + intervals:
+            scopeStrSet = {&#34;&#34;} if scopeStrs is None else set(scopeStrs)
+            intv = (b, e) if b is not None and e is not None else ()
+
+            headCache = []
+            problemCache = []
+
+            msg = self.repInterval(intv)
+            spec(msg, cache=headCache)
+
+            thisCompiled = AttrDict()
+            compiled[intv] = thisCompiled
+
+            # check which triggers are a substring in which other triggers
+            # these triggers can never be found!
+
+            tFullMap.clear()
+
+            for eidkind, info in raw.items():
+                if &#34;&#34; in info:
+                    (r, triggers) = info[&#34;&#34;]
+
+                    for trigger in triggers:
+                        tFullMap.setdefault(trigger, {}).setdefault(&#34;&#34;, {}).setdefault(
+                            eidkind, set()
+                        ).add(r)
+
+                for scopeStr, (r, triggers) in info.items():
+                    if scopeStr == &#34;&#34;:
+                        continue
+
+                    if scopeStr in scopeStrSet:
+                        for trigger in triggers:
+                            tFullMap.setdefault(trigger, {}).setdefault(
+                                scopeStr, {}
+                            ).setdefault(eidkind, set()).add(r)
+
+            # now compile the result information: tMap, newSheet
+
+            newSheet = {}
+            thisCompiled.sheet = newSheet
+
+            tMap = {}
+            thisCompiled.tMap = tMap
+
+            for eidkind, info in raw.items():
+                if &#34;&#34; in info:
+                    (r, triggers) = info[&#34;&#34;]
+                    newSheet[eidkind] = triggers
+
+                    for trigger in triggers:
+                        tMap[trigger] = &#34;&#34;
+
+                for scopeStr, (r, triggers) in info.items():
+                    if scopeStr == &#34;&#34;:
+                        continue
+
+                    if scopeStr in scopeStrSet:
+                        newSheet[eidkind] = triggers
+
+                        for trigger in triggers:
+                            tMap[trigger] = scopeStr
+
+            # the sheet is now compiled, all compiled data has been created
+            # the rest only deals with error reporting
+
+            ambi = 0
+            clashes = 0
+
+            for trigger in sorted(tFullMap):
+                problem = []
+                triggerInfo = tFullMap[trigger]
+
+                for scopeStr in sorted(triggerInfo):
+                    scopeInfo = triggerInfo[scopeStr]
+                    scopeRep = f&#34; in scope {scopeStr}&#34; if scopeStr else &#34;&#34;
+
+                    thisAmbi = False
+                    theseClashes = 0
+
+                    if len(scopeInfo) &gt; 1:
+                        problem.append((0, f&#34;Ambi: &#39;{trigger}&#39;{scopeRep}: &#34;))
+                        thisAmbi = True
+
+                    for eidkind, rs in scopeInfo.items():
+                        name = nameMap[eidkind]
+                        rowRep = &#34;,&#34;.join(str(r) for r in rs)
+                        nRs = len(rs)
+
+                        if nRs &gt; 1:
+                            theseClashes += 1
+
+                        if thisAmbi:
+                            problem.append((1, f&#34;{name}: {rowRep}&#34;))
+                        elif nRs &gt; 1:
+                            problem.append(
+                                (0, f&#34;Clash: &#39;{trigger}&#39; for {name}: {rowRep}&#34;)
+                            )
+
+                    clashes += theseClashes
+
+                    if len(problem):
+                        problem = tuple(problem)
+
+                        if problem not in problems:
+                            if thisAmbi:
+                                ambi += 1
+                            if theseClashes:
+                                clashes += theseClashes
+
+                            problems.add(problem)
+                            errProblem(problem, problemCache)
+
+            if ambi &gt; 0:
+                err(f&#34;Ambiguous triggers: {ambi} x&#34;, cache=problemCache)
+
+            if clashes &gt; 0:
+                err(f&#34;Reused triggers scope: {clashes} x&#34;, cache=problemCache)
+
+            if len(problemCache) &gt; 0:
+                self.flush(headCache)
+                self.flush(problemCache)
+
+    def _prepareSheet(self):
+        &#34;&#34;&#34;Transform the sheets into instructions.
+
+        Now we have intervals with fixed sets of triggers,
+        we can generate instructions out of the sheets: info that the search
+        algorithm needs to do its work.
+
+        This info is such that it supports simultaneous searching for multiple triggers.
+        &#34;&#34;&#34;
+        spaceEscaped = self.spaceEscaped
+
+        sheetData = self.getSheetData()
+        compiled = sheetData.compiled
+        nameMap = sheetData.nameMap
+        caseSensitive = sheetData.caseSensitive
+
+        instructions = {}
+        sheetData.instructions = instructions
+
+        triggerScopes = {}
+        sheetData.triggerScopes = triggerScopes
+
+        allTriggers = set()
+        sheetData.allTriggers = allTriggers
+
+        for intv, thisCompiled in compiled.items():
+            sheet = thisCompiled.sheet
+            tMap = thisCompiled.tMap
+
+            triggerSet = set()
+            tPos = {}
+            idMap = {}
+
+            theseInstructions = dict(tPos=tPos, tMap=tMap)
+            instructions[intv] = theseInstructions
+
+            for eidkind, triggers in sheet.items():
+                for trigger in triggers:
+                    triggerT = toTokens(
+                        trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+                    )
+                    triggerSet.add(triggerT)
+                    idMap.setdefault(trigger, []).append(eidkind)
+
+            for triggerT in triggerSet:
+                for i, token in enumerate(triggerT):
+                    tPos.setdefault(i, {}).setdefault(token, set()).add(triggerT)
+
+            theseInstructions[&#34;idMap&#34;] = {
+                trigger: eidkinds[0] for (trigger, eidkinds) in idMap.items()
+            }
+
+            tMap = theseInstructions[&#34;tMap&#34;]
+            idMap = theseInstructions[&#34;idMap&#34;]
+
+            for trigger, scope in tMap.items():
+                eidkind = idMap.get(trigger, None)
+
+                if eidkind is None:
+                    continue
+
+                name = nameMap[eidkind]
+                allTriggers.add((name, eidkind, trigger, scope))
+                triggerScopes.setdefault(trigger, set()).add(scope)
+
+    def _processSheet(self):
+        &#34;&#34;&#34;Carries out the search instructions that have been compiled from the sheet.
+
+        We look up the occurrences, organize the hits of the triggers, and store them
+        as entities in the current set.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        forceSilent = self.forceSilent
+        silent = self.silent
+        browse = self.browse
+
+        if not browse and not silent and not forceSilent:
+            app = self.app
+            app.indent(reset=True)
+            app.info(&#34;Looking up occurrences of many candidates ...&#34;)
+
+        self.findOccs()
+        self._collectHits()
+
+        if not browse and not silent and not forceSilent:
+            app.info(&#34;done&#34;)
+
+        self._markEntities()
+
+    def _collectHits(self):
+        &#34;&#34;&#34;Stores the trigger hits.
+
+        The hits will be stored under the key `hitData` in the sheet data.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        forceSilent = self.forceSilent
+        sheetData = self.getSheetData()
+        inventory = sheetData.inventory
+        instructions = sheetData.instructions
+
+        def log(msg):
+            if forceSilent:
+                return
+            self.log(False, 0, msg)
+
+        hitData = {}
+        sheetData.hitData = hitData
+
+        for path, data in instructions.items():
+            idMap = data[&#34;idMap&#34;]
+            tMap = data[&#34;tMap&#34;]
+
+            for trigger, scope in tMap.items():
+                eidkind = idMap.get(trigger, None)
+
+                if eidkind is None:
+                    continue
+
+                occs = inventory.get(eidkind, {}).get(trigger, {}).get(scope, [])
+                hitData.setdefault(eidkind, {})[(trigger, scope)] = len(occs)
+
+    def _markEntities(self):
+        &#34;&#34;&#34;Marks up the members of the inventory as entities.
+
+        The instructions contain the entity identifier and the entity kind that
+        have to be assigned to the surface forms.
+
+        The inventory knows where the occurrences of the surface forms are.
+        All these occurrences will be added to the current entity set.
+        &#34;&#34;&#34;
+        if not self.properlySetup:
+            return
+
+        sheetData = self.getSheetData()
+        inventory = sheetData.inventory
+
+        newEntities = []
+        triggerFromMatch = {}
+        sheetData.triggerFromMatch = triggerFromMatch
+
+        for eidkind, entData in inventory.items():
+            for trigger, triggerData in entData.items():
+                for scope, matches in triggerData.items():
+                    for match in matches:
+                        triggerFromMatch[match] = (trigger, scope)
+
+                    newEntities.append((eidkind, matches))
+
+        self._addToSet(newEntities)
+
+    def getSheetData(self):
+        &#34;&#34;&#34;Deliver the data of current sheet.
+
+        Sheet data is `tf.core.generic.AttrDict` with various kinds of data under
+        various keys, which are listed in `tf.ner.sheets.SHEET_KEYS`.
+
+        Returns
+        -------
+        dict
+        &#34;&#34;&#34;
+        sheetName = self.sheetName
+        sheetsData = self.sheets
+
+        return sheetsData.setdefault(sheetName, AttrDict())
+
+    def log(self, isError, indent, msg, cache=None):
+        &#34;&#34;&#34;Issue a message to the user.
+
+        Depending on the `silent` member of the instance and on whether the message
+        is an error message, it can be inhibited.
+
+        Parameters
+        ----------
+        isError: boolean
+            Whether it is an error message or a normal message
+        indent: integer
+            How far (in tabs) the message should be indented
+        msg: string
+            The actual message
+        cache: list, optional None
+            If it is a list, the output will not be sent to the console,
+            but appended to the cache.
+            You can save it for later.
+        &#34;&#34;&#34;
+        silent = self.silent
+
+        if silent and not isError:
+            return
+
+        browse = self.browse
+        sheetData = self.getSheetData()
+        logData = sheetData.logData
+
+        if cache is None:
+            logData.append((isError, indent, msg))
+
+        if not browse:
+            if cache is None:
+                self.consoleLine(isError, indent, msg)
+            else:
+                cache.append((isError, indent, msg))
+
+    def flush(self, cache):
+        &#34;&#34;&#34;Flushes the cache of log messages.
+
+        Parameters
+        ----------
+        cache: list
+            The items in the cache
+        &#34;&#34;&#34;
+        browse = self.browse
+        sheetData = self.getSheetData()
+        logData = sheetData.logData
+
+        if not browse:
+            for item in cache:
+                logData.append(item)
+                self.consoleLine(*item)</code></pre>
+</details>
+<div class="desc"><p>Functions that do scope handling.</p>
+<p>These functions will be added as methods to the class that inherits this class.</p>
+<p>Handling of NER spreadsheets.</p>
+<p>A NER spreadsheet contains entity information; in particular it links
+named entities to triggers by which they can be found in the corpus.</p>
+<p>See <code>readSheetData()</code> for the description of the shape of the spreadsheet,
+which is expected to be an Excel sheet.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>sheets</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>Sheet data to start with. Relevant for when the TF browser uses this class.
+See <code><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></code></dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="tf.ner.scopes.Scopes" href="scopes.html#tf.ner.scopes.Scopes">Scopes</a></li>
+<li><a title="tf.ner.triggers.Triggers" href="triggers.html#tf.ner.triggers.Triggers">Triggers</a></li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="tf.ner.ner.NER" href="ner.html#tf.ner.ner.NER">NER</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.ner.sheets.Sheets.sheetName"><code class="name">var <span class="ident">sheetName</span></code></dt>
+<dd>
+<div class="desc"><p>The current NER sheet.</p></div>
+</dd>
+<dt id="tf.ner.sheets.Sheets.sheetNames"><code class="name">var <span class="ident">sheetNames</span></code></dt>
+<dd>
+<div class="desc"><p>The set of names of NER sheets that are present on the file system.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.ner.sheets.Sheets.flush"><code class="name flex">
+<span>def <span class="ident">flush</span></span>(<span>self, cache)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/sheets.py#L1240-L1255" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def flush(self, cache):
+    &#34;&#34;&#34;Flushes the cache of log messages.
+
+    Parameters
+    ----------
+    cache: list
+        The items in the cache
+    &#34;&#34;&#34;
+    browse = self.browse
+    sheetData = self.getSheetData()
+    logData = sheetData.logData
+
+    if not browse:
+        for item in cache:
+            logData.append(item)
+            self.consoleLine(*item)</code></pre>
+</details>
+<div class="desc"><p>Flushes the cache of log messages.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>cache</code></strong> :&ensp;<code>list</code></dt>
+<dd>The items in the cache</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.sheets.Sheets.getMeta"><code class="name flex">
+<span>def <span class="ident">getMeta</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/sheets.py#L588-L606" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def getMeta(self):
+    &#34;&#34;&#34;Retrieves the metadata of the current sheet.
+
+    The metadata of each entity is stored in the extra fields in its row.
+    The writer of the NER sheet is free to chose additional rows.
+
+    Returns
+    -------
+    tuple
+        The first member is a list of the names of the metadata columns,
+        taken from the first row of the spreadsheet.
+
+        The second member is a dict with the metadata itself.
+        The keys are strings of the form *entity identifier*`-`*entity kind*.
+        The values are tuples, where the i-th member is the value for the i-th
+        name in the list of metadata fields.
+    &#34;&#34;&#34;
+    sheetData = self.getSheetData()
+    return (sheetData.metaFields, sheetData.metaData)</code></pre>
+</details>
+<div class="desc"><p>Retrieves the metadata of the current sheet.</p>
+<p>The metadata of each entity is stored in the extra fields in its row.
+The writer of the NER sheet is free to chose additional rows.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>
+<p>The first member is a list of the names of the metadata columns,
+taken from the first row of the spreadsheet.</p>
+<p>The second member is a dict with the metadata itself.
+The keys are strings of the form <em>entity identifier</em><code>-</code><em>entity kind</em>.
+The values are tuples, where the i-th member is the value for the i-th
+name in the list of metadata fields.</p>
+</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.sheets.Sheets.getSheetData"><code class="name flex">
+<span>def <span class="ident">getSheetData</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/sheets.py#L1188-L1201" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def getSheetData(self):
+    &#34;&#34;&#34;Deliver the data of current sheet.
+
+    Sheet data is `tf.core.generic.AttrDict` with various kinds of data under
+    various keys, which are listed in `tf.ner.sheets.SHEET_KEYS`.
+
+    Returns
+    -------
+    dict
+    &#34;&#34;&#34;
+    sheetName = self.sheetName
+    sheetsData = self.sheets
+
+    return sheetsData.setdefault(sheetName, AttrDict())</code></pre>
+</details>
+<div class="desc"><p>Deliver the data of current sheet.</p>
+<p>Sheet data is <code><a title="tf.core.generic.AttrDict" href="../core/generic.html#tf.core.generic.AttrDict">AttrDict</a></code> with various kinds of data under
+various keys, which are listed in <code><a title="tf.ner.sheets.SHEET_KEYS" href="#tf.ner.sheets.SHEET_KEYS">SHEET_KEYS</a></code>.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.sheets.Sheets.getToTokensFunc"><code class="name flex">
+<span>def <span class="ident">getToTokensFunc</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/sheets.py#L133-L156" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def getToTokensFunc(self):
+    &#34;&#34;&#34;Make a tokenize function.
+
+    Produce a function that can tokenize strings in the same way as the corpus
+    has been tokenized.
+
+    Returns
+    -------
+    function
+        This function takes a string and returns an iterable of tokens.
+        The tokenization is aware of whether the current sheet works
+        case-sensitively, and whether spaces have been escaped as underscores.
+    &#34;&#34;&#34;
+    settings = self.settings
+    spaceEscaped = settings.spaceEscaped
+    sheetData = self.getSheetData()
+    caseSensitive = sheetData.caseSensitive
+
+    def myToTokens(trigger):
+        return toTokens(
+            trigger, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive
+        )
+
+    return myToTokens</code></pre>
+</details>
+<div class="desc"><p>Make a tokenize function.</p>
+<p>Produce a function that can tokenize strings in the same way as the corpus
+has been tokenized.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>function</code></dt>
+<dd>This function takes a string and returns an iterable of tokens.
+The tokenization is aware of whether the current sheet works
+case-sensitively, and whether spaces have been escaped as underscores.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.sheets.Sheets.loadSheetData"><code class="name flex">
+<span>def <span class="ident">loadSheetData</span></span>(<span>self, force=False, caseSensitive=False)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/sheets.py#L226-L375" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def loadSheetData(self, force=False, caseSensitive=False):
+    &#34;&#34;&#34;Loads the current ner sheet into memory, if there is one.
+
+    If the current ner sheet is None, nothing has to be done.
+
+    Otherwise, we read the corresponding excel sheet(s) from disk and compile them
+    into instructions, if needed.
+
+    When loading a sheet, it will be checked first whether its data is already
+    in memory and uptotdate, in that case nothing will be done.
+
+    Otherwise, it will be checked wether an uptodate version of its data exists
+    on disk. If so, it will be loaded.
+
+    Otherwise, or if `force=True` is passed, the data will be computed from
+    scratch and saved to disk, with a time stamp.
+
+    Parameters
+    ----------
+    force: boolean, optional False
+        If True, do not load from cached data, but do all computations afresh.
+    caseSensitive: boolean, optional False
+        Whether to work with the spreadsheet in a case-sensitive way.
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
+    sheetName = self.sheetName
+    setName = self.setName
+    annoDir = self.annoDir
+    setDir = f&#34;{annoDir}/{setName}&#34;
+    dataFile = f&#34;{setDir}/data.gz&#34;
+    timeFile = f&#34;{setDir}/time.txt&#34;
+    timeKey = &#34;time&#34;
+
+    if sheetName is None:
+        return None
+
+    forceSilent = self.forceSilent
+    sheets = self.sheets
+
+    if sheetName not in sheets:
+        sheets[sheetName] = AttrDict()
+
+    browse = self.browse
+    sheetData = self.getSheetData()
+    sheetDir = self.sheetDir
+    sheetFile = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
+    sheetExists = fileExists(sheetFile)
+    sheetUpdated = mTime(sheetFile) if sheetExists else 0
+    needReload = (
+        force
+        or sheetData.caseSensitive != caseSensitive
+        or sheetData.get(timeKey, 0) &lt; sheetUpdated
+    )
+
+    showLog = True
+
+    if needReload:
+        # try to load from zipped data file first
+        tm = 0
+        dataUptodate = not force and fileExists(timeFile)
+
+        if dataUptodate:
+            with fileOpen(timeFile) as fh:
+                info = fh.read().strip()
+            try:
+                tm = float(info)
+                dataUptodate = sheetUpdated &lt; tm
+            except Exception:
+                dataUptodate = False
+
+        # only load if that data exists and is still up to date
+
+        if dataUptodate:
+            if fileExists(dataFile):
+                with gzip.open(dataFile, mode=&#34;rb&#34;) as f:
+                    data = pickle.load(f)
+
+                if data[&#34;caseSensitive&#34;] != caseSensitive:
+                    loaded = False
+                else:
+                    for k in CLEAR_KEYS:
+                        if k in sheetData:
+                            sheetData[k].clear()
+
+                    for k in SHEET_KEYS:
+                        v = data.get(k, None)
+
+                        if v is None:
+                            if k in sheetData:
+                                if type(sheetData[k]) in {list, dict, set}:
+                                    sheetData[k].clear()
+                                else:
+                                    sheetData[k] = None
+                        else:
+                            sheetData[k] = v
+
+                    sheetData[timeKey] = tm
+                    loaded = True
+            else:
+                loaded = False
+        else:
+            loaded = False
+
+        if loaded:
+            # we have loaded valid, up-to-date, previously compiled spreadsheet data
+            if not forceSilent:
+                self.console(&#34;SHEET data: loaded from disk&#34;)
+        else:
+            # now we really heave to read and compile the spreadsheet
+            if not forceSilent:
+                self.console(
+                    &#34;SHEET data: computing from scratch ...&#34;, newline=False
+                )
+            sheetData.logData = []
+            sheetData.caseSensitive = caseSensitive
+
+            self._readSheet()
+            tm = time.time()
+            sheetData[timeKey] = tm
+
+            self._compileSheet()
+            self._prepareSheet()
+            self._processSheet()
+
+            with gzip.open(dataFile, mode=&#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
+                f.write(
+                    pickle.dumps(
+                        {k: sheetData[k] for k in SHEET_KEYS},
+                        protocol=PICKLE_PROTOCOL,
+                    )
+                )
+
+            with fileOpen(timeFile, &#34;w&#34;) as fh:
+                fh.write(f&#34;{tm}\n&#34;)
+
+            if not forceSilent:
+                self.console(&#34;done&#34;)
+            showLog = False
+    else:
+        # the compiled spreadsheet data we have in memory is still up to date
+        if not forceSilent:
+            self.console(&#34;SHEET data: already in memory and uptodate&#34;)
+
+    if showLog and not browse and not forceSilent:
+        for x in sheetData.logData:
+            self.consoleLine(*x)
+
+    self.forceSilent = False</code></pre>
+</details>
+<div class="desc"><p>Loads the current ner sheet into memory, if there is one.</p>
+<p>If the current ner sheet is None, nothing has to be done.</p>
+<p>Otherwise, we read the corresponding excel sheet(s) from disk and compile them
+into instructions, if needed.</p>
+<p>When loading a sheet, it will be checked first whether its data is already
+in memory and uptotdate, in that case nothing will be done.</p>
+<p>Otherwise, it will be checked wether an uptodate version of its data exists
+on disk. If so, it will be loaded.</p>
+<p>Otherwise, or if <code>force=True</code> is passed, the data will be computed from
+scratch and saved to disk, with a time stamp.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, do not load from cached data, but do all computations afresh.</dd>
+<dt><strong><code>caseSensitive</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to work with the spreadsheet in a case-sensitive way.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.sheets.Sheets.log"><code class="name flex">
+<span>def <span class="ident">log</span></span>(<span>self, isError, indent, msg, cache=None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/sheets.py#L1203-L1238" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def log(self, isError, indent, msg, cache=None):
+    &#34;&#34;&#34;Issue a message to the user.
+
+    Depending on the `silent` member of the instance and on whether the message
+    is an error message, it can be inhibited.
+
+    Parameters
+    ----------
+    isError: boolean
+        Whether it is an error message or a normal message
+    indent: integer
+        How far (in tabs) the message should be indented
+    msg: string
+        The actual message
+    cache: list, optional None
+        If it is a list, the output will not be sent to the console,
+        but appended to the cache.
+        You can save it for later.
+    &#34;&#34;&#34;
+    silent = self.silent
+
+    if silent and not isError:
+        return
+
+    browse = self.browse
+    sheetData = self.getSheetData()
+    logData = sheetData.logData
+
+    if cache is None:
+        logData.append((isError, indent, msg))
+
+    if not browse:
+        if cache is None:
+            self.consoleLine(isError, indent, msg)
+        else:
+            cache.append((isError, indent, msg))</code></pre>
+</details>
+<div class="desc"><p>Issue a message to the user.</p>
+<p>Depending on the <code>silent</code> member of the instance and on whether the message
+is an error message, it can be inhibited.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>isError</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>Whether it is an error message or a normal message</dd>
+<dt><strong><code>indent</code></strong> :&ensp;<code>integer</code></dt>
+<dd>How far (in tabs) the message should be indented</dd>
+<dt><strong><code>msg</code></strong> :&ensp;<code>string</code></dt>
+<dd>The actual message</dd>
+<dt><strong><code>cache</code></strong> :&ensp;<code>list</code>, optional <code>None</code></dt>
+<dd>If it is a list, the output will not be sent to the console,
+but appended to the cache.
+You can save it for later.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.sheets.Sheets.makeSheetOfSingleTokens"><code class="name flex">
+<span>def <span class="ident">makeSheetOfSingleTokens</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/sheets.py#L377-L437" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def makeSheetOfSingleTokens(self):
+    &#34;&#34;&#34;Make a derived sheet based on the individual tokens in the triggers.
+
+    The current sheet will be used to make a new sheet with a row for every
+    token in every trigger on the original sheet.
+    In this way all tokens in triggers will be searched individually.
+    Since tokens do not overlap, the tokens as triggers do not interfere with
+    each other.
+    This can be a convenient debugging tool for the entity spreadsheet in the
+    case of triggers without hits.
+
+    Note however, that there are also other functions that help with debugging
+    the spreadsheet:
+
+    *   `tf.ner.triggers.Triggers.triggerInterference`
+    *   `tf.ner.triggers.Triggers.reportHits`
+    &#34;&#34;&#34;
+    Workbook = self.Workbook
+    sheetName = self.sheetName
+    sheetDir = self.sheetDir
+    sheetPath = f&#34;{sheetDir}/{sheetName}-single.xlsx&#34;
+    sheetData = self.getSheetData()
+    raw = sheetData.raw
+
+    # raw.setdefault(eidkind, {})[normScopeStr] = (r + 1, triggers)
+    words = {}
+
+    for eidkind, eData in raw.items():
+        for scopeStr, (r, triggers) in eData.items():
+            for trigger in triggers:
+                for word in trigger.split():
+                    if word.isalpha():
+                        words.setdefault(word, {}).setdefault(scopeStr, set()).add(
+                            r
+                        )
+
+    wb = Workbook()
+    ws = wb.active
+    ws.append((&#34;comment&#34;, &#34;name&#34;, &#34;kind&#34;, &#34;scope&#34;, &#34;triggers&#34;, &#34;origrow&#34;))
+    ws.append((&#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;))
+
+    eids = {}
+
+    for word in sorted(words):
+        wordData = words[word]
+        eid = toSmallId(word).replace(&#34;.&#34;, &#34; &#34;)
+        n = eids.get(eid, 0)
+
+        eidDis = eid if n == 0 else f&#34;{eid}({n})&#34;
+
+        n += 1
+        eids[eid] = n
+        rows = set()
+
+        for scopeStr in sorted(wordData):
+            rows |= set(wordData[scopeStr])
+
+        rowRep = &#34;,&#34;.join(str(r) for r in sorted(rows))
+        ws.append((&#34;&#34;, eidDis, &#34;x&#34;, &#34;&#34;, word, rowRep))
+
+    wb.save(sheetPath)</code></pre>
+</details>
+<div class="desc"><p>Make a derived sheet based on the individual tokens in the triggers.</p>
+<p>The current sheet will be used to make a new sheet with a row for every
+token in every trigger on the original sheet.
+In this way all tokens in triggers will be searched individually.
+Since tokens do not overlap, the tokens as triggers do not interfere with
+each other.
+This can be a convenient debugging tool for the entity spreadsheet in the
+case of triggers without hits.</p>
+<p>Note however, that there are also other functions that help with debugging
+the spreadsheet:</p>
+<ul>
+<li><code><a title="tf.ner.triggers.Triggers.triggerInterference" href="triggers.html#tf.ner.triggers.Triggers.triggerInterference">Triggers.triggerInterference()</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.reportHits" href="triggers.html#tf.ner.triggers.Triggers.reportHits">Triggers.reportHits()</a></code></li>
+</ul></div>
+</dd>
+<dt id="tf.ner.sheets.Sheets.readSheetData"><code class="name flex">
+<span>def <span class="ident">readSheetData</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/sheets.py#L476-L586" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def readSheetData(self):
+    &#34;&#34;&#34;Read the data of the spreadsheet and deliver it as a list of field lists.
+
+    Concerning the Excel sheets in `ner/sheets`:
+
+    *   they will be read by `tf.ner.ner.NER.setSheet()`;
+    *   you might need to `pip install openpyxl` first;
+
+    Each row in the spreadsheet specifies a set of triggers for a named entity
+    in a certain scope. The row may have additional metadata, which will be linked
+    to the named entity.
+    If you need several scopes for the same named entity, make sure the metadata
+    in those rows is identical. Otherwise it is unpredictable from which row the
+    metadata will be taken.
+
+    The first row is a header row, but the names are only important for the columns
+    marked as metadata columns.
+
+    The second row will be ignored, you can use it as an explanation or subtitle
+    of the column titles in the header row.
+
+    Here is a specification of the columns. We only specify the first so many
+    columns. The remaining columns are treated as metadata.
+
+    1.  **comment**. If this cell starts with a `#` the whole row will be
+        skipped and ignored. Otherwise, the value is taken as a comment, that you
+        are free to fill in or leave empty.
+
+    1.  **name**. The full name of the entity, as it occurs in articles and
+        reference works.
+
+    1.  **kind**. A label that indicates what type of entity it is, e.g. `PER` for
+        person and `LOC` for location and `ORG` for organization. But you are free
+        to chose the labels.
+
+    1.  **scope**. A string that indicates portions in the corpus where the
+        triggers for this entity are valid. The scope specifies zero or more
+        intervals of sections in the corpus, where an empty scope denotes the
+        whole corpus. See `tf.ner.scopes.Scopes.parseScope()`
+        for the syntax of scope specifiers.
+
+    1.  **triggers**. A list of triggers, i.e. textual strings that occur in the
+        corpus and trigger the detection of the entity named in the **name**
+        column. The individual triggers must be separated by a `;`. Triggers may
+        contain multiple words, and even `,`s. It is recommended not to use
+        newlines in the trigger cells. When the triggers are read, white-space
+        will be trimmed, and some character replacements will take place, which
+        are dependent on the corpus. Think of replacing various kinds of quotes
+        by ASCII quotes.
+
+    The remaining columns are metadata columns. This metadata can be retrieved
+    by means of the function `tf.ner.ner.NER.getMeta()`
+
+    A good, real-world example of such a spreadsheet is *people.xlsx* in the
+    [Suriano corpus](https://gitlab.huc.knaw.nl/suriano/letters/-/tree/main/ner/specs?ref_type=heads)
+
+    Returns
+    -------
+    list of list
+        Rows which are lists of fields.
+    &#34;&#34;&#34;
+    sheetName = self.sheetName
+    sheetDir = self.sheetDir
+    loadXls = self.loadXls
+    trigI = self.trigI
+    commentI = self.commentI
+    normalizeChars = self.normalizeChars
+    spaceEscaped = self.spaceEscaped
+
+    sheetData = self.getSheetData()
+    caseSensitive = sheetData.caseSensitive
+
+    def myNormalize(x):
+        return normalize(
+            str(x) if normalizeChars is None else normalizeChars(str(x))
+        )
+
+    sheetPath = f&#34;{sheetDir}/{sheetName}.xlsx&#34;
+
+    wb = loadXls(sheetPath, data_only=True)
+    ws = wb.active
+
+    result = []
+
+    for r, row in enumerate(ws.rows):
+        fields = []
+        result.append(fields)
+
+        isCommentRow = (row[commentI].value or &#34;&#34;).startswith(&#34;#&#34;)
+
+        for i, field in enumerate(row):
+            value = field.value or &#34;&#34;
+
+            if not isCommentRow and r &gt; 1 and i == trigI:
+                value = myNormalize(value)
+                value = {
+                    y
+                    for x in value.split(&#34;;&#34;)
+                    if (
+                        y := tnorm(
+                            x,
+                            spaceEscaped=spaceEscaped,
+                            caseSensitive=caseSensitive,
+                        )
+                    )
+                    != &#34;&#34;
+                }
+
+            fields.append(value)
+
+    return result</code></pre>
+</details>
+<div class="desc"><p>Read the data of the spreadsheet and deliver it as a list of field lists.</p>
+<p>Concerning the Excel sheets in <code>ner/sheets</code>:</p>
+<ul>
+<li>they will be read by <code><a title="tf.ner.ner.NER.setSheet" href="#tf.ner.sheets.Sheets.setSheet">Sheets.setSheet()</a></code>;</li>
+<li>you might need to <code>pip install openpyxl</code> first;</li>
+</ul>
+<p>Each row in the spreadsheet specifies a set of triggers for a named entity
+in a certain scope. The row may have additional metadata, which will be linked
+to the named entity.
+If you need several scopes for the same named entity, make sure the metadata
+in those rows is identical. Otherwise it is unpredictable from which row the
+metadata will be taken.</p>
+<p>The first row is a header row, but the names are only important for the columns
+marked as metadata columns.</p>
+<p>The second row will be ignored, you can use it as an explanation or subtitle
+of the column titles in the header row.</p>
+<p>Here is a specification of the columns. We only specify the first so many
+columns. The remaining columns are treated as metadata.</p>
+<ol>
+<li>
+<p><strong>comment</strong>. If this cell starts with a <code>#</code> the whole row will be
+skipped and ignored. Otherwise, the value is taken as a comment, that you
+are free to fill in or leave empty.</p>
+</li>
+<li>
+<p><strong>name</strong>. The full name of the entity, as it occurs in articles and
+reference works.</p>
+</li>
+<li>
+<p><strong>kind</strong>. A label that indicates what type of entity it is, e.g. <code>PER</code> for
+person and <code>LOC</code> for location and <code>ORG</code> for organization. But you are free
+to chose the labels.</p>
+</li>
+<li>
+<p><strong>scope</strong>. A string that indicates portions in the corpus where the
+triggers for this entity are valid. The scope specifies zero or more
+intervals of sections in the corpus, where an empty scope denotes the
+whole corpus. See <code><a title="tf.ner.scopes.Scopes.parseScope" href="scopes.html#tf.ner.scopes.Scopes.parseScope">Scopes.parseScope()</a></code>
+for the syntax of scope specifiers.</p>
+</li>
+<li>
+<p><strong>triggers</strong>. A list of triggers, i.e. textual strings that occur in the
+corpus and trigger the detection of the entity named in the <strong>name</strong>
+column. The individual triggers must be separated by a <code>;</code>. Triggers may
+contain multiple words, and even <code>,</code>s. It is recommended not to use
+newlines in the trigger cells. When the triggers are read, white-space
+will be trimmed, and some character replacements will take place, which
+are dependent on the corpus. Think of replacing various kinds of quotes
+by ASCII quotes.</p>
+</li>
+</ol>
+<p>The remaining columns are metadata columns. This metadata can be retrieved
+by means of the function <code><a title="tf.ner.ner.NER.getMeta" href="#tf.ner.sheets.Sheets.getMeta">Sheets.getMeta()</a></code></p>
+<p>A good, real-world example of such a spreadsheet is <em>people.xlsx</em> in the
+<a href="https://gitlab.huc.knaw.nl/suriano/letters/-/tree/main/ner/specs?ref_type=heads">Suriano corpus</a></p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code> of <code>list</code></dt>
+<dd>Rows which are lists of fields.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.sheets.Sheets.readSheets"><code class="name flex">
+<span>def <span class="ident">readSheets</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/sheets.py#L158-L174" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def readSheets(self):
+    &#34;&#34;&#34;Read the list current ner sheets (again).
+
+    Use this when you change ner sheets outside the NER browser, e.g.
+    by editing the spreadsheets in Excel.
+    &#34;&#34;&#34;
+    sheetDir = self.sheetDir
+    setNames = self.setNames
+
+    sheetNames = set()
+    self.sheetNames = sheetNames
+
+    for sheetFile in dirContents(sheetDir)[0]:
+        if extNm(sheetFile) == &#34;xlsx&#34;:
+            sheetName = sheetFile.removesuffix(&#34;.xlsx&#34;)
+            sheetNames.add(sheetName)
+            setNames.add(f&#34;.{sheetName}&#34;)</code></pre>
+</details>
+<div class="desc"><p>Read the list current ner sheets (again).</p>
+<p>Use this when you change ner sheets outside the NER browser, e.g.
+by editing the spreadsheets in Excel.</p></div>
+</dd>
+<dt id="tf.ner.sheets.Sheets.setSheet"><code class="name flex">
+<span>def <span class="ident">setSheet</span></span>(<span>self, newSheet, force=False, caseSensitive=None, forceSilent=False)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/sheets.py#L176-L224" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def setSheet(self, newSheet, force=False, caseSensitive=None, forceSilent=False):
+    &#34;&#34;&#34;Switch to a named ner sheet.
+
+    After the switch, the new sheet will be loaded into memory, processed, and
+    executed.
+
+    Parameters
+    ----------
+    newSheet: string
+        The name of the new ner sheet to switch to.
+    force: boolean, optional False
+        If True, do not load from cached data, but do all computations afresh.
+    caseSensitive: boolean, optional None
+        Whether to work with the spreadsheet in a case-sensitive way.
+        If `None`, the value is taken from the current instance of this class.
+    forceSilent: boolean, optional False
+        If True, all output is suppressed, irrespective of the `silent` member
+        in the instance. Only show stopping error messages are let through.
+
+    &#34;&#34;&#34;
+    if not self.properlySetup:
+        return
+
+    browse = self.browse
+
+    sheetName = self.sheetName
+
+    sheetNames = self.sheetNames
+    sheetDir = self.sheetDir
+    sheetFile = f&#34;{sheetDir}/{newSheet}.xlsx&#34;
+
+    if newSheet not in sheetNames and not fileExists(sheetFile):
+        if not browse:
+            console(f&#34;NER sheet {newSheet} ({sheetFile}) does not exist&#34;)
+        if newSheet is not None:
+            return
+
+    # if not browse:
+    #    self.setSet(&#34;&#34; if newSheet is None else f&#34;.{newSheet}&#34;)
+
+    if newSheet != sheetName:
+        sheetName = newSheet
+        self.sheetName = sheetName
+
+    if caseSensitive is None:
+        caseSensitive = self.caseSensitive
+
+    self.forceSilent = True
+    self.loadSheetData(force=force, caseSensitive=caseSensitive)</code></pre>
+</details>
+<div class="desc"><p>Switch to a named ner sheet.</p>
+<p>After the switch, the new sheet will be loaded into memory, processed, and
+executed.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>newSheet</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of the new ner sheet to switch to.</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, do not load from cached data, but do all computations afresh.</dd>
+<dt><strong><code>caseSensitive</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>Whether to work with the spreadsheet in a case-sensitive way.
+If <code>None</code>, the value is taken from the current instance of this class.</dd>
+<dt><strong><code>forceSilent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, all output is suppressed, irrespective of the <code>silent</code> member
+in the instance. Only show stopping error messages are let through.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.sheets.Sheets.writeSheetData"><code class="name flex">
+<span>def <span class="ident">writeSheetData</span></span>(<span>self, rows, asFile=None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/sheets.py#L439-L474" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def writeSheetData(self, rows, asFile=None):
+    &#34;&#34;&#34;Write a spreadsheet.
+
+    When the data for a spreadsheet has been gathered, you can write it to Excel
+    by means of this function.
+
+    Parameters
+    ----------
+    rows: iterable of iterables
+        The rows, each row an interable of fields
+    asFile: string, optional None
+        The path of the file to write the Excel data to.
+    &#34;&#34;&#34;
+    if not asFile:
+        console(&#34;Pass the path of a destination file in param asFile&#34;)
+        return
+
+    Workbook = self.Workbook
+    trigI = self.trigI
+    commentI = self.commentI
+    wb = Workbook()
+    ws = wb.active
+
+    for r, row in enumerate(rows):
+        if r &lt;= 1:
+            ws.append(row)
+            continue
+
+        isCommentRow = row[commentI].startswith(&#34;#&#34;)
+
+        if not isCommentRow:
+            row[trigI] = &#34;; &#34;.join(row[trigI])
+
+        ws.append(row)
+
+    wb.save(asFile)</code></pre>
+</details>
+<div class="desc"><p>Write a spreadsheet.</p>
+<p>When the data for a spreadsheet has been gathered, you can write it to Excel
+by means of this function.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>rows</code></strong> :&ensp;<code>iterable</code> of <code>iterables</code></dt>
+<dd>The rows, each row an interable of fields</dd>
+<dt><strong><code>asFile</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>The path of the file to write the Excel data to.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="tf.ner.scopes.Scopes" href="scopes.html#tf.ner.scopes.Scopes">Scopes</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tf.ner.scopes.Scopes.intersectScopes" href="scopes.html#tf.ner.scopes.Scopes.intersectScopes">intersectScopes</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.parseInterval" href="scopes.html#tf.ner.scopes.Scopes.parseInterval">parseInterval</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.parseLoc" href="scopes.html#tf.ner.scopes.Scopes.parseLoc">parseLoc</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.parseScope" href="scopes.html#tf.ner.scopes.Scopes.parseScope">parseScope</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.repInterval" href="scopes.html#tf.ner.scopes.Scopes.repInterval">repInterval</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.repLoc" href="scopes.html#tf.ner.scopes.Scopes.repLoc">repLoc</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.repScope" href="scopes.html#tf.ner.scopes.Scopes.repScope">repScope</a></code></li>
+<li><code><a title="tf.ner.scopes.Scopes.testPartitioning" href="scopes.html#tf.ner.scopes.Scopes.testPartitioning">testPartitioning</a></code></li>
+</ul>
+</li>
+<li><code><b><a title="tf.ner.triggers.Triggers" href="triggers.html#tf.ner.triggers.Triggers">Triggers</a></b></code>:
+<ul class="hlist">
+<li><code><a title="tf.ner.triggers.Triggers.diagnoseTrigger" href="triggers.html#tf.ner.triggers.Triggers.diagnoseTrigger">diagnoseTrigger</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.diagnoseTriggers" href="triggers.html#tf.ner.triggers.Triggers.diagnoseTriggers">diagnoseTriggers</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.findOccs" href="triggers.html#tf.ner.triggers.Triggers.findOccs">findOccs</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.findTrigger" href="triggers.html#tf.ner.triggers.Triggers.findTrigger">findTrigger</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.findTriggers" href="triggers.html#tf.ner.triggers.Triggers.findTriggers">findTriggers</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.interference" href="triggers.html#tf.ner.triggers.Triggers.interference">interference</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.partitionTriggers" href="triggers.html#tf.ner.triggers.Triggers.partitionTriggers">partitionTriggers</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.reportHits" href="triggers.html#tf.ner.triggers.Triggers.reportHits">reportHits</a></code></li>
+<li><code><a title="tf.ner.triggers.Triggers.triggerInterference" href="triggers.html#tf.ner.triggers.Triggers.triggerInterference">triggerInterference</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.css" integrity="sha512-b+T2i3P45i1LZM7I00Ci5QquB9szqaxu+uuk5TUSGjZQ4w4n+qujQiIuvTv2BxE7WCGQCifNMksyKILDiHzsOg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.js" integrity="sha512-2B9/byNV1KKRm5nQ2RLViPFD6U4dUjDGwuW1GU+ImJh8YinPU9Zlq1GzdTMO+G2ROrB5o1qasJBy1ttYz0wCug==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="">
+<li><code><a title="tf.ner.sheets.SHEET_KEYS" href="#tf.ner.sheets.SHEET_KEYS">SHEET_KEYS</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.ner.sheets.Sheets" href="#tf.ner.sheets.Sheets">Sheets</a></code></h4>
+<ul class="">
+<li><code><a title="tf.ner.sheets.Sheets.flush" href="#tf.ner.sheets.Sheets.flush">flush</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.getMeta" href="#tf.ner.sheets.Sheets.getMeta">getMeta</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.getSheetData" href="#tf.ner.sheets.Sheets.getSheetData">getSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.getToTokensFunc" href="#tf.ner.sheets.Sheets.getToTokensFunc">getToTokensFunc</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.loadSheetData" href="#tf.ner.sheets.Sheets.loadSheetData">loadSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.log" href="#tf.ner.sheets.Sheets.log">log</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.makeSheetOfSingleTokens" href="#tf.ner.sheets.Sheets.makeSheetOfSingleTokens">makeSheetOfSingleTokens</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.readSheetData" href="#tf.ner.sheets.Sheets.readSheetData">readSheetData</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.readSheets" href="#tf.ner.sheets.Sheets.readSheets">readSheets</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.setSheet" href="#tf.ner.sheets.Sheets.setSheet">setSheet</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.sheetName" href="#tf.ner.sheets.Sheets.sheetName">sheetName</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.sheetNames" href="#tf.ner.sheets.Sheets.sheetNames">sheetNames</a></code></li>
+<li><code><a title="tf.ner.sheets.Sheets.writeSheetData" href="#tf.ner.sheets.Sheets.writeSheetData">writeSheetData</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

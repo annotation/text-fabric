@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>tf.advanced.unravel API documentation</title>
+<meta name="description" content="Unravel …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.advanced.unravel</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="unravel">Unravel</h1>
+<p>Unraveling means to transform a neighbourhood of nodes into a tree of node fragment.
+That sounds simple, but quite a few ideas have to work together to make it work.</p>
+<p>It is described at length in <code><a title="tf.about.displaydesign" href="../about/displaydesign.html">tf.about.displaydesign</a></code>.</p>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.advanced.unravel.unravel"><code class="name flex">
+<span>def <span class="ident">unravel</span></span>(<span>app, n, isPlain=True, explain=False, **options)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/advanced/unravel.py#L185-L221" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
+    &#34;&#34;&#34;Unravels a node and its graph-neighbourhood into a tree of fragments.
+
+    Parameters
+    ----------
+    n: integer
+        The node to unravel.
+    isPlain: boolean, optional True
+        Whether to unravel for plain display. Otherwise it is for pretty display.
+        The tree structure is the same for both, but the tree is also dressed up
+        with formatting information, which may differ for both modes.
+    explain: boolean or `&#39;details&#39;`:
+        Whether to pretty-print the tree.
+        If the value `details` is passed, most of the dressing information of the tree
+        is also shown.
+    **options:
+        Any amount of legal display options.
+        These will influence the dressing information.
+
+    Returns
+    -------
+    chunk: tuple
+        `(node, (begin slot, end slot))`
+        The top of the tree has `None`
+    info: object
+        dressing information in the form of key value pairs, among which:
+        `options` (the display options that are in force), `settings` (properties
+        of node independent properties), `props` (properties
+        of the node of the chunk), `boundaryCls` (CSS info for the boundaries of
+        the chunk). The top of the tree has only has options and settings.
+    children: list
+        subtrees where each subtree is again a tuple of chunk, info and children.
+    &#34;&#34;&#34;
+
+    display = app.display
+    dContext = display.distill(options)
+    return _unravel(app, not isPlain, dContext, n, _inTuple=_inTuple, explain=explain)</code></pre>
+</details>
+<div class="desc"><p>Unravels a node and its graph-neighbourhood into a tree of fragments.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>n</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The node to unravel.</dd>
+<dt><strong><code>isPlain</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether to unravel for plain display. Otherwise it is for pretty display.
+The tree structure is the same for both, but the tree is also dressed up
+with formatting information, which may differ for both modes.</dd>
+<dt><strong><code>explain</code></strong> :&ensp;<code>boolean</code> or <code>`'details'</code>:`</dt>
+<dd>Whether to pretty-print the tree.
+If the value <code>details</code> is passed, most of the dressing information of the tree
+is also shown.</dd>
+</dl>
+<p>**options:
+Any amount of legal display options.
+These will influence the dressing information.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>chunk</code></strong> :&ensp;<code>tuple</code></dt>
+<dd><code>(node, (begin slot, end slot))</code>
+The top of the tree has <code>None</code></dd>
+<dt><strong><code>info</code></strong> :&ensp;<code>object</code></dt>
+<dd>dressing information in the form of key value pairs, among which:
+<code>options</code> (the display options that are in force), <code>settings</code> (properties
+of node independent properties), <code>props</code> (properties
+of the node of the chunk), <code>boundaryCls</code> (CSS info for the boundaries of
+the chunk). The top of the tree has only has options and settings.</dd>
+<dt><strong><code>children</code></strong> :&ensp;<code>list</code></dt>
+<dd>subtrees where each subtree is again a tuple of chunk, info and children.</dd>
+</dl></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.advanced.unravel.NodeProps"><code class="flex name class">
+<span>class <span class="ident">NodeProps</span></span>
+<span>(</span><span>nType,<br>isSlot,<br>isSlotOrDescend,<br>descend,<br>isBaseNonSlot,<br>isLexType,<br>lexType,<br>lineNumberFeature,<br>featuresBare,<br>features,<br>textCls,<br>hlCls,<br>hlStyle,<br>cls,<br>hasGraphics,<br>after,<br>plainCustom)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>NodeProps(nType, isSlot, isSlotOrDescend, descend, isBaseNonSlot, isLexType, lexType, lineNumberFeature, featuresBare, features, textCls, hlCls, hlStyle, cls, hasGraphics, after, plainCustom)</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.tuple</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.advanced.unravel.NodeProps.after"><code class="name">var <span class="ident">after</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the app defines a custom method to generate material after a child.It is a dict keyed by node type whose values are the custom methods.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.cls"><code class="name">var <span class="ident">cls</span></code></dt>
+<dd>
+<div class="desc"><p>A dict of several classes for the display of the node: for the container, the label, and the children of the node; might be set by prettyCustom</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.descend"><code class="name">var <span class="ident">descend</span></code></dt>
+<dd>
+<div class="desc"><p>When calling T.text(n, descend=??) for this node, what should we substitute for the ?? ?</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.features"><code class="name">var <span class="ident">features</span></code></dt>
+<dd>
+<div class="desc"><p>Features to display in the labels of pretty displays with their names</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.featuresBare"><code class="name">var <span class="ident">featuresBare</span></code></dt>
+<dd>
+<div class="desc"><p>Features to display in the labels of pretty displays without their names</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.hasGraphics"><code class="name">var <span class="ident">hasGraphics</span></code></dt>
+<dd>
+<div class="desc"><p>Whether this node type has graphics.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.hlCls"><code class="name">var <span class="ident">hlCls</span></code></dt>
+<dd>
+<div class="desc"><p>The highlight Css class of the current node, both for pretty and plain modes, keyed by boolean 'is pretty'</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.hlStyle"><code class="name">var <span class="ident">hlStyle</span></code></dt>
+<dd>
+<div class="desc"><p>The highlight Css color style of the current node, both for pretty and plain modes, keyed by boolean 'is pretty'</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.isBaseNonSlot"><code class="name">var <span class="ident">isBaseNonSlot</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the current node has a type that is currently a baseType, i.e. a type where a pretty display should stop unfolding.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.isLexType"><code class="name">var <span class="ident">isLexType</span></code></dt>
+<dd>
+<div class="desc"><p>Whether nodes of type are lexemes.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.isSlot"><code class="name">var <span class="ident">isSlot</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the current node is a slot node.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.isSlotOrDescend"><code class="name">var <span class="ident">isSlotOrDescend</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the current node is a slot node or has a type to which the current text format should descend. This type is determined by the current text format.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.lexType"><code class="name">var <span class="ident">lexType</span></code></dt>
+<dd>
+<div class="desc"><p>If nodes of this type have lexemes in another type, this is that type.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.lineNumberFeature"><code class="name">var <span class="ident">lineNumberFeature</span></code></dt>
+<dd>
+<div class="desc"><p>Feature with source line numbers of nodes of this type.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.nType"><code class="name">var <span class="ident">nType</span></code></dt>
+<dd>
+<div class="desc"><p>The node type of the current node.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.plainCustom"><code class="name">var <span class="ident">plainCustom</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the app defines a custom method to plain displays for this node type.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.textCls"><code class="name">var <span class="ident">textCls</span></code></dt>
+<dd>
+<div class="desc"><p>The text Css class of the current node.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings"><code class="flex name class">
+<span>class <span class="ident">OuterSettings</span></span>
+<span>(</span><span>slotType,<br>ltr,<br>fmt,<br>textClsDefault,<br>textMethod,<br>getText,<br>upMethod,<br>slotsMethod,<br>fLookupMethod,<br>eLookupMethod,<br>allEFeats,<br>browsing,<br>webLink,<br>getGraphics)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>OuterSettings(slotType, ltr, fmt, textClsDefault, textMethod, getText, upMethod, slotsMethod, fLookupMethod, eLookupMethod, allEFeats, browsing, webLink, getGraphics)</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.tuple</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.advanced.unravel.OuterSettings.allEFeats"><code class="name">var <span class="ident">allEFeats</span></code></dt>
+<dd>
+<div class="desc"><p>Set of all edge features: <code>tf.core.api.Api.Eall(warp=False)</code></p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.browsing"><code class="name">var <span class="ident">browsing</span></code></dt>
+<dd>
+<div class="desc"><p>whether we work for the TF browser or for a Jupyter notebook</p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.eLookupMethod"><code class="name">var <span class="ident">eLookupMethod</span></code></dt>
+<dd>
+<div class="desc"><p>Method to get the value of an edge feature: <code><a title="tf.core.api.Api.Es" href="../core/api.html#tf.core.api.Api.Es">Api.Es()</a></code></p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.fLookupMethod"><code class="name">var <span class="ident">fLookupMethod</span></code></dt>
+<dd>
+<div class="desc"><p>Method to get the value of a node feature: <code><a title="tf.core.api.Api.Fs" href="../core/api.html#tf.core.api.Api.Fs">Api.Fs()</a></code></p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.fmt"><code class="name">var <span class="ident">fmt</span></code></dt>
+<dd>
+<div class="desc"><p>the currently selected text format.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.getGraphics"><code class="name">var <span class="ident">getGraphics</span></code></dt>
+<dd>
+<div class="desc"><p>Method to fetch graphics for a node. App-dependent.See <code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code> under <strong>graphics</strong>.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.getText"><code class="name">var <span class="ident">getText</span></code></dt>
+<dd>
+<div class="desc"><p>Method to get the text for a node according to a template: <code><a title="tf.advanced.helpers.getText" href="helpers.html#tf.advanced.helpers.getText">getText()</a></code></p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.ltr"><code class="name">var <span class="ident">ltr</span></code></dt>
+<dd>
+<div class="desc"><p>writing direction.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.slotType"><code class="name">var <span class="ident">slotType</span></code></dt>
+<dd>
+<div class="desc"><p>The slot type of the dataset.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.slotsMethod"><code class="name">var <span class="ident">slotsMethod</span></code></dt>
+<dd>
+<div class="desc"><p>Method to get the slots of a node: <code><a title="tf.core.oslotsfeature.OslotsFeature.s" href="../core/oslotsfeature.html#tf.core.oslotsfeature.OslotsFeature.s">OslotsFeature.s()</a></code></p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.textClsDefault"><code class="name">var <span class="ident">textClsDefault</span></code></dt>
+<dd>
+<div class="desc"><p>Default CSS class for full text.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.textMethod"><code class="name">var <span class="ident">textMethod</span></code></dt>
+<dd>
+<div class="desc"><p>Method to print text of a node according to a text format: <code><a title="tf.core.text.Text.text" href="../core/text.html#tf.core.text.Text.text">Text.text()</a></code></p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.upMethod"><code class="name">var <span class="ident">upMethod</span></code></dt>
+<dd>
+<div class="desc"><p>Method to move from a node to its first embedder: <code><a title="tf.core.locality.Locality.u" href="../core/locality.html#tf.core.locality.Locality.u">Locality.u()</a></code></p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.webLink"><code class="name">var <span class="ident">webLink</span></code></dt>
+<dd>
+<div class="desc"><p>Method to produce a web link to a node: <code><a title="tf.advanced.links.webLink" href="links.html#tf.advanced.links.webLink">webLink()</a></code></p></div>
+</dd>
+</dl>
+</dd>
+<dt id="tf.advanced.unravel.TreeInfo"><code class="flex name class">
+<span>class <span class="ident">TreeInfo</span></span>
+<span>(</span><span>**specs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/advanced/unravel.py#L168-L182" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">class TreeInfo:
+    &#34;&#34;&#34;Tree properties during plain() or pretty().
+
+    Collects `NodeProps`, `OuterSettings`, and `tf.advanced.options`.
+    &#34;&#34;&#34;
+
+    def __init__(self, **specs):
+        self.update(**specs)
+
+    def update(self, **specs):
+        for (k, v) in specs.items():
+            setattr(self, k, v)
+
+    def get(self, k, v):
+        return getattr(self, k, v)</code></pre>
+</details>
+<div class="desc"><p>Tree properties during plain() or pretty().</p>
+<p>Collects <code><a title="tf.advanced.unravel.NodeProps" href="#tf.advanced.unravel.NodeProps">NodeProps</a></code>, <code><a title="tf.advanced.unravel.OuterSettings" href="#tf.advanced.unravel.OuterSettings">OuterSettings</a></code>, and <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.advanced.unravel.TreeInfo.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>self, k, v)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/advanced/unravel.py#L181-L182" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def get(self, k, v):
+    return getattr(self, k, v)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="tf.advanced.unravel.TreeInfo.update"><code class="name flex">
+<span>def <span class="ident">update</span></span>(<span>self, **specs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/advanced/unravel.py#L177-L179" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def update(self, **specs):
+    for (k, v) in specs.items():
+        setattr(self, k, v)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.css" integrity="sha512-b+T2i3P45i1LZM7I00Ci5QquB9szqaxu+uuk5TUSGjZQ4w4n+qujQiIuvTv2BxE7WCGQCifNMksyKILDiHzsOg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.js" integrity="sha512-2B9/byNV1KKRm5nQ2RLViPFD6U4dUjDGwuW1GU+ImJh8YinPU9Zlq1GzdTMO+G2ROrB5o1qasJBy1ttYz0wCug==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<div class="toc">
+<ul>
+<li><a href="#unravel">Unravel</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.advanced.unravel.unravel" href="#tf.advanced.unravel.unravel">unravel</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.advanced.unravel.NodeProps" href="#tf.advanced.unravel.NodeProps">NodeProps</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.advanced.unravel.NodeProps.after" href="#tf.advanced.unravel.NodeProps.after">after</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.cls" href="#tf.advanced.unravel.NodeProps.cls">cls</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.descend" href="#tf.advanced.unravel.NodeProps.descend">descend</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.features" href="#tf.advanced.unravel.NodeProps.features">features</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.featuresBare" href="#tf.advanced.unravel.NodeProps.featuresBare">featuresBare</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.hasGraphics" href="#tf.advanced.unravel.NodeProps.hasGraphics">hasGraphics</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.hlCls" href="#tf.advanced.unravel.NodeProps.hlCls">hlCls</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.hlStyle" href="#tf.advanced.unravel.NodeProps.hlStyle">hlStyle</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.isBaseNonSlot" href="#tf.advanced.unravel.NodeProps.isBaseNonSlot">isBaseNonSlot</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.isLexType" href="#tf.advanced.unravel.NodeProps.isLexType">isLexType</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.isSlot" href="#tf.advanced.unravel.NodeProps.isSlot">isSlot</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.isSlotOrDescend" href="#tf.advanced.unravel.NodeProps.isSlotOrDescend">isSlotOrDescend</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.lexType" href="#tf.advanced.unravel.NodeProps.lexType">lexType</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.lineNumberFeature" href="#tf.advanced.unravel.NodeProps.lineNumberFeature">lineNumberFeature</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.nType" href="#tf.advanced.unravel.NodeProps.nType">nType</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.plainCustom" href="#tf.advanced.unravel.NodeProps.plainCustom">plainCustom</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.textCls" href="#tf.advanced.unravel.NodeProps.textCls">textCls</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tf.advanced.unravel.OuterSettings" href="#tf.advanced.unravel.OuterSettings">OuterSettings</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.advanced.unravel.OuterSettings.allEFeats" href="#tf.advanced.unravel.OuterSettings.allEFeats">allEFeats</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.browsing" href="#tf.advanced.unravel.OuterSettings.browsing">browsing</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.eLookupMethod" href="#tf.advanced.unravel.OuterSettings.eLookupMethod">eLookupMethod</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.fLookupMethod" href="#tf.advanced.unravel.OuterSettings.fLookupMethod">fLookupMethod</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.fmt" href="#tf.advanced.unravel.OuterSettings.fmt">fmt</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.getGraphics" href="#tf.advanced.unravel.OuterSettings.getGraphics">getGraphics</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.getText" href="#tf.advanced.unravel.OuterSettings.getText">getText</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.ltr" href="#tf.advanced.unravel.OuterSettings.ltr">ltr</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.slotType" href="#tf.advanced.unravel.OuterSettings.slotType">slotType</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.slotsMethod" href="#tf.advanced.unravel.OuterSettings.slotsMethod">slotsMethod</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.textClsDefault" href="#tf.advanced.unravel.OuterSettings.textClsDefault">textClsDefault</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.textMethod" href="#tf.advanced.unravel.OuterSettings.textMethod">textMethod</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.upMethod" href="#tf.advanced.unravel.OuterSettings.upMethod">upMethod</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.webLink" href="#tf.advanced.unravel.OuterSettings.webLink">webLink</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tf.advanced.unravel.TreeInfo" href="#tf.advanced.unravel.TreeInfo">TreeInfo</a></code></h4>
+<ul class="">
+<li><code><a title="tf.advanced.unravel.TreeInfo.get" href="#tf.advanced.unravel.TreeInfo.get">get</a></code></li>
+<li><code><a title="tf.advanced.unravel.TreeInfo.update" href="#tf.advanced.unravel.TreeInfo.update">update</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

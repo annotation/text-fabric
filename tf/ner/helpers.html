@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>tf.ner.helpers API documentation</title>
+<meta name="description" content="Auxiliary functions.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.ner.helpers</code></h1>
+</header>
+<section id="section-intro">
+<p>Auxiliary functions.</p>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-variables">Global variables</h2>
+<dl>
+<dt id="tf.ner.helpers.CUT_OFF"><code class="name">var <span class="ident">CUT_OFF</span></code></dt>
+<dd>
+<div class="desc"><p>Maximum length of entity identifiers.</p></div>
+</dd>
+<dt id="tf.ner.helpers.PART_CUT_OFF"><code class="name">var <span class="ident">PART_CUT_OFF</span></code></dt>
+<dd>
+<div class="desc"><p>Maximum length of parts of entity identifiers.</p></div>
+</dd>
+<dt id="tf.ner.helpers.TO_ASCII_DEF"><code class="name">var <span class="ident">TO_ASCII_DEF</span></code></dt>
+<dd>
+<div class="desc"><p>Undecomposable UNICODE characters mapped to their related ASCII characters.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.ner.helpers.findCompile"><code class="name flex">
+<span>def <span class="ident">findCompile</span></span>(<span>bFind, bFindC)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/helpers.py#L219-L247" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def findCompile(bFind, bFindC):
+    &#34;&#34;&#34;Compiles a regular expression out of a search pattern.
+
+    Parameters
+    ----------
+    bFind: string
+        The search pattern as a plain string.
+    bFindC: boolean
+        Whether the search is case-sensitive.
+
+    Returns
+    -------
+    tuple
+        the white-space-stripped search pattern;
+        the regular expression object, if successful, otherwise None;
+        the error message if the re-compilation was not successful.
+    &#34;&#34;&#34;
+    bFind = (bFind or &#34;&#34;).strip()
+    bFindFlag = [] if bFindC else [re.I]
+    bFindRe = None
+    errorMsg = &#34;&#34;
+
+    if bFind:
+        try:
+            bFindRe = re.compile(bFind, *bFindFlag)
+        except Exception as e:
+            errorMsg = str(e)
+
+    return (bFind, bFindRe, errorMsg)</code></pre>
+</details>
+<div class="desc"><p>Compiles a regular expression out of a search pattern.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>bFind</code></strong> :&ensp;<code>string</code></dt>
+<dd>The search pattern as a plain string.</dd>
+<dt><strong><code>bFindC</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>Whether the search is case-sensitive.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>the white-space-stripped search pattern;
+the regular expression object, if successful, otherwise None;
+the error message if the re-compilation was not successful.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.helpers.fromTokens"><code class="name flex">
+<span>def <span class="ident">fromTokens</span></span>(<span>tokens, spaceEscaped=False)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/helpers.py#L80-L104" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def fromTokens(tokens, spaceEscaped=False):
+    &#34;&#34;&#34;The inverse of `toTokens()`.
+
+    Doing first toTokens and then fromTokens is idempotent (provided you do it in
+    a case-sensitive way).
+    So if you have to revert back from tokens to text,
+    make sure that you have done a combo of toTokens and
+    fromTokens first.
+    You can use `tnorm()` for that.
+
+    Parameters
+    ----------
+    spaceEscaped: boolean, optional False
+        If True, it all ` ` in token strings will be escaped as `-`
+    caseSensitive: boolean, optional False
+        If True, return all tokens in lower case.
+
+    Returns
+    -------
+    tuple of string
+        The sequence of tokens to which the text has decomposed
+    &#34;&#34;&#34;
+    return &#34; &#34;.join(
+        tuple(t.replace(&#34; &#34;, &#34;_&#34;) for t in tokens) if spaceEscaped else tokens
+    )</code></pre>
+</details>
+<div class="desc"><p>The inverse of <code><a title="tf.ner.helpers.toTokens" href="#tf.ner.helpers.toTokens">toTokens()</a></code>.</p>
+<p>Doing first toTokens and then fromTokens is idempotent (provided you do it in
+a case-sensitive way).
+So if you have to revert back from tokens to text,
+make sure that you have done a combo of toTokens and
+fromTokens first.
+You can use <code><a title="tf.ner.helpers.tnorm" href="#tf.ner.helpers.tnorm">tnorm()</a></code> for that.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>spaceEscaped</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, it all <code> </code> in token strings will be escaped as <code>-</code></dd>
+<dt><strong><code>caseSensitive</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, return all tokens in lower case.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code> of <code>string</code></dt>
+<dd>The sequence of tokens to which the text has decomposed</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.helpers.normalize"><code class="name flex">
+<span>def <span class="ident">normalize</span></span>(<span>text)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/helpers.py#L47-L49" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def normalize(text):
+    &#34;&#34;&#34;Normalize white-space in a text.&#34;&#34;&#34;
+    return WHITE_RE.sub(&#34; &#34;, text).strip()</code></pre>
+</details>
+<div class="desc"><p>Normalize white-space in a text.</p></div>
+</dd>
+<dt id="tf.ner.helpers.tnorm"><code class="name flex">
+<span>def <span class="ident">tnorm</span></span>(<span>text, spaceEscaped=False, caseSensitive=False)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/helpers.py#L107-L128" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def tnorm(text, spaceEscaped=False, caseSensitive=False):
+    &#34;&#34;&#34;Normalize text.
+
+    Split a text into tokens and then recombine to text again.
+    This will result in a normalized version of the text with respect to whitespace.
+
+    Parameters
+    ----------
+    spaceEscaped: boolean, optional False
+        If your corpus has tokens with spaces in it, pass True, otherwise False.
+    caseSensitive: boolean, optional False
+        If True, case sensitivity is preserved, otherwise all uppercase will be
+        converted to lowercase.
+
+    Returns
+    -------
+    string
+    &#34;&#34;&#34;
+    return fromTokens(
+        toTokens(text, spaceEscaped=spaceEscaped, caseSensitive=caseSensitive),
+        spaceEscaped=spaceEscaped,
+    )</code></pre>
+</details>
+<div class="desc"><p>Normalize text.</p>
+<p>Split a text into tokens and then recombine to text again.
+This will result in a normalized version of the text with respect to whitespace.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>spaceEscaped</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If your corpus has tokens with spaces in it, pass True, otherwise False.</dd>
+<dt><strong><code>caseSensitive</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, case sensitivity is preserved, otherwise all uppercase will be
+converted to lowercase.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.helpers.toAscii"><code class="name flex">
+<span>def <span class="ident">toAscii</span></span>(<span>text)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/helpers.py#L131-L153" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def toAscii(text):
+    &#34;&#34;&#34;Transforms a text with diacritical marks into a plain ASCII text.
+
+    Characters with diacritics are replaced by their base character.
+    Some characters with diacritics are considered by UNICODE to be undecomposable
+    characters, such as `ø` and `ñ`.
+    We use a table (`TO_ASCII_DEF`) to map these on their related ASCII characters.
+
+    Parameters
+    ----------
+    text: string
+        The text to be translated
+
+    Returns
+    -------
+    string
+        The translated text.
+    &#34;&#34;&#34;
+    return &#34;&#34;.join(
+        TO_ASCII.get(c, c)
+        for c in unicodedata.normalize(&#34;NFD&#34;, text)
+        if unicodedata.category(c) != &#34;Mn&#34;
+    )</code></pre>
+</details>
+<div class="desc"><p>Transforms a text with diacritical marks into a plain ASCII text.</p>
+<p>Characters with diacritics are replaced by their base character.
+Some characters with diacritics are considered by UNICODE to be undecomposable
+characters, such as <code>ø</code> and <code>ñ</code>.
+We use a table (<code><a title="tf.ner.helpers.TO_ASCII_DEF" href="#tf.ner.helpers.TO_ASCII_DEF">TO_ASCII_DEF</a></code>) to map these on their related ASCII characters.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>string</code></dt>
+<dd>The text to be translated</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>The translated text.</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.helpers.toId"><code class="name flex">
+<span>def <span class="ident">toId</span></span>(<span>text)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/helpers.py#L156-L170" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def toId(text):
+    &#34;&#34;&#34;Transforms text to an identifier string.
+
+    Tokens are lower-cased, separated by `.`, reduced to ASCII.
+
+    Parameters
+    ----------
+    text: string
+        The text to be transformed
+
+    Returns
+    -------
+        The identifier string based on `text`
+    &#34;&#34;&#34;
+    return NON_WORD.sub(&#34;.&#34;, toAscii(text.lower())).strip(&#34;.&#34;)</code></pre>
+</details>
+<div class="desc"><p>Transforms text to an identifier string.</p>
+<p>Tokens are lower-cased, separated by <code>.</code>, reduced to ASCII.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>string</code></dt>
+<dd>The text to be transformed</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<pre><code>The identifier string based on &lt;code&gt;text&lt;/code&gt;
+</code></pre></div>
+</dd>
+<dt id="tf.ner.helpers.toSmallId"><code class="name flex">
+<span>def <span class="ident">toSmallId</span></span>(<span>text, transform={})</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/helpers.py#L173-L216" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def toSmallId(text, transform={}):
+    &#34;&#34;&#34;Transforms text to a smaller identifier string.
+
+    As `toId()`, but now certain parts of the resulting identifier are
+    either left out or replaced by shorter strings.
+
+    This transformation is defined by the `transform` dictionary,
+    which ultimately is provided in the corpus-dependent
+    `ner/config.yaml` .
+
+    Parameters
+    ----------
+    text: string
+        The text to be transformed
+    transform: dict, optional {}
+        Custom transformations to be applied; usually this is the omission of frequent
+        non-content words in the language.
+
+    Returns
+    -------
+        The identifier string based on `text`
+    &#34;&#34;&#34;
+    eid = toId(text)
+
+    if len(eid) &lt;= CUT_OFF:
+        return eid
+
+    parts = [y for x in eid.split(&#34;.&#34;) if (y := transform.get(x, x))]
+    result = []
+    n = 0
+
+    for part in parts:
+        if len(part) &gt; PART_CUT_OFF:
+            part = part[0:PREFIX_PART] + &#34;~&#34; + part[-SUFFIX_PART:]
+
+        nPart = len(part)
+
+        result.append(part)
+        n += nPart
+
+        if n &gt; CUT_OFF:
+            break
+
+    return &#34;.&#34;.join(result)</code></pre>
+</details>
+<div class="desc"><p>Transforms text to a smaller identifier string.</p>
+<p>As <code><a title="tf.ner.helpers.toId" href="#tf.ner.helpers.toId">toId()</a></code>, but now certain parts of the resulting identifier are
+either left out or replaced by shorter strings.</p>
+<p>This transformation is defined by the <code>transform</code> dictionary,
+which ultimately is provided in the corpus-dependent
+<code>ner/config.yaml</code> .</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>string</code></dt>
+<dd>The text to be transformed</dd>
+<dt><strong><code>transform</code></strong> :&ensp;<code>dict</code>, optional <code>{}</code></dt>
+<dd>Custom transformations to be applied; usually this is the omission of frequent
+non-content words in the language.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<pre><code>The identifier string based on &lt;code&gt;text&lt;/code&gt;
+</code></pre></div>
+</dd>
+<dt id="tf.ner.helpers.toTokens"><code class="name flex">
+<span>def <span class="ident">toTokens</span></span>(<span>text, spaceEscaped=False, caseSensitive=False)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/helpers.py#L52-L77" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def toTokens(text, spaceEscaped=False, caseSensitive=False):
+    &#34;&#34;&#34;Split a text into tokens.
+
+    The text is split on white-space.
+    Tokens are further split into maximal segments of word characters
+    and individual non-word characters.
+
+    Parameters
+    ----------
+    spaceEscaped: boolean, optional False
+        If True, it is assumed that if a `_` occurs in a token string, a space is meant.
+    caseSensitive: boolean, optional False
+        If True, return all tokens in lower case.
+
+    Returns
+    -------
+    tuple of string
+        The sequence of tokens to which the text has decomposed
+    &#34;&#34;&#34;
+    result = TOKEN_RE.findall(normalize(text))
+    result = tuple((t.replace(&#34;_&#34;, &#34; &#34;) for t in result) if spaceEscaped else result)
+
+    if not caseSensitive:
+        result = tuple(t.lower() for t in result)
+
+    return tuple(t for t in result if t != &#34; &#34;)</code></pre>
+</details>
+<div class="desc"><p>Split a text into tokens.</p>
+<p>The text is split on white-space.
+Tokens are further split into maximal segments of word characters
+and individual non-word characters.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>spaceEscaped</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, it is assumed that if a <code>_</code> occurs in a token string, a space is meant.</dd>
+<dt><strong><code>caseSensitive</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, return all tokens in lower case.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code> of <code>string</code></dt>
+<dd>The sequence of tokens to which the text has decomposed</dd>
+</dl></div>
+</dd>
+<dt id="tf.ner.helpers.xstrip"><code class="name flex">
+<span>def <span class="ident">xstrip</span></span>(<span>x)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/ner/helpers.py#L11-L12" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def xstrip(x):
+    return WHITE_STRIP_RE.sub(&#34;&#34;, x)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.css" integrity="sha512-b+T2i3P45i1LZM7I00Ci5QquB9szqaxu+uuk5TUSGjZQ4w4n+qujQiIuvTv2BxE7WCGQCifNMksyKILDiHzsOg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.js" integrity="sha512-2B9/byNV1KKRm5nQ2RLViPFD6U4dUjDGwuW1GU+ImJh8YinPU9Zlq1GzdTMO+G2ROrB5o1qasJBy1ttYz0wCug==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.ner" href="index.html">tf.ner</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="">
+<li><code><a title="tf.ner.helpers.CUT_OFF" href="#tf.ner.helpers.CUT_OFF">CUT_OFF</a></code></li>
+<li><code><a title="tf.ner.helpers.PART_CUT_OFF" href="#tf.ner.helpers.PART_CUT_OFF">PART_CUT_OFF</a></code></li>
+<li><code><a title="tf.ner.helpers.TO_ASCII_DEF" href="#tf.ner.helpers.TO_ASCII_DEF">TO_ASCII_DEF</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="tf.ner.helpers.findCompile" href="#tf.ner.helpers.findCompile">findCompile</a></code></li>
+<li><code><a title="tf.ner.helpers.fromTokens" href="#tf.ner.helpers.fromTokens">fromTokens</a></code></li>
+<li><code><a title="tf.ner.helpers.normalize" href="#tf.ner.helpers.normalize">normalize</a></code></li>
+<li><code><a title="tf.ner.helpers.tnorm" href="#tf.ner.helpers.tnorm">tnorm</a></code></li>
+<li><code><a title="tf.ner.helpers.toAscii" href="#tf.ner.helpers.toAscii">toAscii</a></code></li>
+<li><code><a title="tf.ner.helpers.toId" href="#tf.ner.helpers.toId">toId</a></code></li>
+<li><code><a title="tf.ner.helpers.toSmallId" href="#tf.ner.helpers.toSmallId">toSmallId</a></code></li>
+<li><code><a title="tf.ner.helpers.toTokens" href="#tf.ner.helpers.toTokens">toTokens</a></code></li>
+<li><code><a title="tf.ner.helpers.xstrip" href="#tf.ner.helpers.xstrip">xstrip</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>

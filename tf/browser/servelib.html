@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>tf.browser.servelib API documentation</title>
+<meta name="description" content="Common Server Related Functions …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.browser.servelib</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="common-server-related-functions">Common Server Related Functions</h1>
+<h2 id="about">About</h2>
+<p>Here are functions that are being used by various parts of the
+TF browser infrastructure, such as</p>
+<ul>
+<li><code><a title="tf.browser.web" href="web.html">tf.browser.web</a></code></li>
+<li><code><a title="tf.browser.start" href="start.html">tf.browser.start</a></code></li>
+</ul>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.browser.servelib.batchAround"><code class="name flex">
+<span>def <span class="ident">batchAround</span></span>(<span>nResults, position, batch)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/browser/servelib.py#L35-L44" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def batchAround(nResults, position, batch):
+    halfBatch = int((batch + 1) / 2)
+    left = min(max(position - halfBatch, 1), nResults)
+    right = max(min(position + halfBatch, nResults), 1)
+    discrepancy = batch - (right - left + 1)
+    if discrepancy != 0:
+        right += discrepancy
+    if right &gt; nResults:
+        right = nResults
+    return (left, right)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.servelib.getAbout"><code class="name flex">
+<span>def <span class="ident">getAbout</span></span>(<span>colophon, header, provenance, form)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/browser/servelib.py#L198-L231" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def getAbout(colophon, header, provenance, form):
+    return f&#34;&#34;&#34;
+{colophon}
+
+{provenance}
+
+Job: {form[&#39;jobName&#39;]}
+
+# {form[&#39;title&#39;]}
+
+## {form[&#39;author&#39;]}
+
+{form[&#39;description&#39;]}
+
+## Information requests:
+
+### Sections
+
+``` python
+{form[&#39;sections&#39;]}
+```
+
+### Nodes
+
+``` python
+{form[&#39;tuples&#39;]}
+```
+
+### Search
+
+``` python
+{form[&#39;query&#39;]}
+```
+&#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.servelib.getFormData"><code class="name flex">
+<span>def <span class="ident">getFormData</span></span>(<span>interfaceDefaults)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/browser/servelib.py#L47-L195" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def getFormData(interfaceDefaults):
+    &#34;&#34;&#34;Get form data.
+
+    The TF browser user interacts with the web app by clicking and typing,
+    as a result of which a HTML form gets filled in.
+    This form as regularly submitted to the web server with a request
+    for a new incarnation of the page: a response.
+
+    The values that come with a request, must be peeled out of the form,
+    and stored as logical values.
+
+    Most of the data has a known function to the web server,
+    but there is also a list of web app dependent options.
+    &#34;&#34;&#34;
+
+    form = {}
+    jobName = request.form.get(&#34;jobName&#34;, &#34;&#34;).strip()
+    resetForm = request.form.get(&#34;resetForm&#34;, &#34;&#34;)
+    form[&#34;resetForm&#34;] = resetForm
+
+    if jobName:
+        form[&#34;jobName&#34;] = jobName
+        form[&#34;loadJob&#34;] = &#34;&#34;
+    else:
+        form[&#34;jobName&#34;] = DEFAULT_NAME
+        form[&#34;loadJob&#34;] = &#34;1&#34;
+        form[&#34;resetForm&#34;] = &#34;1&#34;
+
+    form[&#34;query&#34;] = request.form.get(&#34;query&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
+    form[&#34;messages&#34;] = request.form.get(&#34;messages&#34;, &#34;&#34;) or &#34;&#34;
+    form[&#34;features&#34;] = request.form.get(&#34;features&#34;, &#34;&#34;) or &#34;&#34;
+    form[&#34;tuples&#34;] = request.form.get(&#34;tuples&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
+    form[&#34;sections&#34;] = request.form.get(&#34;sections&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
+    form[&#34;appName&#34;] = request.form.get(&#34;appName&#34;, &#34;&#34;)
+    form[&#34;side&#34;] = request.form.get(&#34;side&#34;, &#34;&#34;)
+    form[&#34;dstate&#34;] = request.form.get(&#34;dstate&#34;, &#34;&#34;)
+    form[&#34;metaopen&#34;] = request.form.get(&#34;metaopen&#34;, &#34;&#34;)
+    form[&#34;author&#34;] = request.form.get(&#34;author&#34;, &#34;&#34;).strip()
+    form[&#34;title&#34;] = request.form.get(&#34;title&#34;, &#34;&#34;).strip()
+    form[&#34;description&#34;] = request.form.get(&#34;description&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
+    form[&#34;forceEdges&#34;] = request.form.get(&#34;forceEdges&#34;, None)
+    form[&#34;hideTypes&#34;] = request.form.get(&#34;hideTypes&#34;, None)
+    form[&#34;condensed&#34;] = request.form.get(&#34;condensed&#34;, &#34;&#34;)
+    form[&#34;baseTypes&#34;] = tuple(request.form.getlist(&#34;baseTypes&#34;))
+    form[&#34;hiddenTypes&#34;] = tuple(request.form.getlist(&#34;hiddenTypes&#34;))
+    form[&#34;edgeFeatures&#34;] = tuple(request.form.getlist(&#34;edgeFeatures&#34;))
+    form[&#34;condenseType&#34;] = request.form.get(&#34;condenseType&#34;, &#34;&#34;)
+    form[&#34;textFormat&#34;] = request.form.get(&#34;textFormat&#34;, &#34;&#34;)
+    form[&#34;sectionsExpandAll&#34;] = request.form.get(&#34;sectionsExpandAll&#34;, &#34;&#34;)
+    form[&#34;tuplesExpandAll&#34;] = request.form.get(&#34;tuplesExpandAll&#34;, &#34;&#34;)
+    form[&#34;queryExpandAll&#34;] = request.form.get(&#34;queryExpandAll&#34;, &#34;&#34;)
+    form[&#34;passageOpened&#34;] = request.form.get(&#34;passageOpened&#34;, &#34;&#34;)
+    form[&#34;sectionsOpened&#34;] = request.form.get(&#34;sectionsOpened&#34;, &#34;&#34;)
+    form[&#34;tuplesOpened&#34;] = request.form.get(&#34;tuplesOpened&#34;, &#34;&#34;)
+    form[&#34;queryOpened&#34;] = request.form.get(&#34;queryOpened&#34;, &#34;&#34;)
+    form[&#34;mode&#34;] = request.form.get(&#34;mode&#34;, &#34;&#34;) or &#34;passage&#34;
+    form[&#34;position&#34;] = getInt(request.form.get(&#34;position&#34;, &#34;&#34;), default=1)
+    form[&#34;batch&#34;] = getInt(request.form.get(&#34;batch&#34;, &#34;&#34;), default=BATCH)
+    form[&#34;sec0&#34;] = request.form.get(&#34;sec0&#34;, &#34;&#34;)
+    form[&#34;sec1&#34;] = request.form.get(&#34;sec1&#34;, &#34;&#34;)
+    form[&#34;sec2&#34;] = request.form.get(&#34;sec2&#34;, &#34;&#34;)
+    form[&#34;s0filter&#34;] = request.form.get(&#34;s0filter&#34;, &#34;&#34;)
+
+    for k in [&#34;colormapn&#34;, &#34;ecolormapn&#34;]:
+        form[k] = request.form.get(k, &#34;&#34;)
+    colorMapN = getInt(form[&#34;colormapn&#34;], default=0)
+    eColorMapN = getInt(form[&#34;ecolormapn&#34;], default=0)
+
+    colorMap = {}
+
+    for i in range(1, colorMapN + 1):
+        colorKey = f&#34;colormap_{i}&#34;
+        form[colorKey] = request.form.get(colorKey, &#34;&#34;)
+        color = form[colorKey]
+        colorMap[i] = color
+
+    form[&#34;colorMap&#34;] = colorMap
+
+    edgeHighlights = {}
+
+    for i in range(1, eColorMapN + 1):
+        for k in [f&#34;ecolormap_{i}&#34;, f&#34;edge_name_{i}&#34;, f&#34;edge_from_{i}&#34;, f&#34;edge_to_{i}&#34;]:
+            form[k] = request.form.get(k, &#34;&#34;)
+        color = form[f&#34;ecolormap_{i}&#34;]
+        name = form[f&#34;edge_name_{i}&#34;]
+        fRep = form[f&#34;edge_from_{i}&#34;]
+        tRep = form[f&#34;edge_to_{i}&#34;]
+        if name == &#34;&#34; or fRep == &#34;&#34; or tRep == &#34;&#34;:
+            continue
+        f = (
+            0
+            if fRep == &#34;&#34;
+            else None
+            if fRep == &#34;any&#34;
+            else int(fRep)
+            if fRep.isdecimal()
+            else 0
+        )
+        t = (
+            0
+            if tRep == &#34;&#34;
+            else None
+            if tRep == &#34;any&#34;
+            else int(tRep)
+            if tRep.isdecimal()
+            else 0
+        )
+        edgeHighlights.setdefault(name, {})[(f, t)] = color
+
+    for i in range(1, 4):
+        for k in [
+            f&#34;ecolormap_new_{i}&#34;,
+            f&#34;edge_name_new_{i}&#34;,
+            f&#34;edge_from_new_{i}&#34;,
+            f&#34;edge_to_new_{i}&#34;,
+        ]:
+            form[k] = request.form.get(k, &#34;&#34;)
+        color = form[f&#34;ecolormap_new_{i}&#34;]
+        name = form[f&#34;edge_name_new_{i}&#34;]
+        fRep = form[f&#34;edge_from_new_{i}&#34;]
+        tRep = form[f&#34;edge_to_new_{i}&#34;]
+        if name != &#34;&#34; and fRep != &#34;&#34; and tRep != &#34;&#34;:
+            f = (
+                0
+                if fRep == &#34;&#34;
+                else None
+                if fRep == &#34;any&#34;
+                else int(fRep)
+                if fRep.isdecimal()
+                else 0
+            )
+            t = (
+                0
+                if tRep == &#34;&#34;
+                else None
+                if tRep == &#34;any&#34;
+                else int(tRep)
+                if tRep.isdecimal()
+                else 0
+            )
+            edgeHighlights.setdefault(name, {})[(f, t)] = color
+
+    form[&#34;edgeHighlights&#34;] = edgeHighlights
+
+    for (k, v) in interfaceDefaults.items():
+        if v is None:
+            continue
+        form[k] = request.form.get(k, None)
+    return form</code></pre>
+</details>
+<div class="desc"><p>Get form data.</p>
+<p>The TF browser user interacts with the web app by clicking and typing,
+as a result of which a HTML form gets filled in.
+This form as regularly submitted to the web server with a request
+for a new incarnation of the page: a response.</p>
+<p>The values that come with a request, must be peeled out of the form,
+and stored as logical values.</p>
+<p>Most of the data has a known function to the web server,
+but there is also a list of web app dependent options.</p></div>
+</dd>
+<dt id="tf.browser.servelib.getInt"><code class="name flex">
+<span>def <span class="ident">getInt</span></span>(<span>x, default=1)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/browser/servelib.py#L27-L32" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def getInt(x, default=1):
+    if len(x) &gt; 15:
+        return default
+    if not x.isdecimal():
+        return default
+    return int(x)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="tf.browser.servelib.zipTables"><code class="name flex">
+<span>def <span class="ident">zipTables</span></span>(<span>csvs, tupleResultsX, queryResultsX, about, form)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/browser/servelib.py#L234-L262" class="git-link" target="_blank">Browse git</a>
+</summary>
+<pre><code class="python">def zipTables(csvs, tupleResultsX, queryResultsX, about, form):
+    appName = form[&#34;appName&#34;]
+    jobName = form[&#34;jobName&#34;]
+
+    zipBuffer = BytesIO()
+    with ZipFile(zipBuffer, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
+
+        zipFile.writestr(&#34;job.json&#34;, writeJson(form).encode(&#34;utf8&#34;))
+        zipFile.writestr(&#34;job.json&#34;, writeJson(
+            {k: v for (k, v) in form.items() if k not in {&#34;edgeHighlights&#34;, &#34;colorMap&#34;}}
+        ).encode(&#34;utf8&#34;))
+        zipFile.writestr(&#34;about.md&#34;, about)
+        if csvs is not None:
+            for (csv, data) in csvs:
+                contents = &#34;&#34;.join(
+                    (&#34;\t&#34;.join(str(t) for t in tup) + &#34;\n&#34;) for tup in data
+                )
+                zipFile.writestr(f&#34;{csv}.tsv&#34;, contents.encode(&#34;utf8&#34;))
+            for (name, data) in (
+                (&#34;nodesx.tsv&#34;, tupleResultsX),
+                (&#34;resultsx.tsv&#34;, queryResultsX),
+            ):
+                if data is not None:
+                    contents = &#34;\ufeff&#34; + &#34;&#34;.join(
+                        (&#34;\t&#34;.join(&#34;&#34; if t is None else str(t) for t in tup) + &#34;\n&#34;)
+                        for tup in data
+                    )
+                    zipFile.writestr(name, contents.encode(&#34;utf_16_le&#34;))
+    return (f&#34;{appName}-{jobName}.zip&#34;, zipBuffer.getvalue())</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.css" integrity="sha512-b+T2i3P45i1LZM7I00Ci5QquB9szqaxu+uuk5TUSGjZQ4w4n+qujQiIuvTv2BxE7WCGQCifNMksyKILDiHzsOg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.js" integrity="sha512-2B9/byNV1KKRm5nQ2RLViPFD6U4dUjDGwuW1GU+ImJh8YinPU9Zlq1GzdTMO+G2ROrB5o1qasJBy1ttYz0wCug==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<div class="toc">
+<ul>
+<li><a href="#common-server-related-functions">Common Server Related Functions</a><ul>
+<li><a href="#about">About</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.browser" href="index.html">tf.browser</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.browser.servelib.batchAround" href="#tf.browser.servelib.batchAround">batchAround</a></code></li>
+<li><code><a title="tf.browser.servelib.getAbout" href="#tf.browser.servelib.getAbout">getAbout</a></code></li>
+<li><code><a title="tf.browser.servelib.getFormData" href="#tf.browser.servelib.getFormData">getFormData</a></code></li>
+<li><code><a title="tf.browser.servelib.getInt" href="#tf.browser.servelib.getInt">getInt</a></code></li>
+<li><code><a title="tf.browser.servelib.zipTables" href="#tf.browser.servelib.zipTables">zipTables</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
