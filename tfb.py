@@ -302,7 +302,7 @@ def main():
         clean()
     elif task == "db":
         clean()
-        run("pip install -e .", shell=True)
+        run("pip install -e '.[all]'", shell=True)
     elif task == "pb":
         clean()
         makeDist(pypi=False)

@@ -58,3 +58,4 @@ dist
 .jekyll-metadata
 .obsidian*
 .idea/
+text_fabric.egg-info/

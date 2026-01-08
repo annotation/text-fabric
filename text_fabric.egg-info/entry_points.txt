@@ -1,6 +1,0 @@
-[console_scripts]
-tf = tf.browser.start:main
-tf-make = tf.client.make.build:main
-tf-nbconvert = tf.tools.nbconvert:main
-tf-zip = tf.advanced.zipdata:main
-tf-zipall = tf.zip:main
