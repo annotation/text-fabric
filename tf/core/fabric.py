@@ -34,6 +34,8 @@ from .files import (
     setDir,
     expandDir,
     dirExists,
+    fileOpen,
+    fileExists,
     normpath,
     splitExt,
     scanDir,
@@ -289,6 +291,8 @@ class FabricCore:
             iterable of feature names.
             The feature names are just the names of `.tf` files
             without directory information and without extension.
+            Alternatively, you can also specify `file:`*path*, where *path*
+            points to a file with feature names, one per line.
         add: boolean, optional False
             The features will be added to the same currently loaded features, managed
             by the current API.
@@ -325,7 +329,20 @@ class FabricCore:
         self.good = True
 
         if self.good:
+            if type(features) is str and features.startswith("file:"):
+                featuresFile = ex(features.removeprefix("file:"))
+
+                if fileExists(featuresFile):
+                    with fileOpen(featuresFile) as fh:
+                        featureStr = fh.read()
+
+                    features = tuple(fnorm for f in featureStr.split("\n") if (fnorm := f.strip()) != "")
+                else:
+                    warning(f"File with featurenames does not exist: {featuresFile}")
+                    features = ()
+
             featuresRequested = sorted(fitemize(features))
+
             if add:
                 self.featuresRequested += featuresRequested
             else:
