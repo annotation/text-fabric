@@ -94,7 +94,7 @@ in <code><a title="tf.core.prepare" href="prepare.html">tf.core.prepare</a></cod
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/core/fabric.py#L131-L1053" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d4c81cf5de17b9b3062c95f114d9656badcac4cf/tf/core/fabric.py#L133-L1070" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">class FabricCore:
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -257,6 +257,8 @@ in <code><a title="tf.core.prepare" href="prepare.html">tf.core.prepare</a></cod
             iterable of feature names.
             The feature names are just the names of `.tf` files
             without directory information and without extension.
+            Alternatively, you can also specify `file:`*path*, where *path*
+            points to a file with feature names, one per line.
         add: boolean, optional False
             The features will be added to the same currently loaded features, managed
             by the current API.
@@ -293,7 +295,20 @@ in <code><a title="tf.core.prepare" href="prepare.html">tf.core.prepare</a></cod
         self.good = True
 
         if self.good:
+            if type(features) is str and features.startswith(&#34;file:&#34;):
+                featuresFile = ex(features.removeprefix(&#34;file:&#34;))
+
+                if fileExists(featuresFile):
+                    with fileOpen(featuresFile) as fh:
+                        featureStr = fh.read()
+
+                    features = tuple(fnorm for f in featureStr.split(&#34;\n&#34;) if (fnorm := f.strip()) != &#34;&#34;)
+                else:
+                    warning(f&#34;File with featurenames does not exist: {featuresFile}&#34;)
+                    features = ()
+
             featuresRequested = sorted(fitemize(features))
+
             if add:
                 self.featuresRequested += featuresRequested
             else:
@@ -1127,7 +1142,7 @@ overwhelm your notebook if you print it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/core/fabric.py#L536-L559" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d4c81cf5de17b9b3062c95f114d9656badcac4cf/tf/core/fabric.py#L553-L576" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
@@ -1177,7 +1192,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../inde
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/core/fabric.py#L443-L518" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d4c81cf5de17b9b3062c95f114d9656badcac4cf/tf/core/fabric.py#L460-L535" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=SILENT_D, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
@@ -1294,7 +1309,7 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/core/fabric.py#L281-L441" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d4c81cf5de17b9b3062c95f114d9656badcac4cf/tf/core/fabric.py#L283-L458" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=SILENT_D):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -1307,6 +1322,8 @@ There are other functions that give you the loaded features:
         iterable of feature names.
         The feature names are just the names of `.tf` files
         without directory information and without extension.
+        Alternatively, you can also specify `file:`*path*, where *path*
+        points to a file with feature names, one per line.
     add: boolean, optional False
         The features will be added to the same currently loaded features, managed
         by the current API.
@@ -1343,7 +1360,20 @@ There are other functions that give you the loaded features:
     self.good = True
 
     if self.good:
+        if type(features) is str and features.startswith(&#34;file:&#34;):
+            featuresFile = ex(features.removeprefix(&#34;file:&#34;))
+
+            if fileExists(featuresFile):
+                with fileOpen(featuresFile) as fh:
+                    featureStr = fh.read()
+
+                features = tuple(fnorm for f in featureStr.split(&#34;\n&#34;) if (fnorm := f.strip()) != &#34;&#34;)
+            else:
+                warning(f&#34;File with featurenames does not exist: {featuresFile}&#34;)
+                features = ()
+
         featuresRequested = sorted(fitemize(features))
+
         if add:
             self.featuresRequested += featuresRequested
         else:
@@ -1465,7 +1495,9 @@ There are other functions that give you the loaded features:
 <dd>Either a string containing space separated feature names, or an
 iterable of feature names.
 The feature names are just the names of <code>.<a title="tf" href="../index.html">tf</a></code> files
-without directory information and without extension.</dd>
+without directory information and without extension.
+Alternatively, you can also specify <code>file:</code><em>path</em>, where <em>path</em>
+points to a file with feature names, one per line.</dd>
 <dt><strong><code>add</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>The features will be added to the same currently loaded features, managed
 by the current API.
@@ -1489,7 +1521,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/core/fabric.py#L520-L534" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d4c81cf5de17b9b3062c95f114d9656badcac4cf/tf/core/fabric.py#L537-L551" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=SILENT_D):
     &#34;&#34;&#34;Load all loadable features.
@@ -1521,7 +1553,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6c6706fdc5346174985ffb3075884ce4f7eeb88e/tf/core/fabric.py#L561-L786" class="git-link" target="_blank">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d4c81cf5de17b9b3062c95f114d9656badcac4cf/tf/core/fabric.py#L578-L803" class="git-link" target="_blank">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,
