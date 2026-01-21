@@ -9,6 +9,10 @@
 
 ---
 
+**See the [new developments](NEW_DEVELOPMENTS.md)**
+
+---
+
 > Everything about us, everything around us, everything we know and can know of
 > is composed ultimately of patterns of nothing;
 > that’s the bottom line, the final truth.
