@@ -19,10 +19,10 @@ representation.
 
 The result is [Context-Fabric](https://github.com/Context-Fabric/context-fabric), 
 characterized as *production-ready corpus analysis for the age of AI*, which is
-borne out that it comes with an optional connector to AI servers.
+born out by the fact that it comes with an optional connector to AI servers.
 
 It was with great pleasure that I received word of this new twist from Cody, a few
-weeks for my retirement.
+weeks before my retirement.
 
 Although Context-Fabric does not incorporate the so-called *advanced* API of
 Text-Fabric, I am convinced that in time it will move miles beyond my
@@ -45,9 +45,8 @@ An obvious thing to do could be to also implement the advanced API in Context-Fa
 but that is up to the discretion of Cody.
 
 Alternatively, someone could replace the current data representation in Text-Fabric
-by the much more efficient representation in Context-Fabric. But I'll not be
-the one who will do it.
-If someone else feels attracted to it, I will lend the support that is needed, but
-without diving deep in the code myself.
+by the much more efficient representation in Context-Fabric. But I am not the
+one who will do it. If someone else feels attracted to it, I will lend the
+support that is needed, but without diving deep in the code myself.
 
 I'll keep an eye on the two of you: Text-Fabric and Context-Fabric.
