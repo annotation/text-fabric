@@ -48,5 +48,8 @@ Alternatively, someone could replace the current data representation in Text-Fab
 by the much more efficient representation in Context-Fabric. But I am not the
 one who will do it. If someone else feels attracted to it, I will lend the
 support that is needed, but without diving deep in the code myself.
+Keep in mind though, that it might be a spurious effort. A core Text-Fabric +
+AI (= Context-Fabric) might progress better and faster that an optimized but classic
+TF!
 
 I'll keep an eye on the two of you: Text-Fabric and Context-Fabric.
