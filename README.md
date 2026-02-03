@@ -74,3 +74,4 @@ by means of which Text-Fabric Search collects the solutions of a
 [search template](https://annotation.github.io/text-fabric/tf/about/use.html).
 The quote refers directly to specific lines of code, deeply buried in
 a Python file within a particular version of Text-Fabric.**
+
