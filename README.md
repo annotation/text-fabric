@@ -5,7 +5,7 @@
 [![SWH](https://archive.softwareheritage.org/badge/origin/https://github.com/annotation/text-fabric/)](https://archive.softwareheritage.org/browse/origin/https://github.com/annotation/text-fabric/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1008899.svg)](https://doi.org/10.5281/zenodo.592193)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2592/badge)](https://bestpractices.coreinfrastructure.org/projects/2592)
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Project Status: Unsupported – The project has reached a stable, usable state but the author(s) have ceased all work on it. A new maintainer may be desired.](https://www.repostatus.org/badges/latest/unsupported.svg)](https://www.repostatus.org/#unsupported)
 
 ---
 
