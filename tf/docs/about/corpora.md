@@ -147,12 +147,13 @@ Since everybody can put a TF corpus on GitHub / GitLab, the list may not be comp
     *the canonical TF dataset, where it all started*;
     ETCBC + Dirk Roorda
 
-    *the canonical TF dataset, where it all started*
-
     **I am horrified by the genocidal violence that Israel is committing against the Palestine people**
 
     (2025-05-19)
     ![israel-palestine](../images/ip.png)
+
+    I am Dirk Roorda, the maker of Text-Fabric, and I feel a stronge urge to distance myself from the
+    "language of the oppressor", that's why you see this statement here.
 
 [ETCBC/dhammapada](https://github.com/ETCBC/dhammapada)
 :   *Pāli* and *Latin*
