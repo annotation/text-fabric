@@ -746,12 +746,12 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
         error(
             f"WARNING: {nsTypes} structure levels but {nsFeats} corresponding features"
         )
-        return ({}, {})
+        return (None, None, None, None, None, None)
 
     sTypes = set(sTypeList)
     if len(sTypes) != nsTypes:
         error("WARNING: duplicate structure levels")
-        return ({}, {})
+        return (None, None, None, None, None, None)
 
     higherTypes = collections.defaultdict(set)
     for i, highType in enumerate(sTypeList):
