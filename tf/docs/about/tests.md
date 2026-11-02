@@ -55,16 +55,3 @@ For each particular test, all these cases will be triggered.
 All in all we defined
 [1000 pairs of nodes](https://github.com/annotation/text-fabric/blob/master/test/generic/relations.py)
 leading to 2500 queries, which will all be tested against expected answers. 
-
-## Hebrew transcription
-
-The tests in `test/writing/testTranscription.py` cover ETCBC accent `97`
-(atnah hafukh), including the qere in Psalm 72:17, conversion in both directions,
-and the distinction from accent `93` (yerah ben yomo). They use small fixtures
-from BHSA 2021 and do not require a corpus download.
-
-Run them from the repository root:
-
-``` sh
-python -m unittest discover -s test/writing -p "test*.py" -v
-```
