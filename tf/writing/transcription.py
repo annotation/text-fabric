@@ -102,6 +102,7 @@ class Transcription:
         "14": "\u05A0",  # telisha_gedola
         "44": "\u05A0",  # telisha_gedola = telisha_gedola_med
         "83": "\u05A1",  # pazer
+        "97": "\u05A2",  # atnah hafukh
         "74": "\u05A3",  # munah = munach
         "70": "\u05A4",  # mahapakh = mehuppach
         "71": "\u05A5",  # merkha = merecha
