@@ -743,6 +743,14 @@ h1.chars {
     </thead>
     <tbody>
 <tr>
+  <td class="t">97</td>
+  <td class="g"> ֢</td>
+  <td class="p"></td>
+  <td class="r"></td>
+  <td class="n"><i>accent</i> atnah hafukh</td>
+  <td class="u">05A2</td>
+</tr>
+<tr>
   <td class="t">94</td>
   <td class="g"> ֧</td>
   <td class="p">ˈ</td>
