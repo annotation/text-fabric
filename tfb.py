@@ -341,6 +341,18 @@ def main():
         answer = input("right version ? [yn]")
         if answer != "y":
             return
+
+        notesScript = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            ".github",
+            "scripts",
+            "check_release_notes.py",
+        )
+        notesCheck = run([sys.executable, notesScript])
+        if notesCheck.returncode != 0:
+            console("Write the release notes first, then ship again")
+            return
+
         if task not in {"shipb", "shipo"}:
             shipDocs(ORG, REPO, PKG)
 

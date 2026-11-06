@@ -16,6 +16,31 @@ into a new package,
 [Text-Fabric-Factory](https://github.com/annotation/text-fabric),
 which kan be pip installed separately.
 
+### 13.1
+
+#### 13.1.1
+
+2026-10-13
+
+Bug fix: a corpus that declares an invalid structure configuration (the number
+of structure types does not match the number of structure features, or a
+structure type occurs more than once) could not be loaded at all: TF issued a
+warning and then crashed with a `ValueError`. Now TF issues the warning and
+loads the corpus without structure.
+In that case `tf.core.text.Text.nodeFromHeading` reports that structure types
+are not configured and returns `None`.
+Thanks to [Alex Sosnovshchenko](https://github.com/alexsosn) for the fix
+([PR #88](https://github.com/annotation/text-fabric/pull/88)).
+
+#### 13.1.0
+
+2026-01-15
+
+`tf.core.fabric.FabricCore.load` accepts a file with feature names:
+pass `features="file:`*path*`"`, where *path* points to a text file with one
+feature name per line. If the file does not exist, you get a warning and no
+features are loaded.
+
 ### 13.0
 
 #### 13.0.19
