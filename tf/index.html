@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>tf API documentation</title>
+<meta name="description" content="![logo](images/tf.png) …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}#lunr-search{width:100%;font-size:1em;padding:6px 9px 5px 9px;border:1px solid silver}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Package <code>tf</code></h1>
+</header>
+<section id="section-intro">
+<p><img alt="logo" src="images/tf.png"></p>
+<h1 id="text-fabric">Text-Fabric</h1>
+<p>A corpus of ancient texts and (linguistic) annotations represents a large body
+of knowledge.
+Text-Fabric (TF) makes that knowledge accessible to programmers and non-programmers.</p>
+<p>TF is machinery for processing such corpora as annotated graphs.
+It treats corpora and annotations as data, much like big tables, but without
+losing the rich structure of text, such as embedding and multiple representations.
+It deals with text in a state where all markup is gone, but where the complete logical
+structure still sits in the data.</p>
+<p>Whether a corpus comes from plain texts, OCR output, databases, XML, TEI: TF has support
+to convert it to single column files, where each file corresponds with a
+<em>feature</em> of the text.</p>
+<p>The Python library <code><a title="tf" href="#tf">tf</a></code> can be used to collect a bunch of features and display
+it as an annotated text.
+What ties the features together are natural numbers, that serve to anchor the
+elementary positions in the text as well as the relevant structures within the
+text.</p>
+<p>When TF loads a dataset of features, you can instruct it to get the features
+from anywhere.
+That means it supports workflows where annotations are produced by third parties
+and can be used against the original corpus, <em>without additional work</em>.
+It also facilitates mappings between ongoing versions of the corpus,
+so that annotations made on older versions can be ported to newer versions without
+redoing the annotation creation.</p>
+<h2 id="straight-to">Straight to &hellip;</h2>
+<ul>
+<li>Release notes (<code><a title="tf.about.releases" href="about/releases.html">tf.about.releases</a></code>)</li>
+<li>Install (<code><a title="tf.about.install" href="about/install.html">tf.about.install</a></code>)</li>
+<li>FAQ (<code><a title="tf.about.faq" href="about/faq.html">tf.about.faq</a></code>)</li>
+<li>Corpora (<code><a title="tf.about.corpora" href="about/corpora.html">tf.about.corpora</a></code>)</li>
+<li>Browser (<code><a title="tf.about.browser" href="about/browser.html">tf.about.browser</a></code>)</li>
+<li>Search Client (<code><a title="tf.about.clientmanual" href="about/clientmanual.html">tf.about.clientmanual</a></code>) simplified (<code><a title="tf.about.manual" href="about/manual.html">tf.about.manual</a></code>)</li>
+<li>Use (<code><a title="tf.about.use" href="about/use.html">tf.about.use</a></code>)</li>
+<li>Search (<code><a title="tf.about.searchusage" href="about/searchusage.html">tf.about.searchusage</a></code>)</li>
+<li>Volumes and collections (<code><a title="tf.about.volumes" href="about/volumes.html">tf.about.volumes</a></code>)</li>
+<li>API (<code><a title="tf.cheatsheet" href="cheatsheet.html">tf.cheatsheet</a></code>)</li>
+<li>Annotation, manual (<code><a title="tf.about.annotate" href="about/annotate.html">tf.about.annotate</a></code>)</li>
+<li>Data sharing (<code><a title="tf.about.datasharing" href="about/datasharing.html">tf.about.datasharing</a></code>)</li>
+<li>Data Structures and Algorithms
+(<code><a title="tf.about.datamodel" href="about/datamodel.html">tf.about.datamodel</a></code>, <code><a title="tf.about.searchdesign" href="about/searchdesign.html">tf.about.searchdesign</a></code>, <code><a title="tf.about.displaydesign" href="about/displaydesign.html">tf.about.displaydesign</a></code>)</li>
+<li>File Format (<code><a title="tf.about.fileformats" href="about/fileformats.html">tf.about.fileformats</a></code>, <code><a title="tf.about.optimizations" href="about/optimizations.html">tf.about.optimizations</a></code>)</li>
+<li>Converting to TF (<code><a title="tf.convert.walker" href="convert/walker.html">tf.convert.walker</a></code>, <code><a title="tf.convert.mql" href="convert/mql.html">tf.convert.mql</a></code>).
+For converting from XML, TEI, PageXML etc. see
+<a href="https://github.com/annotation/text-fabric-factory">text-fabric-factory</a></li>
+<li>Exporting data and re-importing it with enrichments (<code><a title="tf.convert.recorder" href="convert/recorder.html">tf.convert.recorder</a></code>)</li>
+<li>Dataset manipulation (<code><a title="tf.dataset.modify" href="dataset/modify.html">tf.dataset.modify</a></code> and <code><a title="tf.dataset.nodemaps.Versions" href="dataset/nodemaps.html#tf.dataset.nodemaps.Versions">Versions</a></code>)</li>
+<li>Crossing versions of datasets (<code><a title="tf.dataset.nodemaps" href="dataset/nodemaps.html">tf.dataset.nodemaps</a></code>)</li>
+<li>Code Organization (<code><a title="tf.about.code" href="about/code.html">tf.about.code</a></code>)</li>
+</ul>
+<h2 id="author">Author</h2>
+<p><strong>Author</strong>:
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a></p>
+<p>Cite TF as
+<a href="https://doi.org/10.5281/zenodo.592193">DOI: 10.5281/zenodo.592193</a>.</p>
+<h2 id="acknowledgments">Acknowledgments</h2>
+<p>TF is a matter of putting a few good ideas by others into practice.</p>
+<p>While I wrote most of the code,
+a product like TF is unthinkable without the contributions
+of avid users that take the trouble to give feedback and file issues,
+and have the zeal and stamina to hold on
+when things are frustrating and bugs overwhelming,
+and give encouragement when they are happy.</p>
+<p>In particular thanks to</p>
+<ul>
+<li>Cale Johnson</li>
+<li>Camil Staps</li>
+<li>Christian Højgaard-Jensen</li>
+<li>Christiaan Erwich</li>
+<li>Cody Kingham</li>
+<li>Ernst Boogert</li>
+<li>Eliran Wong</li>
+<li>Gyusang Jin</li>
+<li>James Cuénod</li>
+<li>Johan de Joode</li>
+<li>Kyoungsik Kim</li>
+<li>Martijn Naaijer</li>
+<li>Oliver Glanz</li>
+<li>Stephen Ku</li>
+<li>Willem van Peursen</li>
+</ul>
+<p><img src="images/huc.png" width="200"> 2022-now</p>
+<p><img src="images/DANS-logo.png" width="200"> 2014-2022</p>
+<p>Special thanks to Henk Harmsen for nudging me into a corner
+where I was exposed to the Hebrew Text Database, and for letting me play
+there for almost longer than could be defended.</p>
+<p>And to Andrea Scharnhorst for understanding and encouragement on this path.</p>
+<h2 id="more-resources">More resources</h2>
+<p>Tutorials:</p>
+<ul>
+<li><a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/tutorial/start.ipynb">BHSA</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/ETCBC/dss/blob/master/tutorial/start.ipynb">DSS</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/start.ipynb">OldBabylonian</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/Nino-cunei/oldassyrian/blob/master/tutorial/start.ipynb">OldAssyrian</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/Nino-cunei/uruk/blob/master/tutorial/start.ipynb">Uruk</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/q-ran/quran/blob/master/tutorial/start.ipynb">Quran</a></li>
+<li>and more via <code><a title="tf.about.corpora" href="about/corpora.html">tf.about.corpora</a></code>.</li>
+</ul>
+<hr>
+<p>Papers:</p>
+<ul>
+<li>(2018) <a href="https://tidsskrift.dk/hiphilnovum/article/view/142740/186442">Text-Fabric: handling Biblical data withIKEA logistics</a></li>
+<li>(2018) <a href="https://doi.org/10.1163/24523666-01000011">Coding the Hebrew Bible</a></li>
+<li>(2017) <a href="https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/">The Hebrew Bible as Data: Laboratory - Sharing - Experiences</a>
+(preprint: <a href="https://arxiv.org/abs/1501.01866">arxiv</a>)</li>
+<li>(2016) <a href="https://arxiv.org/abs/1603.01541">Parallel Texts in the Hebrew Bible, New Methods and Visualizations </a></li>
+<li>(2014) <a href="https://arxiv.org/abs/1410.0286">LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible</a></li>
+<li>(2012) <a href="https://arxiv.org/abs/1412.6069">Annotation as a New Paradigm in Research Archiving</a></li>
+</ul>
+<hr>
+<p>Presentations:</p>
+<ul>
+<li>
+<p>(Lorentz Leiden 2020)
+<a href="https://nbviewer.jupyter.org/github/annotation/text-fabric/blob/master/conferences/Lorentz2020/start.ipynb">Hands on with Dead Sea Scrolls, Old Babylonian Tablets, and the Quran</a>
+and
+<a href="https://github.com./annotation/text-fabric/blob/master/conferences/Lorentz2020/TF-in-context.pdf">Text-Fabric in Context</a></p>
+</li>
+<li>
+<p>(Cambridge 2019, with Cody Kingham)
+<a href="https://github.com./annotation/text-fabric/blob/master/conferences/Cambridge2019/ancient-corpora-analysis.pdf">Data Analysis in Ancient Corpora</a></p>
+</li>
+<li>
+<p>(San Antonio 2016)
+<a href="https://github.com./annotation/text-fabric/blob/master/conferences/SBL2016/Text-Fabric.pdf">Text-Fabric</a>,
+A motivational presentation given just before
+<a href="https://www.sbl-site.org/meetings/Congresses_Abstracts.aspx?MeetingId=29">SBL 2016</a>
+in the Lutheran Church of San Antonio.
+The day after this presentation, during the SBL conference, sitting in one
+of the broad corridors of the building, I started with the first code of
+Text-Fabric: reading and writing TF-feature files, somewhat like
+<a href="https://github.com/annotation/text-fabric/blob/94ddafd955a5042f565229151dc88db9333cfabd/tf/data.py">here</a>.</p>
+</li>
+</ul>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="tf.about" href="about/index.html">tf.about</a></code></dt>
+<dd>
+<div class="desc"><p>Documents …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.advanced" href="advanced/index.html">tf.advanced</a></code></dt>
+<dd>
+<div class="desc"><p>Advanced API …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.app" href="app.html">tf.app</a></code></dt>
+<dd>
+<div class="desc"><p>Make use of a corpus …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.browser" href="browser/index.html">tf.browser</a></code></dt>
+<dd>
+<div class="desc"><p>Local TF data and web server</p></div>
+</dd>
+<dt><code class="name"><a title="tf.capable" href="capable.html">tf.capable</a></code></dt>
+<dd>
+<div class="desc"><p>Dependency management …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.cheatsheet" href="cheatsheet.html">tf.cheatsheet</a></code></dt>
+<dd>
+<div class="desc"><p><code>A.</code> Advanced API …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.clean" href="clean.html">tf.clean</a></code></dt>
+<dd>
+<div class="desc"><p>Clean …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.client" href="client/index.html">tf.client</a></code></dt>
+<dd>
+<div class="desc"><p>Layered Search …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.convert" href="convert/index.html">tf.convert</a></code></dt>
+<dd>
+<div class="desc"><p>Various forms of data interchange …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.core" href="core/index.html">tf.core</a></code></dt>
+<dd>
+<div class="desc"><p>Core API of TF …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.dataset" href="dataset/index.html">tf.dataset</a></code></dt>
+<dd>
+<div class="desc"><p>Dataset operations …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.fabric" href="fabric.html">tf.fabric</a></code></dt>
+<dd>
+<div class="desc"><p><code>Fabric</code> …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.lib" href="lib.html">tf.lib</a></code></dt>
+<dd>
+<div class="desc"><p>Utility functions …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.ner" href="ner/index.html">tf.ner</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="tf.parameters" href="parameters.html">tf.parameters</a></code></dt>
+<dd>
+<div class="desc"><p>Parameters …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.search" href="search/index.html">tf.search</a></code></dt>
+<dd>
+<div class="desc"><p>Guidance for searching …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.tools" href="tools/index.html">tf.tools</a></code></dt>
+<dd>
+<div class="desc"><p>Various tools for workflows around TF.</p></div>
+</dd>
+<dt><code class="name"><a title="tf.volumes" href="volumes/index.html">tf.volumes</a></code></dt>
+<dd>
+<div class="desc"><p>Volume operations …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.writing" href="writing/index.html">tf.writing</a></code></dt>
+<dd>
+<div class="desc"><p>Writing systems support …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.zip" href="zip.html">tf.zip</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../tf/index.html">tf home</a> -
+<a href="../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.css" integrity="sha512-b+T2i3P45i1LZM7I00Ci5QquB9szqaxu+uuk5TUSGjZQ4w4n+qujQiIuvTv2BxE7WCGQCifNMksyKILDiHzsOg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.16.0/tingle.min.js" integrity="sha512-2B9/byNV1KKRm5nQ2RLViPFD6U4dUjDGwuW1GU+ImJh8YinPU9Zlq1GzdTMO+G2ROrB5o1qasJBy1ttYz0wCug==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<div class="toc">
+<ul>
+<li><a href="#text-fabric">Text-Fabric</a><ul>
+<li><a href="#straight-to">Straight to &hellip;</a></li>
+<li><a href="#author">Author</a></li>
+<li><a href="#acknowledgments">Acknowledgments</a></li>
+<li><a href="#more-resources">More resources</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="tf.about" href="about/index.html">tf.about</a></code></li>
+<li><code><a title="tf.advanced" href="advanced/index.html">tf.advanced</a></code></li>
+<li><code><a title="tf.app" href="app.html">tf.app</a></code></li>
+<li><code><a title="tf.browser" href="browser/index.html">tf.browser</a></code></li>
+<li><code><a title="tf.capable" href="capable.html">tf.capable</a></code></li>
+<li><code><a title="tf.cheatsheet" href="cheatsheet.html">tf.cheatsheet</a></code></li>
+<li><code><a title="tf.clean" href="clean.html">tf.clean</a></code></li>
+<li><code><a title="tf.client" href="client/index.html">tf.client</a></code></li>
+<li><code><a title="tf.convert" href="convert/index.html">tf.convert</a></code></li>
+<li><code><a title="tf.core" href="core/index.html">tf.core</a></code></li>
+<li><code><a title="tf.dataset" href="dataset/index.html">tf.dataset</a></code></li>
+<li><code><a title="tf.fabric" href="fabric.html">tf.fabric</a></code></li>
+<li><code><a title="tf.lib" href="lib.html">tf.lib</a></code></li>
+<li><code><a title="tf.ner" href="ner/index.html">tf.ner</a></code></li>
+<li><code><a title="tf.parameters" href="parameters.html">tf.parameters</a></code></li>
+<li><code><a title="tf.search" href="search/index.html">tf.search</a></code></li>
+<li><code><a title="tf.tools" href="tools/index.html">tf.tools</a></code></li>
+<li><code><a title="tf.volumes" href="volumes/index.html">tf.volumes</a></code></li>
+<li><code><a title="tf.writing" href="writing/index.html">tf.writing</a></code></li>
+<li><code><a title="tf.zip" href="zip.html">tf.zip</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
