@@ -59,13 +59,23 @@ jobs:
           cache: pip
           cache-dependency-path: setup.cfg
 
+      # pdoc3 imports every module, so the optional dependencies
+      # (pygithub, python-gitlab) must be installed as well.
       - name: Install Text-Fabric and pdoc3
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pdoc3 -e .
+          python -m pip install pdoc3 -e ".[all]"
 
       - name: Build docs
         run: python -c "from tf.tools.pdocs import pdoc3; pdoc3('tf')"
+
+      # Never publish a partial site.
+      - name: Verify the built site
+        run: |
+          for f in site/index.html site/tf/index.html site/tf/about/releases.html; do
+            test -f "$f" || { echo "::error::Missing $f, not publishing"; exit 1; }
+          done
+          echo "$(find site -type f | wc -l) files built"
 
       - name: Publish to gh-pages
         uses: peaceiris/actions-gh-pages@v4

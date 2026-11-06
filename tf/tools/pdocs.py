@@ -204,7 +204,12 @@ def pdoc3(pkg):
         console(f"Remove previous build ({SITE})")
         rmtree(SITE)
     console("Generate docs with pdoc3")
-    run(f"{getCommand(pkg, asString=True)} {pkg}", shell=True)
+    result = run(f"{getCommand(pkg, asString=True)} {pkg}", shell=True)
+    if result.returncode != 0:
+        # pdoc3 stops at the first module it cannot import, leaving a partial site.
+        # Never continue with that, otherwise the partial site gets shipped.
+        console(f"pdoc3 failed with exit code {result.returncode}: docs not built")
+        raise SystemExit(1)
     # console("Move docs into place")
     # run(f"mv {SITE}/{pkg}/* {SITE}", shell=True)
     # rmtree(f"{SITE}/{pkg}")
