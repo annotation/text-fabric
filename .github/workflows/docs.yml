@@ -1,0 +1,76 @@
+name: Release notes and docs
+
+# - On every push, pull request and version tag: check that the current version
+#   (tf/parameters.py, setup.cfg) has an entry in tf/docs/about/releases.md.
+# - On every push to master (and on manual runs): rebuild the pdoc3 docs and
+#   publish them to the gh-pages branch, i.e. https://annotation.github.io/text-fabric/
+#   This does the same as `python tfb.py sdocs`, but without needing a local machine.
+
+on:
+  push:
+    branches: [master]
+    tags: ["v*"]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-notes:
+    name: Check release notes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check that the current version has release notes
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          if [ "$REF_TYPE" = "tag" ]; then
+            python .github/scripts/check_release_notes.py "$REF_NAME"
+          else
+            python .github/scripts/check_release_notes.py
+          fi
+
+  docs:
+    name: Build and publish docs
+    needs: release-notes
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: setup.cfg
+
+      - name: Install Text-Fabric and pdoc3
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pdoc3 -e .
+
+      - name: Build docs
+        run: python -c "from tf.tools.pdocs import pdoc3; pdoc3('tf')"
+
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./site
+          commit_message: "docs update"
