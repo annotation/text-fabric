@@ -195,23 +195,60 @@ def adjustVersion(task):
         console(f"Replacing version {currentVersion} by {newVersion}")
 
 
-def makeDist(pypi=True, test=False):
-    distFile = "{}-{}".format(PACKAGE, currentVersion)
-    distFileCompressed = f"{distFile}.tar.gz"
-    distPath = f"{DIST}/{distFileCompressed}"
-    distPath = f"{DIST}/*"
+def buildDist():
+    """Build the package into `dist`.
+
+    Returns True if the build succeeded and produced files, False otherwise.
+    """
     if os.path.exists(DIST):
         rmtree(DIST)
     os.makedirs(DIST, exist_ok=True)
     # run(["python", "setup.py", "sdist", "bdist_wheel"])
     # run(["python", "setup.py", "bdist_wheel"])
-    run(["python", "-m", "build"])
+
+    # Use the interpreter that runs this script, so that `build` is looked up
+    # in the same Python installation.
+    result = run([sys.executable, "-m", "build"])
+    if result.returncode != 0:
+        console(
+            f"Building the package failed (exit code {result.returncode}). "
+            f"Is the package `build` installed? ({sys.executable} -m pip install build)"
+        )
+        return False
+
+    distFiles = glob(f"{DIST}/*")
+    if not distFiles:
+        console(f"Building the package produced no files in {DIST}")
+        return False
+
+    return True
+
+
+def uploadDist(test=False):
+    """Upload the files in `dist` to PyPI (or test-PyPI).
+
+    Returns True if the upload succeeded, False otherwise.
+    """
+    distFiles = glob(f"{DIST}/*")
+    cmd = ["twine", "upload"] + (["-r", "testpypi"] if test else []) + distFiles
+    result = run(cmd)
+    if result.returncode != 0:
+        console(f"Uploading to {'test-' if test else ''}PyPI failed")
+        return False
+    # run("./purge.sh", shell=True)
+    return True
+
+
+def makeDist(pypi=True, test=False):
+    """Build the package and optionally upload it.
+
+    Returns True if all steps succeeded, False otherwise.
+    """
+    if not buildDist():
+        return False
     if pypi:
-        if test:
-            run(["twine", "upload", "-r", "testpypi", distPath])
-        else:
-            run(["twine", "upload", distPath])
-        # run("./purge.sh", shell=True)
+        return uploadDist(test=test)
+    return True
 
 
 def commit(task, msg):
@@ -353,10 +390,20 @@ def main():
             console("Write the release notes first, then ship again")
             return
 
+        # Build first: if that fails, nothing has been published yet.
+        if not buildDist():
+            console("Nothing shipped: no docs, no upload, no commit, no tag")
+            return
+
         if task not in {"shipb", "shipo"}:
             shipDocs(ORG, REPO, PKG)
 
-        makeDist(test=task in {"shipt", "shipb"})
+        if not uploadDist(test=task in {"shipt", "shipb"}):
+            console(
+                "Not committing and tagging. "
+                f"Fix the problem, then run this command again: python tfb.py {task}"
+            )
+            return
 
         if task not in {"shipb", "shipo"}:
             commit(task, msg)
