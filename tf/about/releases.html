@@ -53,6 +53,20 @@ into a new package,
 <a href="https://github.com/annotation/text-fabric">Text-Fabric-Factory</a>,
 which kan be pip installed separately.</p>
 <h3 id="131">13.1</h3>
+<h4 id="1312">13.1.2</h4>
+<p>2026-11-06</p>
+<p>Bug fix in the Hebrew transcription: the ETCBC accent code <code>97</code>
+(<em>atnah hafukh</em>, U+05A2) was missing from the conversion table, so it remained
+as the digits <code>97</code> in the Hebrew text, e.g. in the qere of Psalm 72:17.
+<code><a title="tf.writing.transcription.Transcription.to_hebrew" href="../writing/transcription.html#tf.writing.transcription.Transcription.to_hebrew">Transcription.to_hebrew()</a></code> now produces the accent,
+and <code>from_hebrew</code> converts it back to <code>97</code>.
+The table in <code><a title="tf.writing.hebrew" href="../writing/hebrew.html">tf.writing.hebrew</a></code> now lists this accent.
+Thanks to <a href="https://github.com/tonyjurg">Tony Jurg</a> for the fix
+(<a href="https://github.com/annotation/text-fabric/pull/91">PR #91</a>).</p>
+<p>Behind the scenes: the documentation is now built and published automatically
+by a GitHub Action on every change, and a release can no longer be made without
+an entry in these release notes
+(<a href="https://github.com/annotation/text-fabric/pull/92">PR #92</a>).</p>
 <h4 id="1311">13.1.1</h4>
 <p>2026-10-13</p>
 <p>Bug fix: a corpus that declares an invalid structure configuration (the number
@@ -204,6 +218,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#13">13</a><ul>
 <li><a href="#131">13.1</a><ul>
+<li><a href="#1312">13.1.2</a></li>
 <li><a href="#1311">13.1.1</a></li>
 <li><a href="#1310">13.1.0</a></li>
 </ul>

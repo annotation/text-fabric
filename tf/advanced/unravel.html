@@ -139,17 +139,6 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <span>(</span><span>nType,<br>isSlot,<br>isSlotOrDescend,<br>descend,<br>isBaseNonSlot,<br>isLexType,<br>lexType,<br>lineNumberFeature,<br>featuresBare,<br>features,<br>textCls,<br>hlCls,<br>hlStyle,<br>cls,<br>hasGraphics,<br>after,<br>plainCustom)</span>
 </code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>NodeProps(nType, isSlot, isSlotOrDescend, descend, isBaseNonSlot, isLexType, lexType, lineNumberFeature, featuresBare, features, textCls, hlCls, hlStyle, cls, hasGraphics, after, plainCustom)</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -159,257 +148,70 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <dl>
 <dt id="tf.advanced.unravel.NodeProps.after"><code class="name">var <span class="ident">after</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Whether the app defines a custom method to generate material after a child.It is a dict keyed by node type whose values are the custom methods.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.cls"><code class="name">var <span class="ident">cls</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>A dict of several classes for the display of the node: for the container, the label, and the children of the node; might be set by prettyCustom</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.descend"><code class="name">var <span class="ident">descend</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>When calling T.text(n, descend=??) for this node, what should we substitute for the ?? ?</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.features"><code class="name">var <span class="ident">features</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Features to display in the labels of pretty displays with their names</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.featuresBare"><code class="name">var <span class="ident">featuresBare</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Features to display in the labels of pretty displays without their names</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.hasGraphics"><code class="name">var <span class="ident">hasGraphics</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Whether this node type has graphics.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.hlCls"><code class="name">var <span class="ident">hlCls</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>The highlight Css class of the current node, both for pretty and plain modes, keyed by boolean 'is pretty'</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.hlStyle"><code class="name">var <span class="ident">hlStyle</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>The highlight Css color style of the current node, both for pretty and plain modes, keyed by boolean 'is pretty'</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.isBaseNonSlot"><code class="name">var <span class="ident">isBaseNonSlot</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Whether the current node has a type that is currently a baseType, i.e. a type where a pretty display should stop unfolding.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.isLexType"><code class="name">var <span class="ident">isLexType</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Whether nodes of type are lexemes.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.isSlot"><code class="name">var <span class="ident">isSlot</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Whether the current node is a slot node.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.isSlotOrDescend"><code class="name">var <span class="ident">isSlotOrDescend</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Whether the current node is a slot node or has a type to which the current text format should descend. This type is determined by the current text format.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.lexType"><code class="name">var <span class="ident">lexType</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>If nodes of this type have lexemes in another type, this is that type.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.lineNumberFeature"><code class="name">var <span class="ident">lineNumberFeature</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Feature with source line numbers of nodes of this type.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.nType"><code class="name">var <span class="ident">nType</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>The node type of the current node.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.plainCustom"><code class="name">var <span class="ident">plainCustom</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Whether the app defines a custom method to plain displays for this node type.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.NodeProps.textCls"><code class="name">var <span class="ident">textCls</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L87-L91" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class NodeProps:
-    &#34;&#34;&#34;Node properties during plain() or pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>The text Css class of the current node.</p></div>
 </dd>
 </dl>
@@ -419,17 +221,6 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <span>(</span><span>slotType,<br>ltr,<br>fmt,<br>textClsDefault,<br>textMethod,<br>getText,<br>upMethod,<br>slotsMethod,<br>fLookupMethod,<br>eLookupMethod,<br>allEFeats,<br>browsing,<br>webLink,<br>getGraphics)</span>
 </code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>OuterSettings(slotType, ltr, fmt, textClsDefault, textMethod, getText, upMethod, slotsMethod, fLookupMethod, eLookupMethod, allEFeats, browsing, webLink, getGraphics)</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -439,212 +230,58 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <dl>
 <dt id="tf.advanced.unravel.OuterSettings.allEFeats"><code class="name">var <span class="ident">allEFeats</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Set of all edge features: <code>tf.core.api.Api.Eall(warp=False)</code></p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.browsing"><code class="name">var <span class="ident">browsing</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>whether we work for the TF browser or for a Jupyter notebook</p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.eLookupMethod"><code class="name">var <span class="ident">eLookupMethod</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Method to get the value of an edge feature: <code><a title="tf.core.api.Api.Es" href="../core/api.html#tf.core.api.Api.Es">Api.Es()</a></code></p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.fLookupMethod"><code class="name">var <span class="ident">fLookupMethod</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Method to get the value of a node feature: <code><a title="tf.core.api.Api.Fs" href="../core/api.html#tf.core.api.Api.Fs">Api.Fs()</a></code></p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.fmt"><code class="name">var <span class="ident">fmt</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>the currently selected text format.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.getGraphics"><code class="name">var <span class="ident">getGraphics</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Method to fetch graphics for a node. App-dependent.See <code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code> under <strong>graphics</strong>.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.getText"><code class="name">var <span class="ident">getText</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Method to get the text for a node according to a template: <code><a title="tf.advanced.helpers.getText" href="helpers.html#tf.advanced.helpers.getText">getText()</a></code></p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.ltr"><code class="name">var <span class="ident">ltr</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>writing direction.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.slotType"><code class="name">var <span class="ident">slotType</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>The slot type of the dataset.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.slotsMethod"><code class="name">var <span class="ident">slotsMethod</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Method to get the slots of a node: <code><a title="tf.core.oslotsfeature.OslotsFeature.s" href="../core/oslotsfeature.html#tf.core.oslotsfeature.OslotsFeature.s">OslotsFeature.s()</a></code></p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.textClsDefault"><code class="name">var <span class="ident">textClsDefault</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Default CSS class for full text.</p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.textMethod"><code class="name">var <span class="ident">textMethod</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Method to print text of a node according to a text format: <code><a title="tf.core.text.Text.text" href="../core/text.html#tf.core.text.Text.text">Text.text()</a></code></p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.upMethod"><code class="name">var <span class="ident">upMethod</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Method to move from a node to its first embedder: <code><a title="tf.core.locality.Locality.u" href="../core/locality.html#tf.core.locality.Locality.u">Locality.u()</a></code></p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.webLink"><code class="name">var <span class="ident">webLink</span></code></dt>
 <dd>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6eb60fded88a27e2a8c3bda21ec61129dad9601f/tf/advanced/unravel.py#L22-L26" class="git-link" target="_blank">Browse git</a>
-</summary>
-<pre><code class="python">class OuterSettings:
-    &#34;&#34;&#34;Common properties during plain() and pretty().
-    &#34;&#34;&#34;
-
-    pass</code></pre>
-</details>
 <div class="desc"><p>Method to produce a web link to a node: <code><a title="tf.advanced.links.webLink" href="links.html#tf.advanced.links.webLink">webLink()</a></code></p></div>
 </dd>
 </dl>
