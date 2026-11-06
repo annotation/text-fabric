@@ -18,6 +18,24 @@ which kan be pip installed separately.
 
 ### 13.1
 
+#### 13.1.2
+
+2026-11-06
+
+Bug fix in the Hebrew transcription: the ETCBC accent code `97`
+(*atnah hafukh*, U+05A2) was missing from the conversion table, so it remained
+as the digits `97` in the Hebrew text, e.g. in the qere of Psalm 72:17.
+`tf.writing.transcription.Transcription.to_hebrew` now produces the accent,
+and `from_hebrew` converts it back to `97`.
+The table in `tf.writing.hebrew` now lists this accent.
+Thanks to [Tony Jurg](https://github.com/tonyjurg) for the fix
+([PR #91](https://github.com/annotation/text-fabric/pull/91)).
+
+Behind the scenes: the documentation is now built and published automatically
+by a GitHub Action on every change, and a release can no longer be made without
+an entry in these release notes
+([PR #92](https://github.com/annotation/text-fabric/pull/92)).
+
 #### 13.1.1
 
 2026-10-13
